@@ -17,13 +17,13 @@ metadata:
 spec:
   server:
     # server image used in Che deployment
-    cheImage: 'quay.io/crw/server-rhel8'
+    cheImage: ''
     # tag of an image used in Che deployment
-    cheImageTag: 'latest'
+    cheImageTag: ''
     # image:tag used in Devfile registry deployment
-    devfileRegistryImage: 'quay.io/crw/devfileregistry-rhel8:latest'
+    devfileRegistryImage: ''
     # image:tag used in plugin registry deployment
-    pluginRegistryImage: 'quay.io/crw/pluginregistry-rhel8:latest'
+    pluginRegistryImage: ''
     # defaults to `che`. When set to `codeready`, CodeReady Workspaces is deployed
     # the difference is in images, labels, exec commands
     cheFlavor: 'codeready'
@@ -56,10 +56,6 @@ spec:
       CHE_WORKSPACE_PLUGIN__BROKER_INIT_IMAGE: 'quay.io/crw/pluginbrokerinit-rhel8:latest'
       CHE_WORKSPACE_PLUGIN__BROKER_UNIFIED_IMAGE: 'quay.io/crw/pluginbroker-rhel8:latest'
       CHE_SERVER_SECURE__EXPOSER_JWTPROXY_IMAGE: 'quay.io/crw/jwtproxy-rhel8:latest'
-      CHE_FACTORY_DEFAULT__EDITOR: 'eclipse/che-theia/7.3.1'
-      CHE_FACTORY_DEFAULT__PLUGINS: 'eclipse/che-machine-exec-plugin/7.3.1'
-      CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR: 'eclipse/che-theia/7.3.1'
-      CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS: 'eclipse/che-machine-exec-plugin/7.3.1'
   database:
     # when set to true, the operator skips deploying Postgres, and passes connection details of existing DB to Che server
     # otherwise a Postgres deployment is created
