@@ -52,10 +52,6 @@ spec:
     serverMemoryLimit: ''
     customCheProperties:
       CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY: 'Always'
-      CHE_DOCKER_ALWAYS__PULL__IMAGE: 'true'
-      CHE_WORKSPACE_PLUGIN__BROKER_INIT_IMAGE: 'quay.io/crw/pluginbrokerinit-rhel8:latest'
-      CHE_WORKSPACE_PLUGIN__BROKER_UNIFIED_IMAGE: 'quay.io/crw/pluginbroker-rhel8:latest'
-      CHE_SERVER_SECURE__EXPOSER_JWTPROXY_IMAGE: 'quay.io/crw/jwtproxy-rhel8:latest'
   database:
     # when set to true, the operator skips deploying Postgres, and passes connection details of existing DB to Che server
     # otherwise a Postgres deployment is created
