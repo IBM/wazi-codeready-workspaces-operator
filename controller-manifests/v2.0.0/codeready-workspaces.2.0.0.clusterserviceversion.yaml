@@ -8,7 +8,7 @@ metadata:
           "apiVersion": "org.eclipse.che/v1",
           "kind": "CheCluster",
           "metadata": {
-             "name":"codeready"
+             "name":"codeready-workspaces"
           },
           "spec": {
              "server": {
@@ -113,43 +113,6 @@ spec:
   description: |
     A collaborative Kubernetes-native development solution that delivers OpenShift workspaces and in-browser IDE for rapid cloud application development.
     This operator installs PostgreSQL, Red Hat SSO, and the Red Hat CodeReady Workspaces server, as well as configures all three services.
-
-    ## Pre-Reqs
-
-    In addition to a standard namespaced role, this operator may require a **ClusterRole** that allows the operator service account to:
-
-    * read secrets in openshift-ingress namespace (the operator will get TLS secret in openshift-ingress namespace to extract certificate and add it to Java trust store for Red Hat CodeReady Workspaces server)
-
-    * list, get, create, update, patch, watch and delete oauthclients at a cluster scope (the operator creates oAuthclient and OpenShift v3 identity provider in Keycloak to enable Login With OpenShift in Red Hat CodeReady Workspaces)
-
-
-    The operator service account will require extra privileges if you enable either `server.selfSignedCerts` or `auth.openShiftoAuth` which are false in CR template by default.
-    After the operator is installed, grant the **codeready-operator** service account such privileges:
-    When **auth.openShiftoAuth** is enabled:
-
-
-    ```
-
-    oc create clusterrole codeready-operator --resource=oauthclients --verb=get,create,delete,update,list,watch
-
-    oc create clusterrolebinding codeready-operator --clusterrole=codeready-operator --serviceaccount=${NAMESPACE}:codeready-operator
-
-    ```
-
-
-    When **server.selfSignedCerts** is enabled:
-
-    ```
-
-    oc create role secret-reader --resource=secrets --verb=get -n=openshift-ingress
-
-    oc create rolebinding codeready-operator --role=secret-reader --serviceaccount=${NAMESPACE}:codeready-operator -n=openshift-ingress
-
-    ```
-
-
-    `${NAMESPACE}` is an OpenShift project where you installed the operator.
-
 
     ## How to Install
 
