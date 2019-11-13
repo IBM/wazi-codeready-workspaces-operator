@@ -21,7 +21,7 @@ metadata:
              },
              "database": {
                 "externalDb": false,
-                "chePostgresHostname": "",
+                "chePostgresHostName": "",
                 "chePostgresPort": "",
                 "chePostgresUser": "",
                 "chePostgresPassword": "",
