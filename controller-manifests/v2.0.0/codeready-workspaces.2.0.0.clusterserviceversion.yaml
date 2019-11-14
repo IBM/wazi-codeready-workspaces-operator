@@ -289,7 +289,7 @@ spec:
                 - name: OPERATOR_NAME
                   value: codeready-operator
                 image: registry.redhat.io/codeready-workspaces/server-operator-rhel8:2.0
-                imagePullPolicy: IfNotPresent
+                imagePullPolicy: Always
                 name: codeready-operator
                 ports:
                 - containerPort: 60000
