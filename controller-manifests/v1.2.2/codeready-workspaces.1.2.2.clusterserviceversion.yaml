@@ -211,7 +211,7 @@ spec:
       type: MultiNamespace
     - supported: false
       type: AllNamespaces
-  version: 1.2.0
+  version: 1.2.2
   maintainers:
     - email: nboldt@redhat.com
       name: Nick Boldt

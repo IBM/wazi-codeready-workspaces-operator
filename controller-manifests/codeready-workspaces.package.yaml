@@ -1,7 +1,7 @@
 packageName: codeready-workspaces
 channels:
-- name: stable
+- name: latest
   currentCSV: crwoperator.v2.0.0
-- name: legacy
+- name: previous
   currentCSV: crwoperator.v1.2.2
-defaultChannel: stable
+defaultChannel: latest
