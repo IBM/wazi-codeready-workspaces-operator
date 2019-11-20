@@ -50,8 +50,6 @@ spec:
     serverMemoryRequest: ''
     # sets mem limit for server deployment. Defaults to 1Gi
     serverMemoryLimit: ''
-    customCheProperties:
-      CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY: 'Always'
   database:
     # when set to true, the operator skips deploying Postgres, and passes connection details of existing DB to Che server
     # otherwise a Postgres deployment is created
