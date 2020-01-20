@@ -26,7 +26,7 @@ timeout(120) {
 		        poll: true,
 		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
 		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "ssh://${SOURCE_GIT_USERNAME}@github.com:${SOURCE_REPO}.git"],
+		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"],
                 [credentialsId:'devstudio-release']
                 ]])
 
