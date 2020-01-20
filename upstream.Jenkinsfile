@@ -18,10 +18,7 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-	        withCredentials([
-                file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB'),
-                usernamePassword(credentialsId: 'devstudio-release', passwordVariable: 'SOURCE_GIT_PASSWORD', usernameVariable: 'SOURCE_GIT_USERNAME')]
-            ) {
+	        withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
 		      checkout([$class: 'GitSCM',
 		        branches: [[name: "${SOURCE_BRANCH}"]],
 		        doGenerateSubmoduleConfigurations: false,
@@ -80,11 +77,6 @@ cd ${WORKSPACE}/sources
   git config user.email nickboldt+devstudio-release@gmail.com
   git config user.name "devstudio-release"
   git config --global push.default matching
-
-  # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
-  set +e
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
-  set -e
 cd ..
 
 # fetch sources to be updated
@@ -98,7 +90,17 @@ git config --global push.default matching
 cd ..
 
 '''
-		      sh BOOTSTRAP
+              sshagent(credentials : ['devstudio-release'])
+              {
+                sh BOOTSTRAP + '''
+cd ${WORKSPACE}/sources
+  # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
+  set +e
+  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
+  set -e
+cd ..
+'''
+              }
 
 		      OLD_SHA = sh(script: '''#!/bin/bash -xe
 		      cd ${WORKSPACE}/target; git rev-parse HEAD
