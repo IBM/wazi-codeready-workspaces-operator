@@ -29,7 +29,9 @@ timeout(120) {
 		        poll: true,
 		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
 		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://${SOURCE_GIT_USERNAME}@${SOURCE_GIT_PASSWORD}@github.com/${SOURCE_REPO}.git"]]])
+		        userRemoteConfigs: [[url: "ssh://${SOURCE_GIT_USERNAME}@github.com:${SOURCE_REPO}.git"],
+                [credentialsId:'devstudio-release']
+                ]])
 
   		      def BOOTSTRAP = '''#!/bin/bash -xe
 
