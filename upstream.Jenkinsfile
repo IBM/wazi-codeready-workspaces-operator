@@ -78,7 +78,7 @@ cd ${WORKSPACE}/sources
 
   # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
   set +e
-  /tmp/updateBaseImages.sh -b '' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
+  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
   set -e
 cd ..
 
