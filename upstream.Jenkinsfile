@@ -18,7 +18,10 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-	        withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+	        withCredentials([
+                file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB'),
+                usernamePassword(credentialsId: 'devstudio-release', passwordVariable: 'SOURCE_GIT_PASSWORD', usernameVariable: 'SOURCE_GIT_USERNAME')]
+            ) {
 		      checkout([$class: 'GitSCM',
 		        branches: [[name: "${SOURCE_BRANCH}"]],
 		        doGenerateSubmoduleConfigurations: false,
@@ -26,7 +29,7 @@ timeout(120) {
 		        poll: true,
 		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
 		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+		        userRemoteConfigs: [[url: "https://${SOURCE_GIT_USERNAME}@${SOURCE_GIT_PASSWORD}@github.com/${SOURCE_REPO}.git"]]])
 
   		      def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -73,7 +76,7 @@ chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
   git config user.email nickboldt+devstudio-release@gmail.com
-  git config user.name "Red Hat Devstudio Release Bot"
+  git config user.name "devstudio-release"
   git config --global push.default matching
 
   # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
