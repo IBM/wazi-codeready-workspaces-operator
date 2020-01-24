@@ -131,12 +131,11 @@ sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
   -e "s#FROM registry.access.redhat.com/#FROM #g" \
   -e "s/# *RUN yum /RUN yum /g" \
-  -e "s@# *ADD controller-manifests /manifests@ADD controller-manifests /manifests@g"
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
-    COMPNAME="''' + QUAY_PROJECT + '''-rhel8" \r
+    COMPNAME="''' + QUAY_PROJECT + '''" \r
 LABEL summary="$SUMMARY" \\\r
       description="$DESCRIPTION" \\\r
       io.k8s.description="$DESCRIPTION" \\\r
@@ -148,7 +147,7 @@ LABEL summary="$SUMMARY" \\\r
       license="EPLv2" \\\r
       maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
       io.openshift.expose-services="" \\\r
-      com.redhat.delivery.appregistry="true" \\\r
+      com.redhat.delivery.appregistry="false" \\\r
       usage="" \r'
 
 echo -e "$METADATA" >> ${WORKSPACE}/target/Dockerfile
