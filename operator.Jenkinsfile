@@ -70,7 +70,8 @@ fi
 
 # REQUIRE: skopeo
 # TODO merge changes in generatePRs branch to master when ready
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/generatePRs/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+# curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/generatePRs/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
