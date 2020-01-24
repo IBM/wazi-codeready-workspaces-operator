@@ -62,11 +62,7 @@ klist # verify working
 
 hasChanged=0
 
-# TODO rename upstream Dockerfile to rhel.Dockerfile in che-operator repo
-SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
-if [[ -f ${WORKSPACE}/sources/rhel.Dockerfile ]]; then
-  SOURCEDOCKERFILE=${WORKSPACE}/sources/rhel.Dockerfile
-fi
+SOURCEDOCKERFILE=${WORKSPACE}/sources/operator-metadata.Dockerfile
 
 # REQUIRE: skopeo
 # TODO merge changes in generatePRs branch to master when ready
