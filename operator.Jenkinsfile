@@ -90,17 +90,18 @@ git config --global push.default matching
 cd ..
 
 '''
-              sshagent(credentials : ['devstudio-release'])
-              {
-                sh BOOTSTRAP + '''
-cd ${WORKSPACE}/sources
-  # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
-  set +e
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
-  set -e
-cd ..
-'''
-              }
+// TODO make this work eventually to we can generate PRs against che-operator repo
+//               sshagent(credentials : ['devstudio-release'])
+//               {
+//                 sh BOOTSTRAP + '''
+// cd ${WORKSPACE}/sources
+//   # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
+//   set +e
+//   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
+//   set -e
+// cd ..
+// '''
+//               }
 
 		      OLD_SHA = sh(script: '''#!/bin/bash -xe
 		      cd ${WORKSPACE}/target; git rev-parse HEAD
