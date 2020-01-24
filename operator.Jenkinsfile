@@ -137,7 +137,7 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
-    COMPNAME="''' + QUAY_PROJECT + '''" \r
+    COMPNAME="''' + QUAY_PROJECT + '''-rhel8" \r
 LABEL summary="$SUMMARY" \\\r
       description="$DESCRIPTION" \\\r
       io.k8s.description="$DESCRIPTION" \\\r
