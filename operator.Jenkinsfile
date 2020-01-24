@@ -104,7 +104,7 @@ cd ..
 // '''
 //               }
 
-		      OLD_SHA = sh(script: '''#!/bin/bash -xe
+		      OLD_SHA = sh(script: BOOTSTRAP + '''
 		      cd ${WORKSPACE}/target; git rev-parse HEAD
 		      ''', returnStdout: true)
 		      println "Got OLD_SHA in target folder: " + OLD_SHA
