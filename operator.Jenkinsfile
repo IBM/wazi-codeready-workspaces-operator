@@ -2,8 +2,8 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
+// def SOURCE_BRANCH = "crw-2.0" // or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
-def SOURCE_BRANCH = "crw-2.0" // or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator" // dist-git repo to use as target
 
