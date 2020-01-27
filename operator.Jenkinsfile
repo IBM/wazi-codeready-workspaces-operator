@@ -137,13 +137,13 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
-    COMPNAME="''' + QUAY_PROJECT + '''-rhel8" \r
+    COMPNAME="''' + QUAY_PROJECT + '''" \r
 LABEL summary="$SUMMARY" \\\r
       description="$DESCRIPTION" \\\r
       io.k8s.description="$DESCRIPTION" \\\r
       io.k8s.display-name=\"$DESCRIPTION" \\\r
       io.openshift.tags="$PRODNAME,$COMPNAME" \\\r
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \\\r
+      com.redhat.component="$PRODNAME-rhel8-$COMPNAME-container" \\\r
       name="$PRODNAME/$COMPNAME" \\\r
       version="'$CRW_VERSION'" \\\r
       license="EPLv2" \\\r
