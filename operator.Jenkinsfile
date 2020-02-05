@@ -112,7 +112,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES=".gitignore Dockerfile Gopkg.lock Gopkg.toml README.md  cmd templates e2e pkg vendor version"
+SYNC_FILES=".gitignore cmd deploy deploy.sh e2e Gopkg.lock Gopkg.toml olm pkg README.md templates vendor version"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
