@@ -36,7 +36,7 @@ metadata:
                 "identityProviderClientId": ""
              },
              "storage": {
-                "pvcStrategy": "per-workspace",
+                "pvcStrategy": "common",
                 "pvcClaimSize": "1Gi",
                 "preCreateSubPaths": true
              }
