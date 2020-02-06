@@ -128,20 +128,20 @@ done
 # global string replacements in deploy scripts
 egrep -rl "che" ${WORKSPACE}/target/deploy | \
   xargs sed -i \
-    -e "s#quay.io/eclipse/che-operator:nightly#''' + CRW_OPERATOR_IMAGE + '''#g" \
-    -e "s#che/operator#codeready/operator#" \
-    -e "s#che-operator#codeready-operator#" \
-    -e "s#name: eclipse-che#name: codeready-workspaces#" \
-    -e "s#cheImageTag: 'nightly'#cheImageTag: ''#" \
-    -e "s#/bin/codeready-operator#/bin/che-operator#"
+    -e 's#quay.io/eclipse/che-operator:nightly#''' + CRW_OPERATOR_IMAGE + '''#g' \
+    -e 's#che/operator#codeready/operator#g' \
+    -e 's#che-operator#codeready-operator#g' \
+    -e 's#name: eclipse-che#name: codeready-workspaces#g' \
+    -e 's#cheImageTag: \\'nightly\\'#cheImageTag: \\'\\'#g' \
+    -e 's#/bin/codeready-operator#/bin/che-operator#g'
 
 # replacements in deploy/crds/org_v1_che_cr.yaml
 sed -i ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml
-    -e "s#\\(cheFlavor:\\) ''#\\1 'codeready'#" \
-    -e "s#\\(devfileRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
-    -e "s#\\(pluginRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
-    -e "s#\\(identityProviderImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
-    -e "s#\\(identityProviderAdminUserName:\\) ''#\\1 'admin'#"
+    -e "s#\\(cheFlavor:\\) ''#\\1 'codeready'#g" \
+    -e "s#\\(devfileRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
+    -e "s#\\(pluginRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
+    -e "s#\\(identityProviderImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
+    -e "s#\\(identityProviderAdminUserName:\\) ''#\\1 'admin'#g"
 
 # yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (comments are stripped out)
 yq 'del(.spec.k8s)' ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml --yaml-output --in-place --yaml-roundtrip
