@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "crw-2.0" // or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "crw-2.1" // or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator" // dist-git repo to use as target
@@ -12,6 +12,7 @@ def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
 
+def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
 def OLD_SHA=""
 
 def buildNode = "rhel7-releng" // slave label
@@ -123,6 +124,27 @@ for d in ${SYNC_FILES}; do
     rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/target/${d}/
   fi
 done
+
+# global string replacements in deploy scripts
+egrep -rl "che" ${WORKSPACE}/target/deploy | \
+  xargs sed -i \
+    -e "s#quay.io/eclipse/che-operator:nightly#''' + CRW_OPERATOR_IMAGE + '''#g" \
+    -e "s#che/operator#codeready/operator#" \
+    -e "s#che-operator#codeready-operator#" \
+    -e "s#name: eclipse-che#name: codeready-workspaces#" \
+    -e "s#cheImageTag: 'nightly'#cheImageTag: ''#" \
+    -e "s#/bin/codeready-operator#/bin/che-operator#"
+
+# replacements in deploy/crds/org_v1_che_cr.yaml
+sed -i ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml
+    -e "s#\\(cheFlavor:\\) ''#\\1 'codeready'#" \
+    -e "s#\\(devfileRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
+    -e "s#\\(pluginRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
+    -e "s#\\(identityProviderImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#" \
+    -e "s#\\(identityProviderAdminUserName:\\) ''#\\1 'admin'#"
+
+# yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (comments are stripped out)
+yq 'del(.spec.k8s)' ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml --yaml-output --in-place --yaml-roundtrip
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
