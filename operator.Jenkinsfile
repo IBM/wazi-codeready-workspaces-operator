@@ -110,11 +110,12 @@ cd ..
 		      ''', returnStdout: true)
 		      println "Got OLD_SHA in target folder: " + OLD_SHA
 
+          def SYNC_FILES = ".gitignore cmd deploy deploy.sh e2e Gopkg.lock Gopkg.toml olm pkg README.md templates vendor version"
+
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES=".gitignore cmd deploy deploy.sh e2e Gopkg.lock Gopkg.toml olm pkg README.md templates vendor version"
-for d in ${SYNC_FILES}; do
+for d in ''' + SYNC_FILES + '''; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
   elif [[ -d ${WORKSPACE}/sources/${d} ]]; then
@@ -124,27 +125,36 @@ for d in ${SYNC_FILES}; do
     rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/target/${d}/
   fi
 done
+'''
 
-# global string replacements in deploy scripts
-egrep -rl "che" ${WORKSPACE}/target/deploy | \
-  xargs sed -i \
-    -e 's#quay.io/eclipse/che-operator:nightly#''' + CRW_OPERATOR_IMAGE + '''#g' \
-    -e 's#che/operator#codeready/operator#g' \
-    -e 's#che-operator#codeready-operator#g' \
-    -e 's#name: eclipse-che#name: codeready-workspaces#g' \
-    -e 's#cheImageTag: \\'nightly\\'#cheImageTag: \\'\\'#g' \
-    -e 's#/bin/codeready-operator#/bin/che-operator#g'
+		      // relative to $WORKSPACE
+		      def files = findFiles(glob: 'target/deploy/**/*')
+		      files.each {
+                println it.path
+                // global string replacements in deploy scripts
+                writeFile file: it.path, text: readFile(it.path)
+                    .replaceAll('quay.io/eclipse/che-operator:nightly', CRW_OPERATOR_IMAGE)
+                    .replaceAll('che/operator', 'codeready/operator')
+                    .replaceAll('che-operator', 'codeready-operator')
+                    .replaceAll('name: eclipse-che', 'name: codeready-workspaces')
+                    .replaceAll("cheImageTag: 'nightly'", "cheImageTag: ''")
+                    .replaceAll('/bin/codeready-operator', '/bin/che-operator')
+		      }
 
-# replacements in deploy/crds/org_v1_che_cr.yaml
-sed -i ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml
-    -e "s#\\(cheFlavor:\\) ''#\\1 'codeready'#g" \
-    -e "s#\\(devfileRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
-    -e "s#\\(pluginRegistryImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
-    -e "s#\\(identityProviderImage:\\) 'quay.io/eclipse/.\\+'#\\1 ''#g" \
-    -e "s#\\(identityProviderAdminUserName:\\) ''#\\1 'admin'#g"
+              // replacements in deploy/crds/org_v1_che_cr.yaml
+              def cryaml = "target/deploy/crds/org_v1_che_cr.yaml"
+              println cryaml
+              writeFile file: cryaml, text: readFile(cryaml)
+                .replaceAll("cheFlavor: ''", "cheFlavor: 'codeready'")
+                .replaceAll("devfileRegistryImage: 'quay.io/eclipse/.+'", "devfileRegistryImage: ''")
+                .replaceAll("pluginRegistryImage: 'quay.io/eclipse/.+'", "pluginRegistryImage: ''")
+                .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
+                .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
 
-# yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (comments are stripped out)
-yq 'del(.spec.k8s)' ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml --yaml-output --in-place --yaml-roundtrip
+		      sh BOOTSTRAP + '''
+
+# TODO: use yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (but comments are stripped out) ?
+# yq 'del(.spec.k8s)' ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml --yaml-output --in-place --yaml-roundtrip
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
@@ -180,9 +190,9 @@ echo -e "$METADATA" >> ${WORKSPACE}/target/Dockerfile
 cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-	git add Dockerfile ${SYNC_FILES}
+	git add Dockerfile ''' + SYNC_FILES + '''
     /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
+	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES + '''
 	git push origin ''' + GIT_BRANCH + '''
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
