@@ -107,7 +107,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="deploy controller-manifests LICENSE"
+SYNC_FILES="controller-manifests"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
