@@ -1,4 +1,4 @@
-packageName: codeready-workspaces
+packageName: codeready-workspaces-2
 channels:
 - name: latest
   currentCSV: crwoperator.v2.1.0
