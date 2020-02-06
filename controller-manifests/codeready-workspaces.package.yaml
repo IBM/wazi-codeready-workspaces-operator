@@ -1,7 +1,12 @@
-packageName: codeready-workspaces-2
+# Must include all channels, even dead ones, so that CVP tests pass. 
+# Expectation is that once an operator is published, it will be carried along here forever.
+# (At least until we move to the OCP 4.4/4.5 approach)
+packageName: codeready-workspaces
 channels:
 - name: latest
   currentCSV: crwoperator.v2.1.0
 - name: previous
   currentCSV: crwoperator.v2.0.0
+- name: deprecated
+  currentCSV: crwoperator.v1.2.2
 defaultChannel: latest
