@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2020 Red Hat, Inc.
+#  Copyright (c) 2018-2020 Red Hat, Inc.
 #    This program and the accompanying materials are made
 #    available under the terms of the Eclipse Public License 2.0
 #    which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -38,6 +38,11 @@ spec:
         metadata:
           type: object
         spec:
+          description: Desired configuration of the Che installation. Based on these
+            settings, the operator automatically creates and maintains several config
+            maps that will contain the appropriate environment variables the various
+            components of the Che installation. These generated config maps should
+            NOT be updated manually.
           properties:
             auth:
               description: Configuration settings related to the Authentication used
@@ -208,6 +213,14 @@ spec:
                     TLS termination if TLS is enabled. See also the `tlsSupport` field.
                   type: string
               type: object
+            metrics:
+              description: Configuration settings related to the metrics collection
+                used by the Che installation.
+              properties:
+                enable:
+                  description: Enables `metrics` Che server endpoint. Default to `false`.
+                  type: boolean
+              type: object
             server:
               description: General configuration settings related to the Che server
                 and the plugin and devfile registries
@@ -226,6 +239,12 @@ spec:
                     involved in a Che deployment. This is particularly useful to install
                     Che in an air-gapped environment.
                   type: string
+                allowUserDefinedWorkspaceNamespaces:
+                  description: Defines if a user is able to specify Kubernetes namespace
+                    (or OpenShift project) different from the default. It's NOT RECOMMENDED
+                    to configured true without OAuth configured. This property is
+                    also used by the OpenShift infra.
+                  type: boolean
                 cheDebug:
                   description: Enables the debug mode for Che server. Defaults to
                     `false`.
@@ -312,6 +331,11 @@ spec:
                     `true`, then no such dedicated server will be started by the operator
                     and you will have to manually set the `pluginRegistryUrl` field.
                   type: boolean
+                gitSelfSignedCert:
+                  description: If enabled, then the certificate from `che-git-self-signed-cert`
+                    config map will be propagated to the Che components and provide
+                    particular configuration for Git.
+                  type: boolean
                 nonProxyHosts:
                   description: List of hosts that should not use the configured proxy.
                     Use `|`` as delimiter, eg `localhost|my.host.com|123.42.12.32`
@@ -383,6 +407,14 @@ spec:
                     WARNING: Enabling TLS might require enabling the `selfSignedCert`
                     field also in some cases.'
                   type: boolean
+                workspaceNamespaceDefault:
+                  description: 'Defines Kubernetes default namespace in which user''s
+                    workspaces are created if user does not override it. It''s possible
+                    to use <username>, <userid> and <workspaceid> placeholders (e.g.:
+                    che-workspace-<username>). In that case, new namespace will be
+                    created for each user (or workspace). Is used by OpenShift infra
+                    as well to specify Project'
+                  type: string
               type: object
             storage:
               description: Configuration settings related to the persistent storage
@@ -423,6 +455,7 @@ spec:
               type: object
           type: object
         status:
+          description: CheClusterStatus defines the observed state of Che installation
           properties:
             cheClusterRunning:
               description: Status of a Che installation. Can be `Available`, `Unavailable`,
