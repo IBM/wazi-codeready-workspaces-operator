@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "master" or crw-2.0 :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "master" or crw-2.1 :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
@@ -172,6 +172,7 @@ else
 fi
 cd ..
 
+# NOTE: this image needs to build in Brew, then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
   for QRP in ''' + QUAY_PROJECT + '''; do
@@ -183,7 +184,7 @@ token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + GIT_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
-QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
+QUAY_REBUILD_PATHs=${QUAY_REPO_PATH}&\
 JOB_BRANCH=master&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
