@@ -146,6 +146,7 @@ done
               println cryaml
               writeFile file: cryaml, text: readFile(cryaml)
                 .replaceAll("cheFlavor: ''", "cheFlavor: 'codeready'")
+                .replaceAll("tlsSupport: .+", "tlsSupport: true")
                 .replaceAll("devfileRegistryImage: 'quay.io/eclipse/.+'", "devfileRegistryImage: ''")
                 .replaceAll("pluginRegistryImage: 'quay.io/eclipse/.+'", "pluginRegistryImage: ''")
                 .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
