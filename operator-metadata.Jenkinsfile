@@ -4,6 +4,9 @@
 // def FORCE_BUILD = "false"
 // def SOURCE_BRANCH = "master" or crw-2.1 :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
+// TODO set upstream source as eclipse/che-operator to copy csvs and crds from a given release version of Che (7.9.2) into CRW's operator repo
+// See https://issues.redhat.com/browse/CRW-579?focusedCommentId=14002557&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14002557
+
 def SOURCE_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
 
@@ -107,7 +110,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="controller-manifests"
+SYNC_FILES="controller-manifests build"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
@@ -128,6 +131,32 @@ sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
   -e "s#FROM registry.access.redhat.com/#FROM #g" \
   -e "s/# *RUN yum /RUN yum /g" \
+
+# generate digests from tags
+# 1. convert csv to use brew container refs so we can resolve stuff
+CSV_NAME="codeready-workspaces"
+CSV_VERSION="2.1.0"
+CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.*${CSV_VERSION}.clusterserviceversion.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
+sed -r \
+    `# for plugin & devfile registries, use internal Brew versions` \
+    -e "s|registry.redhat.io/codeready-workspaces/(pluginregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
+    -e "s|registry.redhat.io/codeready-workspaces/(devfileregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
+    `# for operator, replace internal container name with quay name` \
+    -e "s|crw-2-rhel8-operator|operator-rhel8|g" \
+    `# in all other cases (including operator) use published quay images to compute digests` \
+    -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g" \
+    -i "${CSV_FILE}"
+# 2. generate digests
+pushd ${WORKSPACE}/target >/dev/null
+./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v 2.1.0
+popd >/dev/null
+# 3. switch back to use RHCC container names
+sed -r \
+    `# revert to RHCC` \
+    -e "s#(quay.io/crw/|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-)#registry.redhat.io/codeready-workspaces/#g" \
+    `# for operator, revert to internal name` \
+    -e "s|operator-rhel8|crw-2-rhel8-operator|g" \
+    -i "${CSV_FILE}"
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
