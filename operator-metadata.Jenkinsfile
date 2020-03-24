@@ -33,7 +33,8 @@ timeout(120) {
                 [credentialsId:'devstudio-release']
                 ]])
 
-  		      def BOOTSTRAP = '''#!/bin/bash -xe
+            sh "sudo /usr/bin/python3 -m pip install --upgrade pip; sudo /usr/bin/python3 -m pip install yq jsonschema"
+            def BOOTSTRAP = '''#!/bin/bash -xe
 
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
