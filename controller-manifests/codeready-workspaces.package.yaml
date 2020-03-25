@@ -6,7 +6,5 @@ channels:
 - name: latest
   currentCSV: crwoperator.v2.1.0
 - name: previous
-  currentCSV: crwoperator.v2.0.0
-- name: deprecated
   currentCSV: crwoperator.v1.2.2
 defaultChannel: latest
