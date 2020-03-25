@@ -16,7 +16,7 @@ metadata:
                 "cheFlavor":"codeready",
                 "devfileRegistryImage": "",
                 "pluginRegistryImage": "",
-                "tlsSupport": false,
+                "tlsSupport": true,
                 "selfSignedCert": false
              },
              "database": {
