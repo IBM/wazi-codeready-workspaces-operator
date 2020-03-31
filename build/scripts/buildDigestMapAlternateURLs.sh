@@ -13,7 +13,7 @@
         rm -f ${tmpfile}
         if [[ ! "${QUIET}" ]]; then echo "${alt_image}"; fi
 
-        digest="$(skopeo inspect docker://${alt_image} | jq -r '.Digest')"
+        digest="$(skopeo inspect --tls-verify=false docker://${alt_image} | jq -r '.Digest')"
         if [[ ! "${QUIET}" ]]; then echo -n "[INFO] Got digest"; fi
         echo "    $digest # ${alt_image}"
         if [[ ! ${digest} ]]; then
