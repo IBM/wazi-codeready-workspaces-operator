@@ -57,7 +57,7 @@ ${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -v ${VERSION} ${Q
 names=" "
 count=1
 RELATED_IMAGES='. * { spec : { relatedImages: [ '
-cat ${BASE_DIR}/generated/digests-mapping.txt
+if [[ ! "${QUIET}" ]]; then cat ${BASE_DIR}/generated/digests-mapping.txt; fi
 for mapping in $(cat ${BASE_DIR}/generated/digests-mapping.txt)
 do
   source=$(echo "${mapping}" | sed -e 's/\(.*\)=.*/\1/')
