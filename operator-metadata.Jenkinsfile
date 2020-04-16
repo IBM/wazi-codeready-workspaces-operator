@@ -136,8 +136,8 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 # generate digests from tags
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="2.1.0"
-CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.*${CSV_VERSION}.clusterserviceversion.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
+CSV_VERSION="2.1.1"
+CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
     -e "s|registry.redhat.io/codeready-workspaces/(pluginregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
@@ -149,7 +149,7 @@ sed -r \
     -i "${CSV_FILE}"
 # 2. generate digests
 pushd ${WORKSPACE}/target >/dev/null
-./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v 2.1.0
+./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION}
 popd >/dev/null
 # 3. switch back to use RHCC container names
 sed -r \
