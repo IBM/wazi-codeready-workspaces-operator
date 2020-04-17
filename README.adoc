@@ -20,8 +20,6 @@ NOTE: The job can be configured to sync from any upstream che-operator branch, e
 
 * Metadata for the CRW operator is contained in this repo. See link:https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/controller-manifests[controller-manifests] and link:https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/deploy[deploy] folders, and this link:https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Dockerfile[operator-metadata.Dockerfile].
 
-NOTE: Sync from upstream to `controller-manifests` and `deploy` folders are not yet done automatically. TODO in link:https://issues.redhat.com/browse/CRW-579[CRW-579].
-
 * The metadata is then synced to the downstream repo via this link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw-operator-metadata_sync-github-to-pkgs.devel-pipeline/[job] (link:https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Jenkinsfile[operator-metadata.Jenkinsfile]).
 
 NOTE: The job can be configured to sync from any upstream che-operator branch, eg., `SOURCE_BRANCH` = `master`.
