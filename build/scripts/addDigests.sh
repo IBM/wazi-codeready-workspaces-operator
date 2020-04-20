@@ -50,7 +50,8 @@ rm -Rf ${BASE_DIR}/generated/${CSV_NAME}/
 mkdir -p ${BASE_DIR}/generated/${CSV_NAME}/
 cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
-CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
+CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
+# echo "[INFO] CSV = ${CSV_FILE}"
 ${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -v ${VERSION} ${QUIET}
 
 # inject relatedImages block

@@ -27,6 +27,7 @@ command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1
 usage () {
 	echo "Usage:   $0 [-w WORKDIR] -c [/path/to/csv.yaml] "
 	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/eclipse-che-preview-openshift/7.9.0/eclipse-che-preview-openshift.v7.9.0.clusterserviceversion.yaml"
+	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/codeready-workspaces/v2.1.1/codeready-workspaces.csv.yaml"
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -72,15 +73,17 @@ for image in ${OPERATOR_IMAGE} ${IMAGE_LIST} ${REGISTRY_IMAGES_ALL}; do
     *@)
       continue;;
     *)
-      digest="$(skopeo inspect --tls-verify=false docker://${image} 2>/dev/null | jq -r '.Digest')"
+        # for other build methods or for falling back to other registries when not found, can apply transforms here
+      orig_image={$image}
+      if [[ -x ${SCRIPTS_DIR}/buildDigestMapAlternateURLs.sh ]]; then
+        . ${SCRIPTS_DIR}/buildDigestMapAlternateURLs.sh
+      fi
       if [[ ${digest} ]]; then
         if [[ ! "${QUIET}" ]]; then echo -n "[INFO] Got digest"; fi
         echo "    $digest # ${image}"
       else
-        # for other build methods or for falling back to other registries when not found, can apply transforms here
-        if [[ -x ${SCRIPTS_DIR}/buildDigestMapAlternateURLs.sh ]]; then
-          . ${SCRIPTS_DIR}/buildDigestMapAlternateURLs.sh
-        fi
+        image="${orig_image}"
+        digest="$(skopeo inspect --tls-verify=false docker://${image} 2>/dev/null | jq -r '.Digest')"
       fi
       withoutTag="$(echo "${image}" | sed -e 's/^\(.*\):[^:]*$/\1/')"
       withDigest="${withoutTag}@${digest}";;
