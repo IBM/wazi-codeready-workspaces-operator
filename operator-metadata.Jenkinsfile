@@ -149,7 +149,7 @@ sed -r \
     -i "${CSV_FILE}"
 # 2. generate digests
 pushd ${WORKSPACE}/target >/dev/null
-./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION}
+./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
 popd >/dev/null
 # 3. switch back to use RHCC container names
 sed -r \

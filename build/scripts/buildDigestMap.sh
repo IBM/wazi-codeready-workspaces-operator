@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2019 Red Hat, Inc.
+# Copyright (c) 2019-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -26,8 +26,8 @@ command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1
 
 usage () {
 	echo "Usage:   $0 [-w WORKDIR] -c [/path/to/csv.yaml] "
-	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/eclipse-che-preview-openshift/7.9.0/eclipse-che-preview-openshift.v7.9.0.clusterserviceversion.yaml"
-	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/codeready-workspaces/v2.1.1/codeready-workspaces.csv.yaml"
+	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/eclipse-che-preview-openshift/7.9.0/eclipse-che-preview-openshift.v7.9.0.clusterserviceversion.yaml -t 7.9.0"
+	echo "Example: $0 -w $(pwd) -c  $(pwd)/generated/codeready-workspaces/v2.1.1/codeready-workspaces.csv.yaml -t 2.1"
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -36,14 +36,14 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') BASE_DIR="$2"; shift 1;;
     '-c') CSV="$2"; shift 1;;
-    '-v') VERSION="$2"; shift 1;;
+    '-t') TAG="$2"; shift 1;;
     '-q') QUIET="-q"; shift 0;;
     '--help'|'-h') usage; exit;;
   esac
   shift 1
 done
 
-if [[ ! $CSV ]] || [[ ! $VERSION ]]; then usage; exit 1; fi
+if [[ ! $CSV ]] || [[ ! $TAG ]]; then usage; exit 1; fi
 
 mkdir -p ${BASE_DIR}/generated
 
@@ -55,7 +55,7 @@ OPERATOR_IMAGE=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.cont
 REGISTRY_LIST=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("IMAGE_default_.*_registry"; "g")) | .value' "${CSV}")
 REGISTRY_IMAGES_ALL=""
 for registry in ${REGISTRY_LIST}; do
-  registry="${registry/\@sha256:*/:${VERSION}}" # remove possible existing @sha256:... and use current version instead
+  registry="${registry/\@sha256:*/:${TAG}}" # remove possible existing @sha256:... and use current tag instead
   # echo -n "[INFO] Pull container ${registry} ..."
   ${PODMAN} pull ${registry} ${QUIET}
 

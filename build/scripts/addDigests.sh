@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2019 Red Hat, Inc.
+# Copyright (c) 2019-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -25,9 +25,9 @@ fi
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 
 usage () {
-	echo "Usage:   $0 [-w WORKDIR] -s [SOURCE_PATH] -n [csv name] -v [VERSION] "
+	echo "Usage:   $0 [-w WORKDIR] -s [SOURCE_PATH] -n [csv name] -v [VERSION] -t [TAG]"
 	echo "Example: $0 -w $(pwd) -s eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift -n eclipse-che-preview-openshift -v 7.9.0"
-	echo "Example: $0 -w $(pwd) -s controller-manifests -n codeready-workspaces -v 2.1.0"
+	echo "Example: $0 -w $(pwd) -s controller-manifests -n codeready-workspaces -v 2.1.0 -t 2.1"
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -38,6 +38,7 @@ while [[ "$#" -gt 0 ]]; do
     '-s') SRC_DIR="$2"; shift 1;;
     '-n') CSV_NAME="$2"; shift 1;;
     '-v') VERSION="$2"; shift 1;;
+    '-t') TAG="$2"; shift 1;;
     '-q') QUIET="-q"; shift 0;;
 	'--help'|'-h') usage; exit;;
   esac
@@ -46,13 +47,16 @@ done
 
 if [[ ! $SRC_DIR ]] || [[ ! $CSV_NAME ]] || [[ ! $VERSION ]]; then usage; exit 1; fi
 
+# default to x.y.z as tag, if not set (Che uses x.y.z as CSV version and tag; CRW uses x.y.z as CSV, but only x.y for tags)
+if [[ ! $TAG ]]; then TAG="${VERSION}"; fi 
+
 rm -Rf ${BASE_DIR}/generated/${CSV_NAME}/
 mkdir -p ${BASE_DIR}/generated/${CSV_NAME}/
 cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
 CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
 # echo "[INFO] CSV = ${CSV_FILE}"
-${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -v ${VERSION} ${QUIET}
+${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -t ${TAG} -v ${VERSION} ${QUIET}
 
 # inject relatedImages block
 names=" "
