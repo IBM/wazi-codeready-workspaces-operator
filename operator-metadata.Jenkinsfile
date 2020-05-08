@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "master" or crw-2.1 :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "master" or 2.1.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
 // TODO set upstream source as eclipse/che-operator to copy csvs and crds from a given release version of Che (7.9.2) into CRW's operator repo
 // See https://issues.redhat.com/browse/CRW-579?focusedCommentId=14002557&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14002557
@@ -10,7 +10,7 @@
 def SOURCE_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator-metadata" // also used for the Brew dockerfile params
@@ -136,7 +136,7 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 # generate digests from tags
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="2.1.1"
+CSV_VERSION="2.2.0"
 CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
