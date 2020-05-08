@@ -1,0 +1,15 @@
+language: node_js
+sudo: required
+dist: trusty
+group: bluezone
+node_js:
+- 12.4.0
+services:
+- docker
+env:
+  global:
+  - REPOSITORY="docker.io"
+  - FOLDER_PATH="/ibmcom/"
+  - IMAGE_NAME="wazi-code-operator-catalog"
+install: docker build -t ${REPOSITORY}${FOLDER_PATH}${IMAGE_NAME}:latest .
+script: echo "Success!"
