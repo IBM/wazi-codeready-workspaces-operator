@@ -62,6 +62,7 @@ pushd "${SOURCEDIR}" >/dev/null
 			-e 's|name: eclipse-che|name: codeready-workspaces|' \
 			-e "s|cheImageTag: 'nightly'|cheImageTag: ''|" \
 			-e 's|/bin/codeready-operator|/bin/che-operator|' \
+			-e 's#(githubusercontent|github).com/eclipse/codeready-operator#\1.com/eclipse/che-operator#g' \
 		"$d" > "${TARGETDIR}/${d}"
 		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
 			echo "Converted (sed) ${d}"
@@ -85,9 +86,9 @@ pushd "${SOURCEDIR}" >/dev/null
 			-e 's|(keycloakImageTest.*=) ".+"|\1 "'${SSO_IMAGE}'"|' \
 			\
 			`# hardcoded test values` \
-			-e 's|docker.io/eclipse/che-operator:latest": "che-operator:latest"|"'${CRW_RRIO}/${CRW_OPERATOR}:latest'":  "'${CRW_RRIO}/${CRW_OPERATOR}:latest'|' \
-			-e 's|"quay.io/eclipse/che-operator:[0-9.]+":    "che-operator:[0-9.]+"|"'${CRW_RRIO}'/server-operator-rhel8:2.0": "server-operator-rhel8:2.0"|' \
-			-e 's|"che-operator:[0-9.]+":    "che-operator:[0-9.]+"|"'${CRW_RRIO}/${CRW_OPERATOR}:${CRW_TAG}'":  "'${CRW_RRIO}/${CRW_OPERATOR}:${CRW_TAG}'|' \
+			-e 's|"docker.io/eclipse/che-operator:latest": * "che-operator:latest"|"'${CRW_RRIO}/${CRW_OPERATOR}:latest'":  "'${CRW_OPERATOR}:latest'|' \
+			-e 's|"quay.io/eclipse/che-operator:[0-9.]+": *"che-operator:[0-9.]+"|"'${CRW_RRIO}'/server-operator-rhel8:2.0": "server-operator-rhel8:2.0"|' \
+			-e 's|"che-operator:[0-9.]+": *"che-operator:[0-9.]+"|"'${CRW_RRIO}/${CRW_OPERATOR}:${CRW_TAG}'":  "'${CRW_OPERATOR}:${CRW_TAG}'|' \
 		"$d" > "${TARGETDIR}/${d}"
 		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
 			echo "Converted (sed) ${d}"
