@@ -152,6 +152,11 @@ done
                 .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
                 .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
 
+          // TODO CRW-828 update deploy/operator.yaml with latest image tags 
+          // $➔ skopeo inspect docker://registry.redhat.io/redhat-sso-7/sso73-openshift | jq -r .RepoTags | egrep -v "\[|\]|latest" | sort -V | tail -1 | sed -r -e "s#.+\"(.+)\",#\1#"
+          // 1.0-34
+          // repeat for all crw and ubi-minimal, sso, postgres images
+
 		      sh BOOTSTRAP + '''
 
 # TODO: use yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (but comments are stripped out) ?
