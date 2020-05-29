@@ -20,7 +20,7 @@ def replaceImagesWithLatestTag(String images) {
   result = readFile(opyaml)
 
   images.each() {
-    result.replaceAll("$it:.+", "$it:" + sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags | egrep -v \"\[|\]|latest\" | sort -V | tail -1 | sed -r -e \"s#.+\\\"(.+)\\\",#\1#\""))
+    result.replaceAll("$it:.+", "$it:" + sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | tail -1"))
   }
 
   writeFile file: opyaml, text: result
@@ -168,8 +168,8 @@ done
             "registry.redhat.io/codeready-workspaces/pluginregistry-rhel8",
             "registry.redhat.io/codeready-workspaces/devfileregistry-rhel8",
             "registry.access.redhat.com/ubi8-minimal",
-            "registry.redhat.io/rhscl/postgresql-96-rhel7",
-            "registry.redhat.io/redhat-sso-7/sso73-openshift",
+            "registry.redhat.io/rhel8/postgresql-96",
+            "registry.redhat.io/rh-sso-7/sso74-openshift-rhel8",
             "registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8",
             "registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8",
             "registry.redhat.io/codeready-workspaces/jwtproxy-rhel8")
