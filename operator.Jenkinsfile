@@ -15,6 +15,17 @@ def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
 def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
 def OLD_SHA=""
 
+def replaceImagesWithLatestTag(String images) {
+  def opyaml = "target/deploy/operator.yaml"
+  result = readFile(opyaml)
+
+  images.each() {
+    result.replaceAll("$it:.+", "$it:" + sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags | egrep -v \"\[|\]|latest\" | sort -V | tail -1 | sed -r -e \"s#.+\\\"(.+)\\\",#\1#\""))
+  }
+
+  writeFile file: opyaml, text: result
+}
+
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
@@ -152,11 +163,16 @@ done
                 .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
                 .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
 
-          // TODO CRW-828 update deploy/operator.yaml with latest image tags 
-          // $➔ skopeo inspect docker://registry.redhat.io/redhat-sso-7/sso73-openshift | jq -r .RepoTags | egrep -v "\[|\]|latest" | sort -V | tail -1 | sed -r -e "s#.+\"(.+)\",#\1#"
-          // 1.0-34
-          // repeat for all crw and ubi-minimal, sso, postgres images
-
+          replaceImagesWithLatestTag(
+            "registry.redhat.io/codeready-workspaces/server-rhel8",
+            "registry.redhat.io/codeready-workspaces/pluginregistry-rhel8",
+            "registry.redhat.io/codeready-workspaces/devfileregistry-rhel8",
+            "registry.access.redhat.com/ubi8-minimal",
+            "registry.redhat.io/rhscl/postgresql-96-rhel7",
+            "registry.redhat.io/redhat-sso-7/sso73-openshift",
+            "registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8",
+            "registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8",
+            "registry.redhat.io/codeready-workspaces/jwtproxy-rhel8")
 		      sh BOOTSTRAP + '''
 
 # TODO: use yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (but comments are stripped out) ?
