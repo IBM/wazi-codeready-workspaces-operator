@@ -15,17 +15,6 @@ def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
 def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
 def OLD_SHA=""
 
-def replaceImagesWithLatestTag(String images) {
-  def opyaml = "target/deploy/operator.yaml"
-  result = readFile(opyaml)
-
-  images.each() {
-    result.replaceAll("$it:.+", "$it:" + sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | tail -1"))
-  }
-
-  writeFile file: opyaml, text: result
-}
-
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
@@ -137,33 +126,42 @@ for d in ''' + SYNC_FILES + '''; do
   fi
 done
 '''
+          // OLD way
+		      // // relative to $WORKSPACE
+		      // def files = findFiles(glob: 'target/deploy/**/*')
+		      // files.each {
+          //       println it.path
+          //       // global string replacements in deploy scripts
+          //       writeFile file: it.path, text: readFile(it.path)
+          //           .replaceAll('quay.io/eclipse/che-operator:nightly', CRW_OPERATOR_IMAGE)
+          //           .replaceAll('che/operator', 'codeready/operator')
+          //           .replaceAll('che-operator', 'codeready-operator')
+          //           .replaceAll('name: eclipse-che', 'name: codeready-workspaces')
+          //           .replaceAll("cheImageTag: 'nightly'", "cheImageTag: ''")
+          //           .replaceAll('/bin/codeready-operator', '/bin/che-operator')
+		      // }
 
-		      // relative to $WORKSPACE
-		      def files = findFiles(glob: 'target/deploy/**/*')
-		      files.each {
-                println it.path
-                // global string replacements in deploy scripts
-                writeFile file: it.path, text: readFile(it.path)
-                    .replaceAll('quay.io/eclipse/che-operator:nightly', CRW_OPERATOR_IMAGE)
-                    .replaceAll('che/operator', 'codeready/operator')
-                    .replaceAll('che-operator', 'codeready-operator')
-                    .replaceAll('name: eclipse-che', 'name: codeready-workspaces')
-                    .replaceAll("cheImageTag: 'nightly'", "cheImageTag: ''")
-                    .replaceAll('/bin/codeready-operator', '/bin/che-operator')
-		      }
+          //     // replacements in deploy/crds/org_v1_che_cr.yaml
+          //     def cryaml = "target/deploy/crds/org_v1_che_cr.yaml"
+          //     println cryaml
+          //     writeFile file: cryaml, text: readFile(cryaml)
+          //       .replaceAll("cheFlavor: ''", "cheFlavor: 'codeready'")
+          //       .replaceAll("tlsSupport: .+", "tlsSupport: true")
+          //       .replaceAll("devfileRegistryImage: 'quay.io/eclipse/.+'", "devfileRegistryImage: ''")
+          //       .replaceAll("pluginRegistryImage: 'quay.io/eclipse/.+'", "pluginRegistryImage: ''")
+          //       .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
+          //       .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
 
-              // replacements in deploy/crds/org_v1_che_cr.yaml
-              def cryaml = "target/deploy/crds/org_v1_che_cr.yaml"
-              println cryaml
-              writeFile file: cryaml, text: readFile(cryaml)
-                .replaceAll("cheFlavor: ''", "cheFlavor: 'codeready'")
-                .replaceAll("tlsSupport: .+", "tlsSupport: true")
-                .replaceAll("devfileRegistryImage: 'quay.io/eclipse/.+'", "devfileRegistryImage: ''")
-                .replaceAll("pluginRegistryImage: 'quay.io/eclipse/.+'", "pluginRegistryImage: ''")
-                .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
-                .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
+          // NEW way - requires yq
+		      sh BOOTSTRAP + '''
+          sudo pip3 install yq
+          jq --version
+          yq --version
+          ${WORKSPACE}/target/build/scripts/sync-che-operator-to-crw-operator.sh ${WORKSPACE}/sources/ ${WORKSPACE}/target/
+          '''
 
-          replaceImagesWithLatestTag(
+          def opyaml = "target/deploy/operator.yaml"
+          def images = [
             "registry.redhat.io/codeready-workspaces/server-rhel8",
             "registry.redhat.io/codeready-workspaces/pluginregistry-rhel8",
             "registry.redhat.io/codeready-workspaces/devfileregistry-rhel8",
@@ -172,11 +170,16 @@ done
             "registry.redhat.io/rh-sso-7/sso74-openshift-rhel8",
             "registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8",
             "registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8",
-            "registry.redhat.io/codeready-workspaces/jwtproxy-rhel8")
-		      sh BOOTSTRAP + '''
+            "registry.redhat.io/codeready-workspaces/jwtproxy-rhel8"]
+          result = readFile(opyaml)
+          images.each() {
+            imageAndTag = sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | tail -1").trim()
+            echo "[INFO] Got image+tag: " + imageAndTag
+            result.replaceAll("$it:.+", "$it:" + imageAndTag)
+          }
+          writeFile file: opyaml, text: result
 
-# TODO: use yq to remove k8s section from deploy/crds/org_v1_che_cr.yaml (but comments are stripped out) ?
-# yq 'del(.spec.k8s)' ${WORKSPACE}/target/deploy/crds/org_v1_che_cr.yaml --yaml-output --in-place --yaml-roundtrip
+		      sh BOOTSTRAP + '''
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
