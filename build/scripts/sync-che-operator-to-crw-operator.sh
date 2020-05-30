@@ -151,6 +151,9 @@ yq  -y 'del(.spec.k8s)')" && \
 		fi
 	done <   <(find deploy/crds -type f -name "org_v1_che_cr.yaml" -print0)
 
+	# delete unneeded files
+	echo "Delete olm/eclipse-che-preview-kubernetes and olm/eclipse-che-preview-openshift"
+	rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes olm/eclipse-che-preview-openshift"
 
 popd >/dev/null
 
