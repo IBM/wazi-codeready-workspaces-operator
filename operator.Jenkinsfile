@@ -175,7 +175,7 @@ done
           result = readFile(opyaml)
           images.each() {
             latestTag = sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | grep -v 'source|latest' | tail -1").trim()
-            echo "[INFO] Got image+tag: " + latestTag
+            echo "[INFO] Got image+tag: $it : $latestTag"
             result.replaceAll("$it:.+", "$it:" + latestTag)
           }
           writeFile file: opyaml, text: result
