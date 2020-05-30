@@ -96,7 +96,7 @@ cd ..
 		      ''', returnStdout: true)
 		      println "Got OLD_SHA in target folder: " + OLD_SHA
 
-          def SYNC_FILES = ".dockerignore .gitignore build cmd deploy deploy.sh e2e go.mod go.sum Gopkg.lock Gopkg.toml LICENSE olm pkg README.md templates vendor version"
+          def SYNC_FILES = ".dockerignore .gitignore cmd deploy deploy.sh e2e go.mod go.sum Gopkg.lock Gopkg.toml LICENSE olm pkg README.md templates vendor version"
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
