@@ -69,25 +69,14 @@ SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-# don't bother to check/update if we're using a tag instead of a branch
-if [[ "''' + SOURCE_BRANCH + '''" != "refs/tags/"* ]]; then
-  cd ${WORKSPACE}/sources
-    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-    export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-    git config user.email "nickboldt+devstudio-release@gmail.com"
-    git config user.name "Red Hat Devstudio Release Bot"
-    git config --global push.default matching
-    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
-
-    # can't yet generate a PR against eclipse/che-* repos, and can't push directly
-    # so check for a new base image but DO NOT commit/push/pull-request
-    /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
-  cd ..
-else
-  cd ${WORKSPACE}/sources
-    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
-  cd ..
-fi
+cd ${WORKSPACE}/sources
+  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+  git config user.email "nickboldt+devstudio-release@gmail.com"
+  git config user.name "Red Hat Devstudio Release Bot"
+  git config --global push.default matching
+  SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
+cd ..
 
 # fetch sources to be updated
 GIT_PATH="''' + GIT_PATH + '''"
