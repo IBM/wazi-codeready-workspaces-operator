@@ -110,6 +110,9 @@ for d in ''' + SYNC_FILES + '''; do
     rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/target/${d}/
   fi
 done
+
+# remove unneeded olm files
+rm -fr ${WORKSPACE}/target/olm/eclipse-che-preview-openshift ${WORKSPACE}/target/olm/eclipse-che-preview-kubernetes
 '''
           // OLD way
 	  // def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
