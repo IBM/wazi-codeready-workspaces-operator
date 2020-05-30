@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "crw-2.1" // or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-operator" // dist-git repo to use as target
@@ -12,24 +12,25 @@ def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
 
-def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
 def OLD_SHA=""
 
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
-		cleanWs()
-	        withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+    wrap([$class: 'TimestamperBuildWrapper']) {
+		  cleanWs()
+	    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+        file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
 		      checkout([$class: 'GitSCM',
 		        branches: [[name: "${SOURCE_BRANCH}"]],
 		        doGenerateSubmoduleConfigurations: false,
 		        credentialsId: 'devstudio-release',
 		        poll: true,
-		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
+        extensions: [
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+        ],
 		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"],
-                [credentialsId:'devstudio-release']
-                ]])
+		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
   		      def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -40,7 +41,7 @@ chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + ''
 # create .k5login file
 echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
 chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
- echo "pkgs.devel.redhat.com,10.16.101.66 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+ echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
 
 ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
@@ -63,23 +64,30 @@ klist # verify working
 
 hasChanged=0
 
-# TODO rename upstream Dockerfile to rhel.Dockerfile in che-operator repo
 SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
-if [[ -f ${WORKSPACE}/sources/rhel.Dockerfile ]]; then
-  SOURCEDOCKERFILE=${WORKSPACE}/sources/rhel.Dockerfile
-fi
 
 # REQUIRE: skopeo
-# TODO merge changes in generatePRs branch to master when ready
-# curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/generatePRs/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/sources
-  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-  git config user.email nickboldt+devstudio-release@gmail.com
-  git config user.name "devstudio-release"
-  git config --global push.default matching
-cd ..
+# don't bother to check/update if we're using a tag instead of a branch
+if [[ "''' + SOURCE_BRANCH + '''" != "refs/tags/"* ]]; then
+  cd ${WORKSPACE}/sources
+    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+    export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+    git config user.email "nickboldt+devstudio-release@gmail.com"
+    git config user.name "Red Hat Devstudio Release Bot"
+    git config --global push.default matching
+    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
+
+    # can't yet generate a PR against eclipse/che-* repos, and can't push directly
+    # so check for a new base image but DO NOT commit/push/pull-request
+    /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
+  cd ..
+else
+  cd ${WORKSPACE}/sources
+    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
+  cd ..
+fi
 
 # fetch sources to be updated
 GIT_PATH="''' + GIT_PATH + '''"
@@ -92,26 +100,14 @@ git config --global push.default matching
 cd ..
 
 '''
-// TODO make this work eventually to we can generate PRs against che-operator repo
-//               sshagent(credentials : ['devstudio-release'])
-//               {
-//                 sh BOOTSTRAP + '''
-// cd ${WORKSPACE}/sources
-//   # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
-//   set +e
-//   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 --pull-request
-//   set -e
-// cd ..
-// '''
-//               }
+		      sh BOOTSTRAP
 
-		      OLD_SHA = sh(script: BOOTSTRAP + '''
+		      OLD_SHA = sh(script: '''#!/bin/bash -xe
 		      cd ${WORKSPACE}/target; git rev-parse HEAD
 		      ''', returnStdout: true)
 		      println "Got OLD_SHA in target folder: " + OLD_SHA
 
           def SYNC_FILES = ".gitignore cmd deploy deploy.sh e2e Gopkg.lock Gopkg.toml olm pkg README.md templates vendor version"
-
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
@@ -127,6 +123,7 @@ for d in ''' + SYNC_FILES + '''; do
 done
 '''
           // OLD way
+	  // def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
 		      // // relative to $WORKSPACE
 		      // def files = findFiles(glob: 'target/deploy/**/*')
 		      // files.each {
@@ -217,12 +214,13 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ''' + SYNC_FILES + '''
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES + '''
-	git push origin ''' + GIT_BRANCH + '''
-	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+  # note this might fail if we're syncing from a tag vs. a branch
+  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES + ''' || true
+  git push origin ''' + GIT_BRANCH + ''' || true
+  NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+  echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
@@ -262,8 +260,9 @@ fi
 	        ''', returnStdout: true)
 	        println "Got NEW_SHA in target folder: " + NEW_SHA
 
-	        if (NEW_SHA.equals(OLD_SHA)) {
+	        if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
 	          currentBuild.result='UNSTABLE'
 	        }
+    }
 	}
 }
