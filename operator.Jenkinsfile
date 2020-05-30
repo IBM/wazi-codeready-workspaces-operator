@@ -160,6 +160,7 @@ done
           ${WORKSPACE}/target/build/scripts/sync-che-operator-to-crw-operator.sh ${WORKSPACE}/sources/ ${WORKSPACE}/target/
           '''
 
+          // get latest tags for the operator deployed images
           def opyaml = "target/deploy/operator.yaml"
           def images = [
             "registry.redhat.io/codeready-workspaces/server-rhel8",
