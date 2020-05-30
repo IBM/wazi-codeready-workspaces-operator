@@ -160,7 +160,7 @@ done
             "registry.redhat.io/codeready-workspaces/jwtproxy-rhel8"]
           result = readFile(opyaml)
           images.each() {
-            latestTag = sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | grep -v 'source|latest' | tail -1").trim()
+            latestTag = sh(returnStdout:true,script:"skopeo inspect docker://$it | jq -r .RepoTags[] | sort -V | egrep -v 'source|latest' | tail -1").trim()
             echo "[INFO] Got image+tag: $it : $latestTag"
             result.replaceAll("$it:.+", "$it:" + latestTag)
           }
