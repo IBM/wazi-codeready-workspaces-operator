@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.2-267 as builder
+FROM registry.access.redhat.com/ubi8-minimal:8.2 as builder
 RUN microdnf install -y findutils
 
 # not applicable to Che, only needed for CRW
