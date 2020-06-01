@@ -85,7 +85,7 @@ sed -i ${CSV_FILE} -r -e "s|tag: |# tag: |"
 rm -f ${CSV_FILE}.old
 
 # update original file with generated changes
-CSV_FILE_ORIG=$(find ${BASE_DIR} -name "${CSV_FILE##*/}" | grep -v generated | tail -1)
+CSV_FILE_ORIG=$(find ${SRC_DIR} -name "${CSV_FILE##*/}" | grep -v generated | tail -1)
 mv "${CSV_FILE}" "${CSV_FILE_ORIG}"
 echo "[INFO] CSV updated: ${CSV_FILE_ORIG}"
 
