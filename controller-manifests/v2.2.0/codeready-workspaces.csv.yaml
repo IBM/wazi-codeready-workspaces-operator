@@ -241,6 +241,7 @@ spec:
                 - config.openshift.io
               resources:
                 - infrastructures
+                - oauths
               verbs:
                 - get
             - apiGroups:
@@ -308,6 +309,22 @@ spec:
                         value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.2
                       - name: IMAGE_default_che_server_secure_exposer_jwt_proxy_image
                         value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.2
+                      - name: CHE_FLAVOR
+                        value: codeready
+                      - name: CONSOLE_LINK_NAME
+                        value: workspaces
+                      - name: CONSOLE_LINK_DISPLAY_NAME
+                        value: CodeReady Workspaces
+                      - name: CONSOLE_LINK_SECTION
+                        value: Red Hat Applications
+                      - name: CONSOLE_LINK_IMAGE
+                        value: /dashboard/assets/branding/loader.svg
+                      - name: CHE_IDENTITY_SECRET
+                        value: che-identity-secret
+                      - name: CHE_IDENTITY_POSTGRES_SECRET
+                        value: che-identity-postgres-secret
+                      - name: CHE_POSTGRES_SECRET
+                        value: che-postgres-secret
                     image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.2
                     imagePullPolicy: Always
                     name: codeready-operator
@@ -324,6 +341,12 @@ spec:
                 - extensions
               resources:
                 - ingresses
+              verbs:
+                - '*'
+            - apiGroups:
+                - batch
+              resources:
+                - jobs
               verbs:
                 - '*'
             - apiGroups:
