@@ -114,7 +114,8 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="controller-manifests build"
+# TODO CRW 2.3 / OCP 4.6 switch to use manifests metadata folders
+SYNC_FILES="controller-manifests manifests metadata build"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
@@ -140,6 +141,7 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="2.2.0"
+# TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
 CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
@@ -152,6 +154,7 @@ sed -r \
     -i "${CSV_FILE}"
 # 2. generate digests
 pushd ${WORKSPACE}/target >/dev/null
+# TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
 ./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
 popd >/dev/null
 # 3. switch back to use RHCC container names
