@@ -270,7 +270,7 @@ done
 cd ${WORKSPACE}/targetmid
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
-	git add Dockerfile ''' + SYNC_FILES_MID + '''
+	git add ''' + SYNC_FILES_MID + '''
   /tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' --nocommit
   # note this might fail if we sync from a tag vs. a branch
   git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" ''' + SYNC_FILES_MID + ''' || true
