@@ -80,7 +80,7 @@ cd ${WORKSPACE}/sources
   # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
   git remote -v
   git config --global hub.protocol https
-  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + MIDSTM_REPO + '''.git
+  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + SOURCE_REPO + '''.git
   git remote -v
 cd ..
 
