@@ -76,16 +76,22 @@ cd ${WORKSPACE}/sources
   git config user.email nickboldt+devstudio-release@gmail.com
   git config user.name "devstudio-release"
   git config --global push.default matching
+
+  # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+  git remote -v
+  git config --global hub.protocol https
+  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + MIDSTM_REPO + '''.git
+  git remote -v
 cd ..
 
 # fetch sources to be updated
 GIT_PATH="''' + GIT_PATH + '''"
 if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} target; fi
-cd ${WORKSPACE}/target
-git checkout --track origin/''' + GIT_BRANCH + ''' || true
-git config user.email crw-build@REDHAT.COM
-git config user.name "CRW Build"
-git config --global push.default matching
+  cd ${WORKSPACE}/target
+  git checkout --track origin/''' + GIT_BRANCH + ''' || true
+  git config user.email crw-build@REDHAT.COM
+  git config user.name "CRW Build"
+  git config --global push.default matching
 cd ..
 
 '''
