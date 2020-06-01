@@ -69,8 +69,6 @@ hasChanged=0
 SOURCEDOCKERFILE=${WORKSPACE}/sources/operator-metadata.Dockerfile
 
 # REQUIRE: skopeo
-# TODO merge changes in generatePRs branch to master when ready
-# curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/generatePRs/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
@@ -95,7 +93,6 @@ cd ..
               {
                 sh BOOTSTRAP + '''
 cd ${WORKSPACE}/sources
-  # TODO verify we can generate a PR here; copy this to other Jenkinsfiles and test there too
   set +e
   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1
   set -e
