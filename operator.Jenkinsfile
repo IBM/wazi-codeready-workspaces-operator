@@ -293,7 +293,7 @@ cd ..
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
   for QRP in ''' + QUAY_PROJECT + '''; do
-    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
+    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="crw-2-rhel8-${QRP}"; fi
     curl \
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
