@@ -20,7 +20,6 @@ spec:
     pluginRegistryImage: ''
     cheFlavor: codeready
     cheWorkspaceClusterRole: ''
-    selfSignedCert: false
     serverTrustStoreConfigMapName: ''
     gitSelfSignedCert: false
     tlsSupport: true
