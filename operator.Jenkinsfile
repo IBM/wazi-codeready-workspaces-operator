@@ -169,7 +169,7 @@ done
 
           // NEW way - requires yq
 		      sh BOOTSTRAP + '''
-          sudo pip3 install yq
+          sudo /usr/bin/python3 -m pip install --upgrade pip; sudo /usr/bin/python3 -m pip install yq
           jq --version
           yq --version
           ${WORKSPACE}/targetdwn/build/scripts/sync-che-operator-to-crw-operator.sh ${WORKSPACE}/sources/ ${WORKSPACE}/targetdwn/
