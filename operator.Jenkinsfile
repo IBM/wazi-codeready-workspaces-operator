@@ -234,10 +234,10 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
 cd ${WORKSPACE}/targetdwn
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
-	git add --ignore-removal Dockerfile ''' + SYNC_FILES_DWN + ''' .
-  /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
+	git add Dockerfile ''' + SYNC_FILES_DWN + ''' .
+  /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit || true
   # note this might fail if we sync from a tag vs. a branch
-  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES_DWN + ''' || true
+  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES_DWN + ''' . || true
   git push origin ''' + DWNSTM_BRANCH + ''' || true
   NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
   if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
@@ -247,7 +247,7 @@ else
     # (this avoids having 2 commits for every change)
     cd ${WORKSPACE}/targetdwn
     OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
-    /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + '''
+    /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' || true
     NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
     if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
     cd ..
