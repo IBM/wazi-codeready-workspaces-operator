@@ -304,6 +304,10 @@ QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
 JOB_BRANCH=master&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
+
+    curl \
+"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_master/buildWithParameters?\
+token=CI_BUILD&cause=build+crwctl+for+operator+sync+from+${BUILD_TAG}&versionSuffix=CI"
   done
 fi
 
