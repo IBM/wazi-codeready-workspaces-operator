@@ -10,7 +10,7 @@ NOTE: The job can be configured to sync from any upstream che-operator branch, e
 
 * Once the sync is done:
 
-** the link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/?h=crw-2.0-rhel-8[codeready-workspaces-operator] repo is updated;
+** the link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/?h=crw-2.2-rhel-8[codeready-workspaces-operator] repo is updated;
 
 ** a Brew build will be triggered via link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/[this job]; 
 
@@ -26,7 +26,7 @@ NOTE: The job can be configured to sync from any upstream che-operator branch, e
 
 * Once the sync is done:
 
-** the link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/?h=crw-2.0-rhel-8[codeready-workspaces-operator-metadata] repo is updated;
+** the link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/?h=crw-2.2-rhel-8[codeready-workspaces-operator-metadata] repo is updated;
 
 ** a Brew build will be triggered via link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/[this job]; 
 
