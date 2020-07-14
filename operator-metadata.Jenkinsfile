@@ -140,7 +140,7 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 # generate digests from tags
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="2.2.0"
+CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\\1#")"
 # TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
 CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
@@ -153,7 +153,7 @@ sed -r \
 # 2. generate digests
 pushd ${WORKSPACE}/target >/dev/null
 # TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
-./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
+./build/scripts/addDigests.sh -s controller-manifests/v${CSV_VERSION} -r ".*.csv.yaml" -t ${CRW_VERSION}
 popd >/dev/null
 # 3. switch back to use RHCC container names
 sed -r \

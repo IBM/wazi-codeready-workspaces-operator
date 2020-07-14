@@ -13,25 +13,50 @@
 # convert che-operator olm files (csv, crd) to downstream using transforms
 
 set -e
+SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
 CRW_VERSION=2.2.0
+CRW_TAG=${CRW_VERSION%.*}
 CRW_VERSION_PREV=2.1.1
-CRW_TAG="${CRW_VERSION%.*}"
 
-if [[ $# -lt 2 ]]; then
-	echo "Usage:   $0 SOURCEDIR TARGETDIR "
-	echo "Example: $0 /path/to/che-operator /path/to/crw-operator"
-	exit 1
-fi
+usage () {
+	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
+	echo "Example: $0 -v 2.2.0 -p 2.1.1 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
+}
 
-SOURCEDIR=$1; SOURCEDIR=${SOURCEDIR%/}
-TARGETDIR=$2; TARGETDIR=${TARGETDIR%/}
+if [[ $# -lt 8 ]]; then usage; exit; fi
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
+	'-v') CRW_VERSION="$1"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
+	# previous version to set in CSV
+	'-p') CRW_VERSION_PREV="$1"; shift 1;;
+	# paths to use for input and ouput
+	'-s') SOURCEDIR="$1"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
+	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
+	'--help'|'-h') usage; exit;;
+	# optional tag overrides
+	'--crw-tag') CRW_TAG="$1"; shift 1;;
+  esac
+  shift 1
+done
 
 # get che version from crw server root pom, eg., 7.14.3
 CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#" || exit 1)"
 
 pushd "${SOURCEDIR}" >/dev/null || exit
+
+# Copy digests scripts
+cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/images.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+# Fix "help" messages for digest scripts
+sed -r \
+	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CRW_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
+	-i "${SCRIPTS_DIR}/addDigests.sh"
+sed -r \
+	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/controller-manifests/v'${CRW_VERSION}'/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
+	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
 
 # simple copy
 # TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CRW_VERSION} folder
@@ -39,7 +64,7 @@ for CRDFILE in \
 	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/deploy/crds/org_v1_che_crd.yaml"; do
-	cp olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
+	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
 done
 
 ICON="$(cat "${TARGETDIR}/build/scripts/sync-che-olm-to-crw-olm.icon.txt")"
@@ -116,7 +141,7 @@ yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 # 		changed="$(cat "${CSVFILE}" | \
 # yq  -y --arg updateName "${updateName}" --arg updateVal "${operator_replacements[$updateName]}" \
 # '.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]' | \
-# yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "IMAGE_default_che_tls_secrets_creation_job"))')" && \
+# yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "RELATED_IMAGE_che_tls_secrets_creation_job"))')" && \
 # 		echo "${changed}" > "${CSVFILE}"
 	# done
 # 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
