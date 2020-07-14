@@ -22,7 +22,7 @@ CRW_VERSION_PREV=2.1.1
 
 usage () {
 	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
-	echo "Example: $0 -v 2.2.0 -p 2.1.1 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
+	echo "Example: $0 -v 2.3.0 -p 2.1.1 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
@@ -30,7 +30,7 @@ if [[ $# -lt 8 ]]; then usage; exit; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
-	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
+	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}"; shift 1;;
 	# previous version to set in CSV
 	'-p') CRW_VERSION_PREV="$2"; shift 1;;
 	# paths to use for input and ouput
@@ -49,7 +49,7 @@ CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/c
 pushd "${SOURCEDIR}" >/dev/null || exit
 
 # Copy digests scripts
-cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/images.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
 # Fix "help" messages for digest scripts
 sed -r \
 	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CRW_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
@@ -60,6 +60,7 @@ sed -r \
 
 # simple copy
 # TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CRW_VERSION} folder
+mkdir -p ${TARGETDIR}/deploy/ ${TARGETDIR}/manifests/ ${TARGETDIR}/controller-manifests/v${CRW_VERSION}/
 for CRDFILE in \
 	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
@@ -135,6 +136,7 @@ yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 		["CHE_FLAVOR"]="codeready"
 		["CONSOLE_LINK_NAME"]="workspaces"
 	)
+
 	# TODO make this work!
 	# for updateName in "${!operator_replacements[@]}"; do
 # 		# .spec.install.spec.deployments[].spec.template.spec.containers.env.CHE_VERSION
@@ -147,8 +149,10 @@ yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 # 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
 # 		echo "Converted (yq #1) ${CSVFILE}"
 # 	fi
+	echo "WARNING: CHE_VERSION, CHE_FLAVOR, CONSOLE_LINK_NAME are wrong!"
 
 	# TODO add cheFlavour:codeready into nested yaml in .metadata.annotations[] -- cannot be transformed with yq!
+	echo 'WARNING: "cheFlavor":"codeready" annotation is missing!'
 
 done
 
