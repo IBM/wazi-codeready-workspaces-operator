@@ -16,23 +16,25 @@ set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
-CRW_VERSION=2.2.0
-CRW_TAG=${CRW_VERSION%.*}
-CRW_VERSION_PREV=2.1.1
+CSV_VERSION=2.2.0
+CRW_TAG=${CSV_VERSION%.*}
+CSV_VERSION_PREV=2.1.1
 
 usage () {
 	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator --che 7.15.1"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator [if no che version, use value in codeready-workspaces/master/pom.xml]"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
-	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}"; shift 1;;
+    '--che') CHE_VERSION="$2"; shift 1;;
+	# for CSV_VERSION = 2.2.0, get CRW_TAG = 2.2
+	'-v') CSV_VERSION="$2"; CRW_TAG="${CSV_VERSION%.*}"; shift 1;;
 	# previous version to set in CSV
-	'-p') CRW_VERSION_PREV="$2"; shift 1;;
+	'-p') CSV_VERSION_PREV="$2"; shift 1;;
 	# paths to use for input and ouput
 	'-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
 	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
@@ -44,27 +46,28 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # get che version from crw server root pom, eg., 7.14.3
-CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#" || exit 1)"
+if [[ ! ${CHE_VERSION} ]]; then
+  CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#" || exit 1)"
+fi
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
 # TODO: should we do this? Need to reconcile Che and CRW versions of these scripts so they're the same
 # Copy digests scripts
 # cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
-
 # Fix "help" messages for digest scripts
-sed -r \
-	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CRW_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
-	-i "${SCRIPTS_DIR}/addDigests.sh"
-sed -r \
-	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/controller-manifests/v'${CRW_VERSION}'/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
-	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
+#sed -r \
+#	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CSV_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
+#	-i "${SCRIPTS_DIR}/addDigests.sh"
+#sed -r \
+#	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/controller-manifests/v'${CSV_VERSION}'/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
+#	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
 
 # simple copy
-# TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CRW_VERSION} folder
-mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/ ${TARGETDIR}/controller-manifests/v${CRW_VERSION}/
+# TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CSV_VERSION} folder
+mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/ ${TARGETDIR}/controller-manifests/v${CSV_VERSION}/
 for CRDFILE in \
-	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.crd.yaml" \
+	"${TARGETDIR}/controller-manifests/v${CSV_VERSION}/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/deploy/crds/org_v1_che_crd.yaml"; do
 	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
@@ -73,7 +76,7 @@ done
 ICON="$(cat "${SCRIPTS_DIR}/sync-che-olm-to-crw-olm.icon.txt")"
 # TODO: when we switch to OCP 4.6 format, use only CSVFILE="${TARGETDIR}/manifests/codeready-workspaces.csv.yaml"
 for CSVFILE in \
-	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.csv.yaml" \
+	"${TARGETDIR}/controller-manifests/v${CSV_VERSION}/codeready-workspaces.csv.yaml" \
 	"${TARGETDIR}/manifests/codeready-workspaces.csv.yaml"; do
 	cp olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}"
 	# transform resulting file
@@ -89,7 +92,7 @@ for CSVFILE in \
 		-e "s|Eclipse Che|CodeReady Workspaces|g" \
 		-e "s|Eclipse Foundation|Red Hat, Inc.|g" \
 		\
-		-e "s|name: .+preview-openshift.v${CHE_VERSION}|name: crwoperator.v${CRW_VERSION}|g" \
+		-e "s|name: .+preview-openshift.v${CHE_VERSION}|name: crwoperator.v${CSV_VERSION}|g" \
 		\
 		-e 's|Keycloak|Red Hat SSO|g' \
 		-e 's|my-keycloak|my-rhsso|' \
@@ -103,8 +106,8 @@ for CSVFILE in \
 		\
 		-e 's|/usr/local/bin/codeready-operator|/usr/local/bin/che-operator|' \
 		-e 's|imagePullPolicy: IfNotPresent|imagePullPolicy: Always|' \
-		-e "s|replaces: eclipse-che-preview-openshift.v.+|replaces: crwoperator.v${CRW_VERSION_PREV}|" \
-		-e "s|version: ${CHE_VERSION}|version: ${CRW_VERSION}|g" \
+		-e "s|replaces: eclipse-che-preview-openshift.v.+|replaces: crwoperator.v${CSV_VERSION_PREV}|" \
+		-e "s|version: ${CHE_VERSION}|version: ${CSV_VERSION}|g" \
 		\
 		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
 		-e "s|quay.io/eclipse/che-server:.+|registry.redhat.io/codeready-workspaces/server-rhel8:${CRW_TAG}|" \
@@ -161,6 +164,19 @@ for CSVFILE in \
 		done
 	fi
 done
+
+# generate package.yaml
+echo "# Must include all channels, even dead ones, so that CVP tests pass. 
+# Expectation is that once an operator is published, it will be carried along here forever.
+# (At least until we move to the OCP 4.4/4.5 approach)
+packageName: codeready-workspaces
+channels:
+- name: latest
+  currentCSV: crwoperator.v${CSV_VERSION}
+- name: previous
+  currentCSV: crwoperator.v1.2.2
+defaultChannel: latest
+" > "${TARGETDIR}/controller-manifests/codeready-workspaces.package.yaml"
 
 popd >/dev/null || exit
 
