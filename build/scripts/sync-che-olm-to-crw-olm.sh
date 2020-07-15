@@ -22,7 +22,7 @@ CRW_VERSION_PREV=2.1.1
 
 usage () {
 	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
-	echo "Example: $0 -v 2.3.0 -p 2.1.1 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
@@ -48,8 +48,10 @@ CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/c
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
+# TODO: should we do this? Need to reconcile Che and CRW versions of these scripts so they're the same
 # Copy digests scripts
-cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+# cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+
 # Fix "help" messages for digest scripts
 sed -r \
 	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CRW_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
@@ -60,7 +62,7 @@ sed -r \
 
 # simple copy
 # TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CRW_VERSION} folder
-mkdir -p ${TARGETDIR}/deploy/ ${TARGETDIR}/manifests/ ${TARGETDIR}/controller-manifests/v${CRW_VERSION}/
+mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/ ${TARGETDIR}/controller-manifests/v${CRW_VERSION}/
 for CRDFILE in \
 	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
@@ -68,13 +70,14 @@ for CRDFILE in \
 	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
 done
 
-ICON="$(cat "${TARGETDIR}/build/scripts/sync-che-olm-to-crw-olm.icon.txt")"
-# TODO: when we switch to OCP 4.6 format, use CSVFILE="${TARGETDIR}/manifests/codeready-workspaces.csv.yaml"
+ICON="$(cat "${SCRIPTS_DIR}/sync-che-olm-to-crw-olm.icon.txt")"
+# TODO: when we switch to OCP 4.6 format, use only CSVFILE="${TARGETDIR}/manifests/codeready-workspaces.csv.yaml"
 for CSVFILE in \
-	${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.csv.yaml; do
+	"${TARGETDIR}/controller-manifests/v${CRW_VERSION}/codeready-workspaces.csv.yaml" \
+	"${TARGETDIR}/manifests/codeready-workspaces.csv.yaml"; do
 	cp olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}"
 	# transform resulting file
-	NOW="$(date -u +%FT%TZ)"
+	NOW="$(date -u +%FT%T+00:00)"
 	sed -r \
 		-e 's|certified: "false"|certified: "true"|g' \
 		-e "s|https://github.com/eclipse/che-operator|https://github.com/redhat-developer/codeready-workspaces-operator/|g" \
@@ -118,42 +121,45 @@ for CSVFILE in \
 		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
 		-e 's|||' \
 		-i "${CSVFILE}"
+	# insert missing cheFlavor annotation
+	if [[ ! $(grep -E '"cheFlavor":"codeready",' "${CSVFILE}") ]]; then 
+		sed -r '/.*"cheImageTag": "",/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "cheFlavor": "codeready",' \
+			-i "${CSVFILE}"
+	fi
 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
 		echo "Converted (sed) ${CSVFILE}"
 	fi
 
 	# yq changes - transform env vars from Che to CRW values
-	changed="$(cat "${CSVFILE}" | \
-yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
+	changed="$(cat "${CSVFILE}" | yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 		echo "${changed}" > "${CSVFILE}"
 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
-		echo "Converted (yq #2) ${CSVFILE}"
+		echo "Converted (yq #1) ${CSVFILE}:"
+		for updateName in ".spec.displayName"; do 
+			echo -n " * $updateName: "
+			cat  "${CSVFILE}" | yq "${updateName}" 2>/dev/null
+		done
 	fi
 
 	# yq changes - transform env vars from Che to CRW values
 	declare -A operator_replacements=(
-		["CHE_VERSION"]="${CRW_VERSION}"
+		["CHE_VERSION"]="${CRW_TAG}"
 		["CHE_FLAVOR"]="codeready"
 		["CONSOLE_LINK_NAME"]="workspaces"
 	)
-
-	# TODO make this work!
-	# for updateName in "${!operator_replacements[@]}"; do
-# 		# .spec.install.spec.deployments[].spec.template.spec.containers.env.CHE_VERSION
-# 		changed="$(cat "${CSVFILE}" | \
-# yq  -y --arg updateName "${updateName}" --arg updateVal "${operator_replacements[$updateName]}" \
-# '.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]' | \
-# yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "RELATED_IMAGE_che_tls_secrets_creation_job"))')" && \
-# 		echo "${changed}" > "${CSVFILE}"
-	# done
-# 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
-# 		echo "Converted (yq #1) ${CSVFILE}"
-# 	fi
-	echo "WARNING: CHE_VERSION, CHE_FLAVOR, CONSOLE_LINK_NAME are wrong!"
-
-	# TODO add cheFlavour:codeready into nested yaml in .metadata.annotations[] -- cannot be transformed with yq!
-	echo 'WARNING: "cheFlavor":"codeready" annotation is missing!'
-
+	for updateName in "${!operator_replacements[@]}"; do
+# 		# .spec.install.spec.deployments[].spec.template.spec.containers[].env[].CHE_VERSION
+ 		changed="$(cat "${CSVFILE}" | yq  -Y --arg updateName "${updateName}" --arg updateVal "${operator_replacements[$updateName]}" \
+		 	'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]')" && \
+ 		echo "${changed}" > "${CSVFILE}"
+	done
+	if [[ $(diff -q -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
+		echo "Converted (yq #2) ${CSVFILE}:"
+		for updateName in "${!operator_replacements[@]}"; do 
+			echo -n " * $updateName: "
+			cat  "${CSVFILE}" | yq --arg updateName "${updateName}" '.spec.install.spec.deployments[].spec.template.spec.containers[].env? | .[] | select(.name == $updateName) | .value' 2>/dev/null
+		done
+	fi
 done
 
 popd >/dev/null || exit
