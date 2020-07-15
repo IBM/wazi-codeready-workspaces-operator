@@ -1,8 +1,9 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "master" or 2.1.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// CSV_VERSION_PREV = "2.2.0"
+// SOURCE_BRANCH = "master" or 2.1.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// FORCE_BUILD = "false"
 
 // TODO set upstream source as eclipse/che-operator to copy csvs and crds from a given release version of Che (7.9.2) into CRW's operator repo
 // See https://issues.redhat.com/browse/CRW-579?focusedCommentId=14002557&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14002557
@@ -98,10 +99,24 @@ cd ..
               sshagent(credentials : ['devstudio-release'])
               {
                 sh BOOTSTRAP + '''
+
+CSV_NAME="codeready-workspaces"
+CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\\1#")"
+CSV_FILE="\$({find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
+if [[ ! ${CSV_FILE} ]]; then 
+  # CRW-878 generate CSV and update CRD from upstream
+  cd ${WORKSPACE}
+  git clone https://github.com/eclipse/che-operator
+  cd ${WORKSPACE}/sources/build/scripts
+  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/che-operator -t ${WORKSPACE}/sources
+  cd ${WORKSPACE}/sources/
+  # TODO when we move to bundle format, remove controller-manifests
+  git add controller-manifests/ manifests/
+  git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/
+fi
+
 cd ${WORKSPACE}/sources
-  set +e
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1
-  set -e
+/tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 || true
 cd ..
 '''
               }
