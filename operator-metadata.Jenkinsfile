@@ -102,7 +102,7 @@ cd ..
 
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\\1#")"
-CSV_FILE="\$({find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
+CSV_FILE="\$( { find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
 if [[ ! ${CSV_FILE} ]]; then 
   # CRW-878 generate CSV and update CRD from upstream
   cd ${WORKSPACE}
