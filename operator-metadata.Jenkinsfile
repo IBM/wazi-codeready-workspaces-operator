@@ -211,11 +211,15 @@ sed -r \
     `# in all other cases (including operator) use published quay images to compute digests` \
     -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g" \
     -i "${CSV_FILE}"
+
 # 2. generate digests
 pushd ${WORKSPACE}/targetdwn >/dev/null
 # TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
-./build/scripts/addDigests.sh -s controller-manifests/v${CSV_VERSION} -r ".*.csv.yaml" -t ${CRW_VERSION}
+# TODO digest scripts do not work anymore - https://github.com/eclipse/che/issues/17432
+# TODO make sure generated CSV is not mangled by yq
+# ./build/scripts/addDigests.sh -s controller-manifests/v${CSV_VERSION} -r ".*.csv.yaml" -t ${CRW_VERSION}
 popd >/dev/null
+
 # 3. switch back to use RHCC container names
 sed -r \
     `# revert to RHCC` \
