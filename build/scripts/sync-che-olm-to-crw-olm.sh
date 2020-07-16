@@ -22,7 +22,7 @@ CSV_VERSION_PREV=2.1.1
 
 usage () {
 	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator --che 7.15.1"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator --che 9.9.9-nightly.1594657566"
 	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator [if no che version, use value in codeready-workspaces/master/pom.xml]"
 }
 
@@ -108,6 +108,11 @@ for CSVFILE in \
 		-e "s|replaces: eclipse-che-preview-openshift.v.+|replaces: crwoperator.v${CSV_VERSION_PREV}|" \
 		-e "s|version: ${CHE_VERSION}|version: ${CSV_VERSION}|g" \
 		\
+		-e 's|"cheImageTag": "nightly"|"cheImageTag": ""|' \
+		-e 's|"devfileRegistryImage":.".+"|"devfileRegistryImage": ""|' \
+		-e 's|"pluginRegistryImage":.".+"|"pluginRegistryImage": ""|' \
+		-e 's|"identityProviderImage":.".+"|"identityProviderImage": ""|' \
+		\
 		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
 		-e "s|quay.io/eclipse/che-server:.+|registry.redhat.io/codeready-workspaces/server-rhel8:${CRW_TAG}|" \
 		-e "s|quay.io/eclipse/che-plugin-registry:.+|registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:${CRW_TAG}|" \
@@ -119,13 +124,16 @@ for CSVFILE in \
 		-e "s|registry.access.redhat.com/ubi8-minimal:.+|registry.access.redhat.com/ubi8-minimal:8.2|" \
 		-e "s|centos/postgresql-96-centos7:9.6|registry.redhat.io/rhel8/postgresql-96:1|" \
 		-e "s|quay.io/eclipse/che-keycloak:.+|registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4|" \
+		-e "s|quay.io/eclipse/codeready-operator:nightly|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
 		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
-		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
-		-e 's|||' \
+		-e 's|IMAGE_default_|RELATED_IMAGE_|' \
+		\
+		` # TODO is this the correct value to set here?` \
+		-e 's|operatorframework.io/suggested-namespace: .+|operatorframework.io/suggested-namespace: workspaces|' \
 		-i "${CSVFILE}"
 	# insert missing cheFlavor annotation
 	if [[ ! $(grep -E '"cheFlavor":"codeready",' "${CSVFILE}") ]]; then 
-		sed -r '/.*"cheImageTag": "",/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "cheFlavor": "codeready",' \
+		sed -r '/.*"cheImageTag": ".*",/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "cheFlavor": "codeready",' \
 			-i "${CSVFILE}"
 	fi
 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
