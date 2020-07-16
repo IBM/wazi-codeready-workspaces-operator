@@ -248,7 +248,7 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
 cd ${WORKSPACE}/targetdwn
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
-	git add Dockerfile ''' + SYNC_FILES_MID2DWN + ''' ''' + SYNC_FILES_UP2DWN + ''' . -A
+	git add Dockerfile ''' + SYNC_FILES_MID2DWN + ''' ''' + SYNC_FILES_UP2DWN + ''' . -A -f
   /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit || true
   # note this might fail if we sync from a tag vs. a branch
   git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} + ''' + MIDSTM_REPO + ''' @ ${MIDSTM_SHA:0:8}" \
