@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
+// CSV_VERSION_CHE = latest Che CSV to use to generate CRW CSV, eg., a nightly like 9.9.9-nightly.1594657566 or an actual release like 7.15.2
 // CSV_VERSION_PREV = "2.2.0"
 // SOURCE_BRANCH = "7.16.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
 // FORCE_BUILD = "false"
@@ -146,7 +147,7 @@ CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/controller-manifests/*${CSV_VERSION}
 if [[ ! ${CSV_FILE} ]]; then 
   # CRW-878 generate CSV and update CRD from upstream
   cd ${WORKSPACE}/targetmid/build/scripts
-  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid
+  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
   cd ${WORKSPACE}/targetmid/
   # TODO when we move to bundle format, remove controller-manifests
   # if anything has changed other than the createdAt date, then we commit this

@@ -16,14 +16,14 @@ set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
-CSV_VERSION=2.2.0
+CSV_VERSION=2.3.0
 CRW_TAG=${CSV_VERSION%.*}
-CSV_VERSION_PREV=2.1.1
+CSV_VERSION_PREV=2.2.0
 
 usage () {
-	echo "Usage:   $0 -v [VERSION] [-p PREV_VERSION] [-s /path/to/sources] [-t /path/to/generated]"
+	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version]"
 	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator --che 9.9.9-nightly.1594657566"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator [if no che version, use value in codeready-workspaces/master/pom.xml]"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator [if no che.version, use value in codeready-workspaces/master/pom.xml]"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
