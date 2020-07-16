@@ -101,7 +101,7 @@ cd ..
 
 # fetch sources to be updated
 DWNSTM_REPO="''' + DWNSTM_REPO + '''"
-if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} target; fi
+if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} targetdwn; fi
   cd ${WORKSPACE}/targetdwn
   git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
   git config user.email crw-build@REDHAT.COM
@@ -143,7 +143,7 @@ cd ..
           OLD_SHA_DWN = sh(script: BOOTSTRAP + '''
           cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
           ''', returnStdout: true)
-          println "Got OLD_SHA_DWN in target folder: " + OLD_SHA_DWN
+          println "Got OLD_SHA_DWN in targetdwn folder: " + OLD_SHA_DWN
 
           sh BOOTSTRAP + '''
 
@@ -156,7 +156,7 @@ for d in ${SYNC_FILES}; do
   elif [[ -d ${WORKSPACE}/targetmid/${d} ]]; then
     # copy over the files
     rsync -zrlt ${WORKSPACE}/targetmid/${d}/* ${WORKSPACE}/targetdwn/${d}/
-    # sync the directory and delete from target if deleted from source
+    # sync the directory and delete from targetdwn if deleted from targetmid
     rsync -zrlt --delete ${WORKSPACE}/targetmid/${d}/ ${WORKSPACE}/targetdwn/${d}/
   fi
 done
@@ -266,7 +266,7 @@ fi
 	        def NEW_SHA_DWN = sh(script: '''#!/bin/bash -xe
 	        cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
 	        ''', returnStdout: true)
-	        println "Got NEW_SHA_DWN in target folder: " + NEW_SHA_DWN
+	        println "Got NEW_SHA_DWN in targetdwn folder: " + NEW_SHA_DWN
 
 	        if (NEW_SHA_DWN.equals(OLD_SHA_DWN)) {
 	          currentBuild.result='UNSTABLE'
