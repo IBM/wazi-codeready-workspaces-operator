@@ -35,7 +35,7 @@ timeout(120) {
             submoduleCfg: [],
             userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
           checkout([$class: 'GitSCM',
-            branches: [[name: "${SOURCE_BRANCH}"]],
+            branches: [[name: "${MIDSTM_BRANCH}"]],
             doGenerateSubmoduleConfigurations: false,
             credentialsId: 'devstudio-release',
             poll: true,
