@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "7.13.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
+// SOURCE_BRANCH = "7.16.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
+// FORCE_BUILD = "false"
 
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 
@@ -22,21 +22,21 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
-		  cleanWs()
+      cleanWs()
 	    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-		      checkout([$class: 'GitSCM',
-		        branches: [[name: "${SOURCE_BRANCH}"]],
-		        doGenerateSubmoduleConfigurations: false,
-		        credentialsId: 'devstudio-release',
-		        poll: true,
-        extensions: [
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
-        ],
-		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+          checkout([$class: 'GitSCM',
+            branches: [[name: "${SOURCE_BRANCH}"]],
+            doGenerateSubmoduleConfigurations: false,
+            credentialsId: 'devstudio-release',
+            poll: true,
+            extensions: [
+              [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+            ],
+            submoduleCfg: [],
+            userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
-  		      def BOOTSTRAP = '''#!/bin/bash -xe
+            def BOOTSTRAP = '''#!/bin/bash -xe
 
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -114,19 +114,19 @@ cd ..
           def SYNC_FILES_MID2DWN = "build"
           def SYNC_FILES_DWN2MID = "deploy"
 
-		      sh BOOTSTRAP
+          sh BOOTSTRAP
 
-		      OLD_SHA_MID = sh(script: '''#!/bin/bash -xe
-		      cd ${WORKSPACE}/targetmid; git rev-parse HEAD
-		      ''', returnStdout: true)
-		      println "Got OLD_SHA_MID in targetmid folder: " + OLD_SHA_MID
+          OLD_SHA_MID = sh(script: '''#!/bin/bash -xe
+          cd ${WORKSPACE}/targetmid; git rev-parse HEAD
+          ''', returnStdout: true)
+          println "Got OLD_SHA_MID in targetmid folder: " + OLD_SHA_MID
 
-		      OLD_SHA_DWN = sh(script: '''#!/bin/bash -xe
-		      cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
-		      ''', returnStdout: true)
-		      println "Got OLD_SHA_DWN in targetdwn folder: " + OLD_SHA_DWN
+          OLD_SHA_DWN = sh(script: '''#!/bin/bash -xe
+          cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
+          ''', returnStdout: true)
+          println "Got OLD_SHA_DWN in targetdwn folder: " + OLD_SHA_DWN
 
-		      sh BOOTSTRAP + '''
+          sh BOOTSTRAP + '''
 
 # rsync files in upstream github to dist-git
 for d in ''' + SYNC_FILES_UP2DWN + '''; do
@@ -155,9 +155,9 @@ done
 '''
           // OLD way
       	  // def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
-		      // // relative to $WORKSPACE
-		      // def files = findFiles(glob: 'targetdwn/deploy/**/*')
-		      // files.each {
+          // // relative to $WORKSPACE
+          // def files = findFiles(glob: 'targetdwn/deploy/**/*')
+          // files.each {
           //       println it.path
           //       // global string replacements in deploy scripts
           //       writeFile file: it.path, text: readFile(it.path)
@@ -167,7 +167,7 @@ done
           //           .replaceAll('name: eclipse-che', 'name: codeready-workspaces')
           //           .replaceAll("cheImageTag: 'nightly'", "cheImageTag: ''")
           //           .replaceAll('/bin/codeready-operator', '/bin/che-operator')
-		      // }
+          // }
 
           //     // replacements in deploy/crds/org_v1_che_cr.yaml
           //     def cryaml = "targetdwn/deploy/crds/org_v1_che_cr.yaml"
@@ -181,7 +181,7 @@ done
           //       .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
 
           // NEW way - requires yq
-		      sh BOOTSTRAP + '''
+          sh BOOTSTRAP + '''
           sudo /usr/bin/python3 -m pip install --upgrade pip; sudo /usr/bin/python3 -m pip install yq
           jq --version
           yq --version
@@ -209,7 +209,7 @@ done
           }
           writeFile file: opyaml, text: result
           
-		      sh BOOTSTRAP + '''
+          sh BOOTSTRAP + '''
 
 # remove unneeded olm files
 rm -fr ${WORKSPACE}/targetdwn/olm/eclipse-che-preview-openshift ${WORKSPACE}/targetdwn/olm/eclipse-che-preview-kubernetes
@@ -329,7 +329,7 @@ if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
 fi
 '''
-    		}
+        }
 	        def NEW_SHA_MID = sh(script: '''#!/bin/bash -xe
 	        cd ${WORKSPACE}/targetmid; git rev-parse HEAD
 	        ''', returnStdout: true)
