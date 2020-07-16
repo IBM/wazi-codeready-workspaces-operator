@@ -251,11 +251,12 @@ if [[ \$(git diff --name-only) ]]; then # file changed
 	git add Dockerfile ''' + SYNC_FILES_MID2DWN + SYNC_FILES_UP2DWN + ''' .
   /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit || true
   # note this might fail if we sync from a tag vs. a branch
-  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ''' + SYNC_FILES_MID2DWN + SYNC_FILES_UP2DWN + ''' . || true
+  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} + ''' + MIDSTM_REPO + ''' @ ${MIDSTM_SHA:0:8}" \
+    Dockerfile ''' + SYNC_FILES_MID2DWN + SYNC_FILES_UP2DWN + ''' . || true
   git push origin ''' + DWNSTM_BRANCH + ''' || true
   NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
   if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
-  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} + ''' + MIDSTM_REPO + ''' @ ${MIDSTM_SHA:0:8}"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)

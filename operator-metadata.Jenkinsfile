@@ -85,12 +85,22 @@ SOURCEDOCKERFILE=${WORKSPACE}/targetmid/operator-metadata.Dockerfile
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/targetmid
+
+cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+  git config user.email "nickboldt+devstudio-release@gmail.com"
+  git config user.name "Red Hat Devstudio Release Bot"
+  git config --global push.default matching
+  SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
+cd ..
+
+cd ${WORKSPACE}/targetmid
+  git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
   export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   git config user.email nickboldt+devstudio-release@gmail.com
   git config user.name "devstudio-release"
   git config --global push.default matching
+  MIDSTM_SHA=$(git rev-parse HEAD) # echo ${MIDSTM_SHA:0:8}
 
   # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
   git remote -v
@@ -112,7 +122,22 @@ cd ..
 '''
               sshagent(credentials : ['devstudio-release'])
               {
+                // UP2MID are right now ONLY files in olm/ folder upstream copied to build/scripts/ folder midstream
+                def SYNC_FILES_UP2MID = "addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh" 
+
                 sh BOOTSTRAP + '''
+
+# rsync files in upstream github to dist-git
+for d in ''' + SYNC_FILES_UP2MID + '''; do
+  if [[ -f ${WORKSPACE}/sources/olm/${d} ]]; then
+    rsync -zrlt ${WORKSPACE}/sources/olm/${d} ${WORKSPACE}/targetmid/build/scripts/${d}
+  elif [[ -d ${WORKSPACE}/sources/olm/${d} ]]; then
+    # copy over the files
+    rsync -zrlt ${WORKSPACE}/sources/olm/${d}/* ${WORKSPACE}/targetmid/build/scripts/${d}/
+    # sync the directory and delete from targetmid if deleted from source
+    rsync -zrlt --delete ${WORKSPACE}/sources/olm/${d}/ ${WORKSPACE}/targetmid/build/scripts/${d}/
+  fi
+done
 
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | \
@@ -128,17 +153,19 @@ if [[ ! ${CSV_FILE} ]]; then
   if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
     git add controller-manifests/ manifests/ build/scripts/
     git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/ build/scripts/
-    git push origin ''' + SOURCE_BRANCH + '''
+    git push origin ''' + MIDSTM_BRANCH + '''
   else # no need to push this so revert
     git checkout controller-manifests/ manifests/ build/scripts/
   fi
 fi
 
 cd ${WORKSPACE}/targetmid
-/tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 || true
+/tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 || true
 cd ..
 '''
               }
+
+          def SYNC_FILES_MID2DWN = "controller-manifests manifests metadata build" // folders in mid/dwn
 
           OLD_SHA_DWN = sh(script: BOOTSTRAP + '''
           cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
@@ -146,11 +173,9 @@ cd ..
           println "Got OLD_SHA_DWN in targetdwn folder: " + OLD_SHA_DWN
 
           sh BOOTSTRAP + '''
-
-# rsync files in github to dist-git
+# rsync files in github midstream to dist-git downstream
 # TODO CRW 2.3 / OCP 4.6 switch to use manifests metadata folders
-SYNC_FILES="controller-manifests manifests metadata build"
-for d in ${SYNC_FILES}; do
+for d in ''' + SYNC_FILES_MID2DWN + '''; do
   if [[ -f ${WORKSPACE}/targetmid/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/targetmid/${d} ${WORKSPACE}/targetdwn/${d}
   elif [[ -d ${WORKSPACE}/targetmid/${d} ]]; then
@@ -220,13 +245,14 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
 cd ${WORKSPACE}/targetdwn
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
-	git add Dockerfile ${SYNC_FILES}
+	git add Dockerfile ''' + SYNC_FILES_MID2DWN + '''
     /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
-	git commit -s -m "[sync] Update from ''' + MIDSTM_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
+  git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} + ''' + MIDSTM_REPO + ''' @ ${MIDSTM_SHA:0:8}" \
+    Dockerfile ''' + SYNC_FILES_MID2DWN + ''' || true
 	git push origin ''' + DWNSTM_BRANCH + '''
 	NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
 	if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
-	echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + MIDSTM_REPO + ''' @ ${SOURCE_SHA:0:8}"
+  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8} + ''' + MIDSTM_REPO + ''' @ ${MIDSTM_SHA:0:8}"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
