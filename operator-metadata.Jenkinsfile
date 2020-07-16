@@ -115,7 +115,7 @@ if [[ ! ${CSV_FILE} ]]; then
   cd ${WORKSPACE}/sources/
   # TODO when we move to bundle format, remove controller-manifests
   # if anything has changed other than the createdAt date, then we commit this
-  if [[ $(git diff | grep -v createdAt | egrep "^(-|\+) ") ]]; then
+  if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
     git add controller-manifests/ manifests/
     git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/
     git push origin ''' + SOURCE_BRANCH + '''
