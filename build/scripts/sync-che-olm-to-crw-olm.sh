@@ -148,7 +148,7 @@ for CSVFILE in \
 	declare -A operator_replacements=(
 		["CHE_VERSION"]="${CRW_TAG}"
 		["CHE_FLAVOR"]="codeready"
-		["CONSOLE_LINK_NAME"]="workspaces"
+		["CONSOLE_LINK_NAME"]="che" # use che, not workspaces - CRW-1078
 	)
 	for updateName in "${!operator_replacements[@]}"; do
 # 		# .spec.install.spec.deployments[].spec.template.spec.containers[].env[].CHE_VERSION
