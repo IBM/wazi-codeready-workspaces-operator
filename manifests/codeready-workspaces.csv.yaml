@@ -47,7 +47,7 @@ metadata:
     categories: Developer Tools, OpenShift Optional
     certified: "true"
     containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.3
-    createdAt: "2020-07-16T17:31:15+00:00"
+    createdAt: "2020-07-16T19:32:53+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     repository: https://github.com/redhat-developer/codeready-workspaces-operator/
@@ -291,23 +291,23 @@ spec:
                         value: codeready-operator
                       - name: CHE_VERSION
                         value: '2.3'
-                      - name: IMAGE_default_che_server
+                      - name: RELATED_IMAGE_che_server
                         value: registry.redhat.io/codeready-workspaces/server-rhel8:2.3
-                      - name: IMAGE_default_plugin_registry
+                      - name: RELATED_IMAGE_plugin_registry
                         value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.3
-                      - name: IMAGE_default_devfile_registry
+                      - name: RELATED_IMAGE_devfile_registry
                         value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8:2.3
-                      - name: IMAGE_default_pvc_jobs
+                      - name: RELATED_IMAGE_pvc_jobs
                         value: registry.access.redhat.com/ubi8-minimal:8.2
-                      - name: IMAGE_default_postgres
+                      - name: RELATED_IMAGE_postgres
                         value: registry.redhat.io/rhel8/postgresql-96:1
-                      - name: IMAGE_default_keycloak
+                      - name: RELATED_IMAGE_keycloak
                         value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4
-                      - name: IMAGE_default_che_workspace_plugin_broker_metadata
+                      - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
                         value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.3
-                      - name: IMAGE_default_che_workspace_plugin_broker_artifacts
+                      - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
                         value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.3
-                      - name: IMAGE_default_che_server_secure_exposer_jwt_proxy_image
+                      - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
                         value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.3
                       - name: CHE_FLAVOR
                         value: codeready
