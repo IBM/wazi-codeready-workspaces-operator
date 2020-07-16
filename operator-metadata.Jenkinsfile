@@ -114,9 +114,14 @@ if [[ ! ${CSV_FILE} ]]; then
   ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/che-operator -t ${WORKSPACE}/sources
   cd ${WORKSPACE}/sources/
   # TODO when we move to bundle format, remove controller-manifests
-  git add controller-manifests/ manifests/
-  git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/
-  git push origin ''' + SOURCE_BRANCH + '''
+  # if anything has changed other than the createdAt date, then we commit this
+  if [[ $(git diff | grep -v createdAt | egrep "^(-|\+) ") ]]; then
+    git add controller-manifests/ manifests/
+    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/
+    git push origin ''' + SOURCE_BRANCH + '''
+  else # no need to push this so revert
+    git checkout controller-manifests/ manifests/
+  fi
 fi
 
 cd ${WORKSPACE}/sources
