@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2018-2020 Red Hat, Inc.
+#  Copyright (c) 2012-2019 Red Hat, Inc.
 #    This program and the accompanying materials are made
 #    available under the terms of the Eclipse Public License 2.0
 #    which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -11,20 +11,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: codeready-operator
+  name: che-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: codeready-operator
+      app: che-operator
   template:
     metadata:
       labels:
-        app: codeready-operator
+        app: che-operator
     spec:
       containers:
-        - name: codeready-operator
-          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
+        - name: che-operator
+          image: quay.io/eclipse/che-operator:nightly
           ports:
             - containerPort: 60000
               name: metrics
@@ -41,33 +41,35 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: codeready-operator
+              value: che-operator
             - name: CHE_VERSION
-              value: 2.2.0
-            - name: IMAGE_default_che_server
-              value: registry.redhat.io/codeready-workspaces/server-rhel8:2.2
-            - name: IMAGE_default_plugin_registry
-              value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.2
-            - name: IMAGE_default_devfile_registry
-              value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8:2.2
-            - name: IMAGE_default_pvc_jobs
-              value: registry.access.redhat.com/ubi8-minimal:8.2
-            - name: IMAGE_default_postgres
-              value: registry.redhat.io/rhel8/postgresql-96:1
-            - name: IMAGE_default_keycloak
-              value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4
-            - name: IMAGE_default_che_workspace_plugin_broker_metadata
-              value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.2
-            - name: IMAGE_default_che_workspace_plugin_broker_artifacts
-              value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.2
-            - name: IMAGE_default_che_server_secure_exposer_jwt_proxy_image
-              value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.2
+              value: nightly
+            - name: RELATED_IMAGE_che_server
+              value: quay.io/eclipse/che-server:nightly
+            - name: RELATED_IMAGE_plugin_registry
+              value: quay.io/eclipse/che-plugin-registry:nightly
+            - name: RELATED_IMAGE_devfile_registry
+              value: quay.io/eclipse/che-devfile-registry:nightly
+            - name: RELATED_IMAGE_che_tls_secrets_creation_job
+              value: quay.io/eclipse/che-tls-secret-creator:alpine-3029769
+            - name: RELATED_IMAGE_pvc_jobs
+              value: registry.access.redhat.com/ubi8-minimal:8.2-301.1592810506
+            - name: RELATED_IMAGE_postgres
+              value: centos/postgresql-96-centos7:9.6
+            - name: RELATED_IMAGE_keycloak
+              value: quay.io/eclipse/che-keycloak:nightly
+            - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
+              value: quay.io/eclipse/che-plugin-metadata-broker:v3.2.0
+            - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
+              value: quay.io/eclipse/che-plugin-artifacts-broker:v3.2.0
+            - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
+              value: quay.io/eclipse/che-jwtproxy:fd94e60
             - name: CHE_FLAVOR
-              value: codeready
+              value: che
             - name: CONSOLE_LINK_NAME
-              value: workspaces
+              value: che
             - name: CONSOLE_LINK_DISPLAY_NAME
-              value: CodeReady Workspaces
+              value: Eclipse Che
             - name: CONSOLE_LINK_SECTION
               value: Red Hat Applications
             - name: CONSOLE_LINK_IMAGE
@@ -78,6 +80,8 @@ spec:
               value: che-identity-postgres-secret
             - name: CHE_POSTGRES_SECRET
               value: che-postgres-secret
+            - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
+              value: ca-certs
       restartPolicy: Always
-      serviceAccountName: codeready-operator
+      serviceAccountName: che-operator
       terminationGracePeriodSeconds: 5
