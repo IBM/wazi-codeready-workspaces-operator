@@ -52,9 +52,8 @@ fi
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
-# TODO: should we do this? Need to reconcile Che and CRW versions of these scripts so they're the same
 # Copy digests scripts
-cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+for d in addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh; do rsync -zrltq "${SOURCEDIR}/olm/${d}" "${SCRIPTS_DIR}"; done
 # Fix "help" messages for digest scripts
 sed -r \
 	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CSV_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
