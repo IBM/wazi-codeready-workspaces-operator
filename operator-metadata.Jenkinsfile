@@ -158,7 +158,7 @@ sed -i ${WORKSPACE}/target/Dockerfile \
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | \
-  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\.GA##")" # 2.3.0 but not 2.3.0.GA
+  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
 # TODO CRW 2.3 / OCP 4.6 switch to use manifests folder
 CSV_FILE="\$(find ${WORKSPACE}/target/controller-manifests/*${CSV_VERSION}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
