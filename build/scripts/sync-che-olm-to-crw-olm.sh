@@ -54,14 +54,14 @@ pushd "${SOURCEDIR}" >/dev/null || exit
 
 # TODO: should we do this? Need to reconcile Che and CRW versions of these scripts so they're the same
 # Copy digests scripts
-# cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
+cp "${SOURCEDIR}/olm/addDigests.sh" "${SOURCEDIR}/olm/buildDigestMap.sh" "${SCRIPTS_DIR}"
 # Fix "help" messages for digest scripts
-#sed -r \
-#	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CSV_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
-#	-i "${SCRIPTS_DIR}/addDigests.sh"
-#sed -r \
-#	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/controller-manifests/v'${CSV_VERSION}'/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
-#	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
+sed -r \
+	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s controller-manifests/v'${CSV_VERSION}' -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
+	-i "${SCRIPTS_DIR}/addDigests.sh"
+sed -r \
+	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/controller-manifests/v'${CSV_VERSION}'/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
+	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
 
 # simple copy
 # TODO when we switch to OCP 4.6 format, remove updates to controller-manifests/v${CSV_VERSION} folder
