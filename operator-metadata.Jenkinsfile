@@ -114,6 +114,7 @@ if [[ ! ${CSV_FILE} ]]; then
   # TODO when we move to bundle format, remove controller-manifests
   git add controller-manifests/ manifests/
   git commit -s -m "[csv] Add CSV ${CSV_VERSION}" controller-manifests/ manifests/
+  git push origin ''' + SOURCE_BRANCH + '''
 fi
 
 cd ${WORKSPACE}/sources
