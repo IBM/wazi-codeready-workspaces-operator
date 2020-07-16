@@ -74,6 +74,7 @@ curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-works
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   git config user.email nickboldt+devstudio-release@gmail.com
   git config user.name "devstudio-release"
   git config --global push.default matching
