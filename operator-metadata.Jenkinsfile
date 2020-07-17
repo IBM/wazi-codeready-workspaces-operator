@@ -280,8 +280,8 @@ if [[ ${hasChanged} -eq 1 ]]; then
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
-DWNSTM_BRANCH=''' + DWNSTM_BRANCH + '''&\
-DWNSTM_REPOs=containers/codeready-workspaces-${QRP}&\
+GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
+GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REBUILD_PATH=${QUAY_REPO_PATH}&\
 JOB_BRANCH=master&\
 FORCE_BUILD=true&\
