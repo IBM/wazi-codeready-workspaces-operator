@@ -22,8 +22,8 @@ CSV_VERSION_PREV=2.2.0
 
 usage () {
 	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version]"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator --che 9.9.9-nightly.1594657566"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator [if no che.version, use value in codeready-workspaces/master/pom.xml]"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t `pwd` --che 9.9.9-nightly.1594657566"
+	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/projects/che-operator -t `pwd` [if no che.version, use value in codeready-workspaces/master/pom.xml]"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
@@ -101,7 +101,7 @@ for CSVFILE in \
 		\
 		-e 's|email: dfestal@redhat.com|email: nboldt@redhat.com|' \
 		-e 's|name: David Festal|name: Nick Boldt|' \
-		-e 's|name: Red Hat, Inc.|name: Red Hat|' \
+		-e 's@((name|support): Red Hat), Inc.@\1@g' \
 		\
 		-e 's|/usr/local/bin/codeready-operator|/usr/local/bin/che-operator|' \
 		-e 's|imagePullPolicy: IfNotPresent|imagePullPolicy: Always|' \
