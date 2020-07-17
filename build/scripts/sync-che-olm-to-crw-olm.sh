@@ -153,7 +153,7 @@ for CSVFILE in \
 
 	# yq changes - transform env vars from Che to CRW values
 	declare -A operator_replacements=(
-		["CHE_VERSION"]="${CRW_TAG}"
+		["CHE_VERSION"]="${CSV_VERSION}" # set this to x.y.z version, matching the CSV
 		["CHE_FLAVOR"]="codeready"
 		["CONSOLE_LINK_NAME"]="che" # use che, not workspaces - CRW-1078
 	)
