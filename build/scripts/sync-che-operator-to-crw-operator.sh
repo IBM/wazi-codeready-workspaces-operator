@@ -134,7 +134,7 @@ pushd "${SOURCEDIR}" >/dev/null
 	declare -A operator_replacements=(
 		["CHE_VERSION"]="${CRW_VERSION}"
 		["CHE_FLAVOR"]="codeready"
-		["CONSOLE_LINK_NAME"]="workspaces"
+		["CONSOLE_LINK_NAME"]="che"
 
 		["IMAGE_default_che_server"]="${CRW_SERVER_IMAGE}"
 		["IMAGE_default_plugin_registry"]="${CRW_PLUGINREGISTRY_IMAGE}"
