@@ -39,8 +39,8 @@ while [[ "$#" -gt 0 ]]; do
 	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
 	'-v') CRW_VERSION="$1"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
 	# paths to use for input and ouput
-	'-s') SOURCEDIR="$1"; SOURCEDIR="${SOURCEDIR%/}"; shit 1;;
-	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shit 1;;
+	'-s') SOURCEDIR="$1"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
+	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
 	'--help'|'-h') usage; exit;;
 	# optional tag overrides
 	'--crw-tag') CRW_TAG="$1"; shift 1;;
