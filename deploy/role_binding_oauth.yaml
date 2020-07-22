@@ -11,19 +11,19 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: che-operator
+  name: codeready-operator
 objects:
 - kind: ClusterRoleBinding
   apiVersion: rbac.authorization.k8s.io/v1
   metadata:
-    name: che-operator
+    name: codeready-operator
   subjects:
     - kind: ServiceAccount
-      name: che-operator
+      name: codeready-operator
       namespace: ${NAMESPACE}
   roleRef:
     kind: ClusterRole
-    name: che-operator
+    name: codeready-operator
     apiGroup: rbac.authorization.k8s.io
 parameters:
   - name: NAMESPACE

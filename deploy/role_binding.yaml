@@ -11,11 +11,11 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: che-operator
+  name: codeready-operator
 subjects:
 - kind: ServiceAccount
-  name: che-operator
+  name: codeready-operator
 roleRef:
   kind: Role
-  name: che-operator
+  name: codeready-operator
   apiGroup: rbac.authorization.k8s.io

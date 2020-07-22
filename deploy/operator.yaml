@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012-2019 Red Hat, Inc.
+#  Copyright (c) 2018-2020 Red Hat, Inc.
 #    This program and the accompanying materials are made
 #    available under the terms of the Eclipse Public License 2.0
 #    which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -11,20 +11,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: che-operator
+  name: codeready-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: che-operator
+      app: codeready-operator
   template:
     metadata:
       labels:
-        app: che-operator
+        app: codeready-operator
     spec:
       containers:
-        - name: che-operator
-          image: quay.io/eclipse/che-operator:7.16.0
+        - name: codeready-operator
+          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
           ports:
             - containerPort: 60000
               name: metrics
@@ -41,9 +41,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: che-operator
+              value: codeready-operator
             - name: CHE_VERSION
-              value: 7.16.0
+              value: 2.3.0.GA
             - name: RELATED_IMAGE_che_server
               value: quay.io/eclipse/che-server:7.16.0
             - name: RELATED_IMAGE_plugin_registry
@@ -65,11 +65,11 @@ spec:
             - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
               value: quay.io/eclipse/che-jwtproxy:fd94e60
             - name: CHE_FLAVOR
-              value: che
+              value: codeready
             - name: CONSOLE_LINK_NAME
               value: che
             - name: CONSOLE_LINK_DISPLAY_NAME
-              value: Eclipse Che
+              value: CodeReady Workspaces
             - name: CONSOLE_LINK_SECTION
               value: Red Hat Applications
             - name: CONSOLE_LINK_IMAGE
@@ -83,5 +83,5 @@ spec:
             - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
               value: ca-certs
       restartPolicy: Always
-      serviceAccountName: che-operator
+      serviceAccountName: codeready-operator
       terminationGracePeriodSeconds: 5
