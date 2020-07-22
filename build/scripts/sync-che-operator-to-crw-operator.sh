@@ -32,21 +32,21 @@ usage () {
 	"
 }
 
-if [[ $# -lt 8 ]]; then usage; exit; fi
+if [[ $# -lt 6 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
-	'-v') CRW_VERSION="$1"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
+	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
 	# paths to use for input and ouput
-	'-s') SOURCEDIR="$1"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
+	'-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
 	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
 	'--help'|'-h') usage; exit;;
 	# optional tag overrides
-	'--crw-tag') CRW_TAG="$1"; shift 1;;
-	'--sso-tag') SSO_TAG="$1"; shift 1;;
-	'--ubi-tag') UBI_TAG="$1"; shift 1;;
-	'--postgres-tag') POSTGRES_TAG="$1"; shift 1;;
+	'--crw-tag') CRW_TAG="$2"; shift 1;;
+	'--sso-tag') SSO_TAG="$2"; shift 1;;
+	'--ubi-tag') UBI_TAG="$2"; shift 1;;
+	'--postgres-tag') POSTGRES_TAG="$2"; shift 1;;
   esac
   shift 1
 done
