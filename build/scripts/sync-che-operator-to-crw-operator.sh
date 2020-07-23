@@ -136,24 +136,24 @@ pushd "${SOURCEDIR}" >/dev/null
 		["CHE_FLAVOR"]="codeready"
 		["CONSOLE_LINK_NAME"]="che"
 
-		["IMAGE_default_che_server"]="${CRW_SERVER_IMAGE}"
-		["IMAGE_default_plugin_registry"]="${CRW_PLUGINREGISTRY_IMAGE}"
-		["IMAGE_default_devfile_registry"]="${CRW_DEVFILEREGISTRY_IMAGE}"
+		["RELATED_IMAGE_che_server"]="${CRW_SERVER_IMAGE}"
+		["RELATED_IMAGE_plugin_registry"]="${CRW_PLUGINREGISTRY_IMAGE}"
+		["RELATED_IMAGE_devfile_registry"]="${CRW_DEVFILEREGISTRY_IMAGE}"
 
-		["IMAGE_default_che_workspace_plugin_broker_metadata"]="${CRW_BROKER_METADATA_IMAGE}"
-		["IMAGE_default_che_workspace_plugin_broker_artifacts"]="${CRW_BROKER_ARTIFACTS_IMAGE}"
-		["IMAGE_default_che_server_secure_exposer_jwt_proxy_image"]="${CRW_JWTPROXY_IMAGE}"
+		["RELATED_IMAGE_che_workspace_plugin_broker_metadata"]="${CRW_BROKER_METADATA_IMAGE}"
+		["RELATED_IMAGE_che_workspace_plugin_broker_artifacts"]="${CRW_BROKER_ARTIFACTS_IMAGE}"
+		["RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image"]="${CRW_JWTPROXY_IMAGE}"
 
-		["IMAGE_default_pvc_jobs"]="${UBI_IMAGE}"
-		["IMAGE_default_postgres"]="${POSTGRES_IMAGE}"
-		["IMAGE_default_keycloak"]="${SSO_IMAGE}"
+		["RELATED_IMAGE_pvc_jobs"]="${UBI_IMAGE}"
+		["RELATED_IMAGE_postgres"]="${POSTGRES_IMAGE}"
+		["RELATED_IMAGE_keycloak"]="${SSO_IMAGE}"
 	)
 	while IFS= read -r -d '' d; do
 		for updateName in "${!operator_replacements[@]}"; do
 			changed="$(cat "${TARGETDIR}/${d}" | \
 yq  -y --arg updateName "${updateName}" --arg updateVal "${operator_replacements[$updateName]}" \
 '.spec.template.spec.containers[].env = [.spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]' | \
-yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "IMAGE_default_che_tls_secrets_creation_job"))')" && \
+yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "RELATED_IMAGE_che_tls_secrets_creation_job"))')" && \
 			echo "${COPYRIGHT}${changed}" > "${TARGETDIR}/${d}"
 		done
 		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
