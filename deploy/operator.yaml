@@ -43,7 +43,7 @@ spec:
             - name: OPERATOR_NAME
               value: codeready-operator
             - name: CHE_VERSION
-              value: 2.3.0
+              value: 2.3.0.GA
             - name: RELATED_IMAGE_che_server
               value: registry.redhat.io/codeready-workspaces/server-rhel8:2.2
             - name: RELATED_IMAGE_plugin_registry
