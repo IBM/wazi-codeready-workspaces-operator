@@ -21,5 +21,5 @@ spec:
   sourceType: grpc
   displayName: IBM Wazi for Red Hat CodeReady Workspaces Development Client
   publisher: IBM
-  image: docker.io/ibmcom/wazi-codeready-operator-catalog:latest
-  # tag: docker.io/ibmcom/wazi-codeready-operator-catalog:1.0.0
+  image: docker.io/ibmcom/wazi-code-operator-catalog:latest
+  # tag: docker.io/ibmcom/wazi-code-operator-catalog:1.0.0
