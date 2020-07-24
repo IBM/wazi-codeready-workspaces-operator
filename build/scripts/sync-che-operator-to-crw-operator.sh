@@ -16,7 +16,7 @@ set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
-CRW_VERSION=2.2.0
+CRW_VERSION=2.3.0
 CRW_TAG=${CRW_VERSION%.*}
 SSO_TAG=7.4
 UBI_TAG=8.2
@@ -24,7 +24,7 @@ POSTGRES_TAG=1
 
 usage () {
 	echo "Usage:   $0 -v [VERSION] [-s /path/to/sources] [-t /path/to/generated]"
-	echo "Example: $0 -v 2.2.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
+	echo "Example: $0 -v 2.3.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
 	echo "Options:
 	--sso-tag 7.4
 	--ubi-tag 8.2
@@ -37,7 +37,7 @@ if [[ $# -lt 6 ]]; then usage; exit; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	# for CRW_VERSION = 2.2.0, get CRW_TAG = 2.2
-	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}" shift 1;;
+	'-v') CRW_VERSION="$2"; CRW_TAG="${CRW_VERSION%.*}"; shift 1;;
 	# paths to use for input and ouput
 	'-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
 	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
