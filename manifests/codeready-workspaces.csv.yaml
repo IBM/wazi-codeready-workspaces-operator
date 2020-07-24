@@ -49,7 +49,7 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools, OpenShift Optional
     certified: "true"
-    containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.3
+    containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.3
     createdAt: "2020-07-17T03:12:14+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
@@ -300,23 +300,23 @@ spec:
                       - name: CHE_VERSION
                         value: 2.3.0
                       - name: RELATED_IMAGE_che_server
-                        value: registry.redhat.io/codeready-workspaces/server-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-server-rhel8:2.3
                       - name: RELATED_IMAGE_plugin_registry
-                        value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8:2.3
                       - name: RELATED_IMAGE_devfile_registry
-                        value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8:2.3
                       - name: RELATED_IMAGE_pvc_jobs
-                        value: registry.access.redhat.com/ubi8-minimal:8.2
+                        value: registry.redhat.io/ubi8-minimal:8.2
                       - name: RELATED_IMAGE_postgres
                         value: registry.redhat.io/rhel8/postgresql-96:1
                       - name: RELATED_IMAGE_keycloak
                         value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-metadata-rhel8:2.3
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-artifacts-rhel8:2.3
                       - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
-                        value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.3
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8:2.3
                       - name: CHE_FLAVOR
                         value: codeready
                       - name: CONSOLE_LINK_NAME
@@ -335,7 +335,7 @@ spec:
                         value: che-postgres-secret
                       - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
                         value: ca-certs
-                    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.3
+                    image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.3
                     imagePullPolicy: Always
                     name: codeready-operator
                     ports:

@@ -9,17 +9,17 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.2-345 as builder
-RUN microdnf install -y findutils
+# metadata images built in brew must be from scratch
+# https://docs.engineering.redhat.com/display/CFC/Migration
+FROM scratch
 
 # not applicable to Che, only needed for CRW
-ADD manifests /manifests
-ADD build /build
-RUN /build/scripts/swap_images.sh /manifests
+COPY manifests /manifests/
+COPY metadata/annotations.yaml /metadata/annotations.yaml
 
-FROM scratch
-COPY --from=builder /manifests /manifests
-COPY ./metadata/annotations.yaml /metadata/annotations.yaml
+# support use of openJ9 images for Z and P? 
+# might not be possible - see https://docs.engineering.redhat.com/display/CFC/Digest_Pinning - "OSBS does not support pinning to platform-specific digests"
+# COPY ./build/scripts/swap_images.sh /tmp
+# RUN if [[ "$(uname -m)" != "x86_64" ]] ; then /tmp/swap_images.sh /manifests/codeready-workspaces.csv.yaml; fi; rm -fr /tmp/swap_images.sh
 
 # append Brew metadata here (it will be appended via https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Jenkinsfile)
