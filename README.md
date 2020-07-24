@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/IBM/wazi-codeready-workspaces-operator.svg?branch=master)](https://travis-ci.com/IBM/wazi-codeready-workspaces-operator)
+[![Build Status](https://travis-ci.com/IBM/wazi-codeready-workspaces-operator.svg?branch=maain)](https://travis-ci.com/IBM/wazi-codeready-workspaces-operator)
 [![Release](https://img.shields.io/github/release/IBM/wazi-codeready-workspaces-operator.svg)](../../releases/latest)
 [![License](https://img.shields.io/github/license/IBM/wazi-codeready-workspaces-operator)](LICENSE)
 [![DockerHub](https://img.shields.io/badge/DockerHub-Operator-blue?color=3498db)](https://hub.docker.com/repository/docker/ibmcom/wazi-code-operator-catalog)
