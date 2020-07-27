@@ -20,7 +20,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
     COMPANY="IBM" \
-    VERSION="1.0.0" \
+    VERSION="1.1.0" \
     RELEASE="1" \
     SUMMARY="IBM Wazi for CodeReady Workspaces Development Client" \
     DESCRIPTION="IBM Wazi for CodeReady Workspaces Development Client - CodeReady Operator Catalog"

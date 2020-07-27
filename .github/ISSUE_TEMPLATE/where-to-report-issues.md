@@ -1,7 +1,7 @@
 ---
 name: "⚠️ Where to report issues ?"
-about: Do not report issues here. Use https://github.com/IBM/wazi-codeready-workspaces/issues
-title: Issues must be filed in CRW JIRA
+about: Do not report issues here. Use https://issues.redhat.com/browse/CRW
+title: Issues must to be filed in CRW JIRA
 labels: ''
 assignees: ''
 
