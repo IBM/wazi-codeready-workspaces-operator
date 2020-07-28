@@ -124,8 +124,10 @@ for CSVFILE in \
 		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}|" \
 		-e 's|IMAGE_default_|RELATED_IMAGE_|' \
 		\
-		` # TODO is this the correct value to set here?` \
-		-e 's|operatorframework.io/suggested-namespace: .+|operatorframework.io/suggested-namespace: workspaces|' \
+		` # CRW-927 set suggested namespace, append cluster-monitoring = true (removed from upstream as not supported in community operators)` \
+		-e '/operatorframework.io\/cluster-monitoring:/d' \
+		-e 's|operatorframework.io/suggested-namespace: .+|operatorframework.io/suggested-namespace: openshift-workspaces|' \
+		-e '/operatorframework.io\/suggested-namespace/a \ \ \ \ operatorframework.io/cluster-monitoring: "true"' \
 		-i "${CSVFILE}"
 	# insert missing cheFlavor annotation
 	if [[ ! $(grep -E '"cheFlavor":"codeready",' "${CSVFILE}") ]]; then 
