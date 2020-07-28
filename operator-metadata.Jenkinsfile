@@ -217,10 +217,9 @@ pushd ${WORKSPACE}/targetdwn >/dev/null
 # ./build/scripts/addDigests.sh -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION}
 popd >/dev/null
 
-# 3. switch back to use RHCC container names
+# 3. revert to OSBS image refs, since digest pinning will automatically switch them to RHCC values
 sed -r \
-    `# revert to RHCC` \
-    -e "s#(quay.io/crw/|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-)#registry.redhat.io/codeready-workspaces/#g" \
+    -e "s#(quay.io/crw/|registry.redhat.io/codeready-workspaces/)#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#g" \
     -i "${CSV_FILE}"
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
