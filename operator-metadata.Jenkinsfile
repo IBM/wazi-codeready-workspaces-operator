@@ -165,7 +165,7 @@ cd ..
 '''
               }
 
-          def SYNC_FILES_MID2DWN = "manifests metadata build" // folders in mid/dwn
+          def SYNC_FILES_MID2DWN = "controller-manifests manifests metadata build" // folders in mid/dwn
 
           OLD_SHA_DWN = sh(script: BOOTSTRAP + '''
           cd ${WORKSPACE}/targetdwn; git rev-parse HEAD

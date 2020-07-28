@@ -174,5 +174,8 @@ for CSVFILE in \
 	fi
 done
 
+# CRW-1044 copy latest bundle format to old appstream format folder too
+rsync -arzq ${TARGETDIR}/manifests/* ${TARGETDIR}/controller-manifests/v${CSV_VERSION}/
+
 popd >/dev/null || exit
 
