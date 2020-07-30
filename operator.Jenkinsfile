@@ -293,7 +293,7 @@ if [[ \$(git diff --name-only) ]]; then # file changed
   git push origin ''' + MIDSTM_BRANCH + ''' || true
   NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
   if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
-  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_MID:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+  echo "[sync] Updated GH @ ${NEW_SHA_MID:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
