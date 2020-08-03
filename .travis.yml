@@ -13,3 +13,5 @@ env:
   - IMAGE_NAME="wazi-code-operator-catalog"
 install: docker build -t ${REPOSITORY}${FOLDER_PATH}${IMAGE_NAME}:latest .
 script: echo "Success!"
+notifications:
+  slack: ibm-systems-z:kiD2FZtJUJtUSp57dwHWwNX1
