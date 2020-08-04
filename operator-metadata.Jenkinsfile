@@ -124,7 +124,8 @@ cd ..
               sshagent(credentials : ['devstudio-release'])
               {
                 // UP2MID are right now ONLY files in olm/ folder upstream copied to build/scripts/ folder midstream
-                def SYNC_FILES_UP2MID = "addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh" 
+                // TODO add in addDigests.sh buildDigestMap.sh from upstream (which are very different from downsteam versions)
+                def SYNC_FILES_UP2MID = "digestExcludeList images.sh olm.sh" 
 
                 sh BOOTSTRAP + '''
 

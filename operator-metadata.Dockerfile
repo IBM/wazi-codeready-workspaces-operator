@@ -14,7 +14,8 @@
 FROM scratch
 
 # not applicable to Che, only needed for CRW
-COPY manifests /manifests/
+# TODO CRW-1044 switch to manifests folder for bundle format
+COPY controller-manifests /manifests/
 COPY metadata/annotations.yaml /metadata/annotations.yaml
 
 # support use of openJ9 images for Z and P? 
