@@ -226,7 +226,7 @@ popd >/dev/null
 sed -r \
     -e "s#(quay.io/crw/|registry.redhat.io/codeready-workspaces/)#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#g" \
     -i "${CSV_FILE}"
-
+# TODO CRW-1044 switch to operators.operatorframework.io.bundle LABELs
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
@@ -242,15 +242,7 @@ LABEL summary="$SUMMARY" \\\r
       license="EPLv2" \\\r
       maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
       io.openshift.expose-services="" \\\r
-      operators.operatorframework.io.bundle.mediatype.v1=registry+v1 \\\r
-      operators.operatorframework.io.bundle.manifests.v1=manifests/ \\\r
-      operators.operatorframework.io.bundle.metadata.v1=metadata/ \\\r
-      operators.operatorframework.io.bundle.package.v1=codeready-workspaces \\\r
-      operators.operatorframework.io.bundle.channels.v1=latest \\\r
-      operators.operatorframework.io.bundle.channel.default.v1=latest \\\r
-      com.redhat.delivery.operator.bundle="true" \\\r
-      com.redhat.openshift.versions="v4.5" \\\r
-      com.redhat.delivery.backport=true \\\r
+      com.redhat.delivery.appregistry="true" \\\r
       usage="" \r'
 
 echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
