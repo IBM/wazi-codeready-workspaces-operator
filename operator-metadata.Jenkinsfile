@@ -213,9 +213,13 @@ sed -r \
 
 # 2. generate digests
 pushd ${WORKSPACE}/targetdwn >/dev/null
-# TODO digest scripts do not work anymore - https://github.com/eclipse/che/issues/17432
-# TODO make sure generated CSV is not mangled by yq
+# TODO digest scripts from upstream do not work - https://github.com/eclipse/che/issues/17432
 # ./build/scripts/addDigests.sh -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION}
+
+# TODO make sure generated CSV is not mangled by yq
+
+# TODO CRW-1044 merge in upstream disgest scripts here
+./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
 popd >/dev/null
 
 # 3. revert to OSBS image refs, since digest pinning will automatically switch them to RHCC values
