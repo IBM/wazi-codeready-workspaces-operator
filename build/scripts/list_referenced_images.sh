@@ -10,6 +10,7 @@
 # List all images referenced in csv.yaml files
 #
 
+# Usage (OCP 4.5-): list_referenced_images.sh controller-manifests/v2.2.0/
 # Usage (OCP 4.6+): list_referenced_images.sh manifests/ 
 set -e
 readarray -d '' metas < <(find "$1" -name '*csv.yaml' -print0)
