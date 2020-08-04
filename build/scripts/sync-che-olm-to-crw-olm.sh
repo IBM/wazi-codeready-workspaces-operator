@@ -52,15 +52,16 @@ fi
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
+# CRW-1044 do we need these? 
 # Copy digests scripts
-for d in addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh; do rsync -zrltq "${SOURCEDIR}/olm/${d}" "${SCRIPTS_DIR}"; done
+# for d in addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh; do rsync -zrltq "${SOURCEDIR}/olm/${d}" "${SCRIPTS_DIR}"; done
 # Fix "help" messages for digest scripts
-sed -r \
-	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s manifests -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
-	-i "${SCRIPTS_DIR}/addDigests.sh"
-sed -r \
-	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/manifests/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
-	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
+# sed -r \
+# 	-e 's|("Example:).*"|\1 $0 -w $(pwd) -s manifests -r \\".*.csv.yaml\\" -t '${CRW_TAG}'"|g' \
+# 	-i "${SCRIPTS_DIR}/addDigests.sh"
+# sed -r \
+# 	-e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/manifests/codeready-workspaces.csv.yaml -t '${CRW_TAG}'"|g' \
+# 	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
 
 # simple copy
 mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/
