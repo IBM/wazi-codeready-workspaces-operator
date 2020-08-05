@@ -49,10 +49,10 @@ mkdir -p ${BASE_DIR}/generated
 
 echo "[INFO] Get images from CSV ${CSV}"
 
-IMAGE_LIST=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("IMAGE_default_.*"; "g")) | .value' "${CSV}")
+IMAGE_LIST=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*"; "g")) | .value' "${CSV}")
 OPERATOR_IMAGE=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].image' "${CSV}")
 
-REGISTRY_LIST=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("IMAGE_default_.*_registry"; "g")) | .value' "${CSV}")
+REGISTRY_LIST=$(yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*_registry"; "g")) | .value' "${CSV}")
 REGISTRY_IMAGES_ALL=""
 for registry in ${REGISTRY_LIST}; do
   registry="${registry/\@sha256:*/:${TAG}}" # remove possible existing @sha256:... and use current tag instead
