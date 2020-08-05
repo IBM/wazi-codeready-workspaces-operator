@@ -27,7 +27,7 @@ command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1
 usage () {
 	echo "Usage:   $0 [-w WORKDIR] -s [SOURCE_PATH] -n [csv name] -v [VERSION] -t [TAG]"
 	echo "Example: $0 -w $(pwd) -s eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift -n eclipse-che-preview-openshift -v 7.9.0"
-	echo "Example: $0 -w $(pwd) -s controller-manifests -n codeready-workspaces -v 2.1.0 -t 2.1"
+	echo "Example: $0 -w $(pwd) -s controller-manifests -n codeready-workspaces -v 2.3.0 -t 2.3"
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -55,7 +55,16 @@ mkdir -p ${BASE_DIR}/generated/${CSV_NAME}/
 cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
 CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
-# echo "[INFO] CSV = ${CSV_FILE}"
+echo "[INFO] CSV to generate: ${CSV_FILE}"
+
+# update the correct file (either in manifests/ or controller-manifests/v${VERSION}/)
+if [[ -d ${SRC_DIR}/v${VERSION} ]]; then
+  CSV_FILE_ORIG=$(find ${SRC_DIR}/v${VERSION} -maxdepth 2 -name "${CSV_FILE##*/}" | grep -v generated | sort | tail -1)
+else
+  CSV_FILE_ORIG=$(find ${SRC_DIR}/ -maxdepth 2 -name "${CSV_FILE##*/}" | grep -v generated | sort | tail -1)
+fi
+echo "[INFO] CSV to update:   ${BASE_DIR}/${CSV_FILE_ORIG}"
+
 ${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -t ${TAG} -v ${VERSION} ${QUIET}
 
 # inject relatedImages block
@@ -85,7 +94,6 @@ sed -i ${CSV_FILE} -r -e "s|tag: |# tag: |"
 rm -f ${CSV_FILE}.old
 
 # update original file with generated changes
-CSV_FILE_ORIG=$(find ${SRC_DIR} -name "${CSV_FILE##*/}" | grep -v generated | tail -1)
 mv "${CSV_FILE}" "${CSV_FILE_ORIG}"
 echo "[INFO] CSV updated: ${CSV_FILE_ORIG}"
 
