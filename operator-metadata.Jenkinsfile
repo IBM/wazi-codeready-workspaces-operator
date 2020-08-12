@@ -11,8 +11,8 @@ def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sy
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
 
-def MIDSTM_BRANCH = "master"         // target branch in GH repo, eg., master or 2.2.x
-def DWNSTM_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
+def MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator-metadata" // also used for the Brew dockerfile params
@@ -84,7 +84,7 @@ hasChanged=0
 SOURCEDOCKERFILE=${WORKSPACE}/targetmid/operator-metadata.Dockerfile
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 
 cd ${WORKSPACE}/sources
@@ -142,7 +142,7 @@ for d in ''' + SYNC_FILES_UP2MID + '''; do
 done
 
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | \
+CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
   sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
 CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
 if [[ ! ${CSV_FILE} ]]; then 
@@ -189,8 +189,7 @@ done
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/targetdwn/Dockerfile
 
-# TODO should this be a branch instead of just master?
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
 #apply patches
 sed -i ${WORKSPACE}/targetdwn/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
@@ -200,7 +199,7 @@ sed -i ${WORKSPACE}/targetdwn/Dockerfile \
 # generate digests from tags
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | \
+CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
   sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
 CSV_FILE="\$(find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
@@ -284,7 +283,7 @@ cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REBUILD_PATH=${QUAY_REPO_PATH}&\
-JOB_BRANCH=master&\
+JOB_BRANCH=''' + MIDSTM_BRANCH + '''&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
   done

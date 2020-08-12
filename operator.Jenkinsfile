@@ -9,8 +9,8 @@ def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sy
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" // GH repo to use as target for deploy/ folder
 def DWNSTM_REPO = "containers/codeready-workspaces-operator" // dist-git repo to use as target for everything
 
-def MIDSTM_BRANCH = "master"         // target branch in GH repo, eg., master or 2.2.x
-def DWNSTM_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
+def MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
@@ -71,7 +71,7 @@ hasChanged=0
 SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
@@ -185,7 +185,7 @@ done
           sudo /usr/bin/python3 -m pip install --upgrade pip; sudo /usr/bin/python3 -m pip install yq
           jq --version
           yq --version
-          CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<version>" | head -2 | tail -1 | \
+          CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
             sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
           ${WORKSPACE}/targetdwn/build/scripts/sync-che-operator-to-crw-operator.sh -v ${CSV_VERSION} -s ${WORKSPACE}/sources/ -t ${WORKSPACE}/targetdwn/
           '''
@@ -217,8 +217,7 @@ rm -fr ${WORKSPACE}/targetdwn/olm/eclipse-che-preview-openshift ${WORKSPACE}/tar
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/targetdwn/Dockerfile
 
-# TODO should this be a branch instead of just master?
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
 #apply patches
 sed -i ${WORKSPACE}/targetdwn/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
@@ -317,12 +316,12 @@ cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=master&\
+JOB_BRANCH=''' + MIDSTM_BRANCH + '''&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
 
     curl \
-"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_master/buildWithParameters?\
+"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_''' + MIDSTM_BRANCH + '''/buildWithParameters?\
 token=CI_BUILD&cause=build+crwctl+for+operator+sync+from+${BUILD_TAG}&versionSuffix=CI"
   done
 fi
