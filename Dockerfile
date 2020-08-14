@@ -16,7 +16,7 @@ FROM quay.io/operator-framework/upstream-registry-builder:latest as builder
 ADD controller-manifests manifests/
 RUN ./bin/initializer --permissive true -o ./bundles.db
 
-FROM registry.access.redhat.com/ubi8/ubi:latest
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
     COMPANY="IBM" \
@@ -25,7 +25,9 @@ ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
     SUMMARY="IBM Wazi for CodeReady Workspaces Development Client" \
     DESCRIPTION="IBM Wazi for CodeReady Workspaces Development Client - CodeReady Operator Catalog"
 
-RUN yum update -y libnghttp2 && \
+RUN microdnf list all && \
+    microdnf update -y && \
+    microdnf clean all && \
     mkdir /registry
     
 WORKDIR /registry
