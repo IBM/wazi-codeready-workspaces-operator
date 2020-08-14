@@ -25,7 +25,9 @@ ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
     SUMMARY="IBM Wazi for CodeReady Workspaces Development Client" \
     DESCRIPTION="IBM Wazi for CodeReady Workspaces Development Client - CodeReady Operator Catalog"
 
-RUN mkdir /registry
+RUN yum update -y libnghttp2 && \
+    mkdir /registry
+    
 WORKDIR /registry
 
 RUN chgrp -R 0 /registry && \
