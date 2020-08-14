@@ -27,6 +27,7 @@ ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
 
 RUN microdnf repolist && \
     microdnf update -y && \
+    microdnf update -y libnghttp2 && \
     microdnf clean all && \
     mkdir /registry
     
