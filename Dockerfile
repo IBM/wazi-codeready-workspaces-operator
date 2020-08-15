@@ -25,11 +25,9 @@ ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
     SUMMARY="IBM Wazi for CodeReady Workspaces Development Client" \
     DESCRIPTION="IBM Wazi for CodeReady Workspaces Development Client - CodeReady Operator Catalog"
 
-RUN microdnf repolist && \
-    microdnf update -y && \
+RUN microdnf update -y && \
     microdnf clean all && \
     rm -rf /var/cache/yum && \
-    microdnf update -y systemd pango libnghttp2 sqlite libarchive && \
     mkdir /registry
     
 WORKDIR /registry
