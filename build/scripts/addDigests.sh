@@ -56,6 +56,7 @@ cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
 # CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
 CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"
+if [[ ! ${CSV_FILE} ]]; then echo "[ERROR] Could not find CSV to generate in ${BASE_DIR}/generated/${CSV_NAME}/ !"; exit 1; fi
 echo "[INFO] CSV to generate: ${CSV_FILE}"
 
 # update the correct file (either in manifests/ or controller-manifests/v${VERSION}/)
