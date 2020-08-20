@@ -16,14 +16,16 @@ set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
-CSV_VERSION=2.3.0
+CSV_VERSION=2.4.0
 CRW_TAG=${CSV_VERSION%.*}
-CSV_VERSION_PREV=2.2.0
+CSV_VERSION_PREV=2.3.0
+MIDSTM_BRANCH=crw-2.4-rhel-8
 
 usage () {
-	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version]"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1595010735"
-	echo "Example: $0 -v 2.3.0 -p 2.2.0 -s ${HOME}/che-operator -t `pwd` [if no che.version, use value in codeready-workspaces/master/pom.xml]"
+	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version] [--crw-branch crw-repo-branch]"
+	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1595010735"
+	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --crw-branch ${MIDSTM_BRANCH}"
+	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
 }
 
 if [[ $# -lt 8 ]]; then usage; exit; fi
@@ -31,6 +33,7 @@ if [[ $# -lt 8 ]]; then usage; exit; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--che') CHE_VERSION="$2"; shift 1;;
+    '--crw-branch') MIDSTM_BRANCH="$2"; shift 1;; # branch of redhat-developer/codeready-workspaces/pom.xml to check as default CHE_VERSION
 	# for CSV_VERSION = 2.2.0, get CRW_TAG = 2.2
 	'-v') CSV_VERSION="$2"; CRW_TAG="${CSV_VERSION%.*}"; shift 1;;
 	# previous version to set in CSV
@@ -47,7 +50,7 @@ done
 
 # get che version from crw server root pom, eg., 7.14.3
 if [[ ! ${CHE_VERSION} ]]; then
-  CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#" || exit 1)"
+	CHE_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#" || exit 1)"
 fi
 
 pushd "${SOURCEDIR}" >/dev/null || exit
