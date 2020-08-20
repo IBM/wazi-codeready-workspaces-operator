@@ -54,7 +54,8 @@ rm -Rf ${BASE_DIR}/generated/${CSV_NAME}/
 mkdir -p ${BASE_DIR}/generated/${CSV_NAME}/
 cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
-CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
+# CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/*${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
+CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"
 echo "[INFO] CSV to generate: ${CSV_FILE}"
 
 # update the correct file (either in manifests/ or controller-manifests/v${VERSION}/)
