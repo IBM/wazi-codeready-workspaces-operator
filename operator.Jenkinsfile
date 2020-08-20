@@ -153,33 +153,6 @@ for d in ''' + SYNC_FILES_MID2DWN + '''; do
 done
 
 '''
-          // OLD way
-      	  // def CRW_OPERATOR_IMAGE = "registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest"
-          // // relative to $WORKSPACE
-          // def files = findFiles(glob: 'targetdwn/deploy/**/*')
-          // files.each {
-          //       println it.path
-          //       // global string replacements in deploy scripts
-          //       writeFile file: it.path, text: readFile(it.path)
-          //           .replaceAll('quay.io/eclipse/che-operator:nightly', CRW_OPERATOR_IMAGE)
-          //           .replaceAll('che/operator', 'codeready/operator')
-          //           .replaceAll('che-operator', 'codeready-operator')
-          //           .replaceAll('name: eclipse-che', 'name: codeready-workspaces')
-          //           .replaceAll("cheImageTag: 'nightly'", "cheImageTag: ''")
-          //           .replaceAll('/bin/codeready-operator', '/bin/che-operator')
-          // }
-
-          //     // replacements in deploy/crds/org_v1_che_cr.yaml
-          //     def cryaml = "targetdwn/deploy/crds/org_v1_che_cr.yaml"
-          //     println cryaml
-          //     writeFile file: cryaml, text: readFile(cryaml)
-          //       .replaceAll("cheFlavor: ''", "cheFlavor: 'codeready'")
-          //       .replaceAll("tlsSupport: .+", "tlsSupport: true")
-          //       .replaceAll("devfileRegistryImage: 'quay.io/eclipse/.+'", "devfileRegistryImage: ''")
-          //       .replaceAll("pluginRegistryImage: 'quay.io/eclipse/.+'", "pluginRegistryImage: ''")
-          //       .replaceAll("identityProviderImage: 'quay.io/eclipse/.+'", "identityProviderImage: ''")
-          //       .replaceAll("identityProviderAdminUserName: ''", "identityProviderAdminUserName: 'admin'")
-
           // NEW way - requires yq
           sh BOOTSTRAP + '''
           sudo /usr/bin/python3 -m pip install --upgrade pip; sudo /usr/bin/python3 -m pip install yq
