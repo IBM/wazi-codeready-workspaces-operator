@@ -289,7 +289,7 @@ cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=''' + CRW_VERSION + '''&\
+JOB_BRANCH=${CRW_VERSION}&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
 
