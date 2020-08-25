@@ -16,26 +16,29 @@ set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
-CSV_VERSION=2.3.0
-CRW_TAG=${CSV_VERSION%.*}
+CSV_VERSION=2.y.0
+CRW_VERSION=${CSV_VERSION%.*}
 
 # TODO handle cmdline input
 usage () {
 	echo "Usage:   $0 -v [CRW CSV_VERSION] -t [/path/to/generated]"
-	echo "Example: $0 -v 2.3.0 -t `pwd`"
+	echo "Example: $0 -v 2.y.0 -t `pwd`"
+  exit
 }
 
-if [[ $# -lt 4 ]]; then usage; exit; fi
+if [[ $# -lt 4 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	# for CSV_VERSION = 2.2.0, get CRW_TAG = 2.2
-	'-v') CSV_VERSION="$2"; CRW_TAG="${CSV_VERSION%.*}"; shift 1;;
+	# for CSV_VERSION = 2.y.0, get CRW_VERSION = 2.y
+	'-v') CSV_VERSION="$2"; CRW_VERSION="${CSV_VERSION%.*}"; shift 1;;
 	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
-	'--help'|'-h') usage; exit;;
+	'--help'|'-h') usage;;
   esac
   shift 1
 done
+
+if [ "${CSV_VERSION}" == "2.y.0" ]; then usage; fi
 
 CONTAINERS=""
 tmpdir=$(mktemp -d); mkdir -p $tmpdir; pushd $tmpdir >/dev/null
@@ -44,13 +47,13 @@ tmpdir=$(mktemp -d); mkdir -p $tmpdir; pushd $tmpdir >/dev/null
     # run cd .../dependencies/che-devfile-registry/; ./build/scripts/list_referenced_images.sh devfiles/
     # run cd .../dependencies/che-plugin-registry/; ./build/scripts/list_referenced_images.sh v3/ | grep 2.3
     CONTAINERS="${CONTAINERS} $(cd crw/dependencies/che-devfile-registry; ./build/scripts/list_referenced_images.sh devfiles/)"
-    CONTAINERS="${CONTAINERS} $(cd crw/dependencies/che-plugin-registry; ./build/scripts/list_referenced_images.sh v3/ | grep ${CRW_TAG})"
+    CONTAINERS="${CONTAINERS} $(cd crw/dependencies/che-plugin-registry; ./build/scripts/list_referenced_images.sh v3/ | grep ${CRW_VERSION})"
 popd >/dev/null
 rm -fr $tmpdir
 
 # TODO: preload container list with the operator since no one else refers to it ? Does it need to be the published version or the OSBS internal one?
-# CONTAINERS_UNIQ=("registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_TAG}") # or
-# CONTAINERS_UNIQ=("registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:${CRW_TAG}")
+# CONTAINERS_UNIQ=("registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_VERSION}") # or
+# CONTAINERS_UNIQ=("registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:${CRW_VERSION}")
 
 # add unique containers to array, then sort
 CONTAINERS_UNIQ=()

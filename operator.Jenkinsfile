@@ -159,7 +159,7 @@ done
           jq --version
           yq --version
           CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-            sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
+            sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
           ${WORKSPACE}/targetdwn/build/scripts/sync-che-operator-to-crw-operator.sh -v ${CSV_VERSION} -s ${WORKSPACE}/sources/ -t ${WORKSPACE}/targetdwn/
           '''
 

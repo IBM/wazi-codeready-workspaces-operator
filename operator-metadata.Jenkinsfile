@@ -143,7 +143,7 @@ done
 
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
+  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
 CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
 if [[ ! ${CSV_FILE} ]]; then 
   # CRW-878 generate CSV and update CRD from upstream
@@ -175,7 +175,7 @@ cd ..
 
           sh BOOTSTRAP + '''
 # rsync files in github midstream to dist-git downstream
-# TODO CRW 2.3 / OCP 4.6 switch to use manifests metadata folders
+# TODO CRW 2.4 / OCP 4.6 switch to use manifests metadata folders
 for d in ''' + SYNC_FILES_MID2DWN + '''; do
   if [[ -f ${WORKSPACE}/targetmid/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/targetmid/${d} ${WORKSPACE}/targetdwn/${d}
@@ -200,7 +200,7 @@ sed -i ${WORKSPACE}/targetdwn/Dockerfile \
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.3.0 but not 2.3.0.GA
+  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
 CSV_FILE="\$(find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
@@ -271,7 +271,7 @@ fi
 cd ..
 
 # NOTE: this image needs to build in Brew (CRW <=2.3), then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
-# For CRW 2.4, don't rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
+# For CRW 2.4, do not rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
 # https://gitlab.cee.redhat.com/codeready-workspaces/knowledge-base/-/blob/master/installStagingCRW.md#create-imagecontentsourcepolicy
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
