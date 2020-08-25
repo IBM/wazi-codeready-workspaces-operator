@@ -4,7 +4,9 @@
 packageName: codeready-workspaces
 channels:
 - name: latest
-  currentCSV: crwoperator.v2.3.0
+  currentCSV: crwoperator.v2.4.0
+- name: ocp43
+  currentCSV: crwoperator.v2.2.0
 - name: previous
   currentCSV: crwoperator.v1.2.2
 defaultChannel: latest
