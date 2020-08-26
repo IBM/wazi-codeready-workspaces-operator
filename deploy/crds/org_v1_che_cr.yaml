@@ -54,7 +54,7 @@ spec:
     identityProviderPassword: admin
     identityProviderRealm: ''
     identityProviderClientId: ''
-    openShiftoAuth: false
+    openShiftoAuth: true
     oAuthClientName: ''
     oAuthSecret: ''
     identityProviderImage: ''
