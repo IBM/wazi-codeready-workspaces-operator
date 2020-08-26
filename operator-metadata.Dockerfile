@@ -13,14 +13,8 @@
 # https://docs.engineering.redhat.com/display/CFC/Migration
 FROM scratch
 
-# not applicable to Che, only needed for CRW
 # TODO CRW-1044 switch to manifests folder for bundle format
 COPY controller-manifests /manifests/
 COPY metadata/annotations.yaml /metadata/annotations.yaml
-
-# support use of openJ9 images for Z and P? 
-# might not be possible - see https://docs.engineering.redhat.com/display/CFC/Digest_Pinning - "OSBS does not support pinning to platform-specific digests"
-# COPY ./build/scripts/swap_images.sh /tmp
-# RUN if [[ "$(uname -m)" != "x86_64" ]] ; then /tmp/swap_images.sh /manifests/codeready-workspaces.csv.yaml; fi; rm -fr /tmp/swap_images.sh
 
 # append Brew metadata here (it will be appended via https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Jenkinsfile)
