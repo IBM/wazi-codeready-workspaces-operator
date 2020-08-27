@@ -23,7 +23,7 @@ MIDSTM_BRANCH=crw-2.4-rhel-8
 
 usage () {
 	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version] [--crw-branch crw-repo-branch]"
-	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1595010735"
+	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1597916268"
 	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --crw-branch ${MIDSTM_BRANCH}"
 	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
 	exit
