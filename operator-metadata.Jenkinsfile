@@ -144,20 +144,20 @@ done
 CSV_NAME="codeready-workspaces"
 CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
   sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
-CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; # echo "[INFO] CSV = ${CSV_FILE}"
-if [[ ! ${CSV_FILE} ]]; then 
-  # CRW-878 generate CSV and update CRD from upstream
-  cd ${WORKSPACE}/targetmid/build/scripts
-  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
-  cd ${WORKSPACE}/targetmid/
-  # if anything has changed other than the createdAt date, then we commit this
-  if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
-    git add manifests/ build/scripts/
-    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ build/scripts/
-    git push origin ''' + MIDSTM_BRANCH + '''
-  else # no need to push this so revert
-    git checkout manifests/ build/scripts/
-  fi
+CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; 
+echo "[INFO] CSV_FILE = ${CSV_FILE}"
+# CRW-878 generate CSV and update CRD from upstream
+cd ${WORKSPACE}/targetmid/build/scripts
+./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
+cd ${WORKSPACE}/targetmid/
+# if anything has changed other than the createdAt date, then we commit this
+if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
+  git add manifests/ build/scripts/ || true
+  git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ controller-manifests/ build/scripts/ || true
+  git push origin ''' + MIDSTM_BRANCH + ''' || true
+else # no need to push this so revert
+  echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
+  git checkout manifests/ build/scripts/
 fi
 
 cd ${WORKSPACE}/targetmid
