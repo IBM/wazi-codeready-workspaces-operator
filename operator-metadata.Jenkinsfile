@@ -218,7 +218,7 @@ pushd ${WORKSPACE}/targetdwn >/dev/null
 # ./build/scripts/addDigests.sh -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION}
 
 # TODO CRW-1044 merge in upstream digests scripts here? or just enable downstream pinning
-# ./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
+./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
 popd >/dev/null
 
 # 3. revert to OSBS image refs, since digest pinning will automatically switch them to RHCC values
