@@ -18,7 +18,7 @@ SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 # defaults
 CSV_VERSION=2.y.0 # csv 2.y.0
 CRW_VERSION=${CSV_VERSION%.*} # tag 2.y
-CSV_VERSION_PREV=2.y-1.0
+CSV_VERSION_PREV=2.x.0
 MIDSTM_BRANCH=crw-2.4-rhel-8
 
 usage () {
@@ -51,7 +51,7 @@ done
 
 # if current CSV and previous CVS version not set, die
 if [ "${CSV_VERSION}" == "2.y.0" ]; then usage; fi
-if [[ "${CSV_VERSION_PREV}" == "2.y-1.0" ]]; then usage; fi
+if [[ "${CSV_VERSION_PREV}" == "2.x.0" ]]; then usage; fi
 
 # get che version from crw server root pom, eg., 7.14.3
 if [[ ! ${CHE_VERSION} ]]; then
@@ -78,6 +78,15 @@ for CRDFILE in \
 	"${TARGETDIR}/deploy/crds/org_v1_che_crd.yaml"; do
 	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
 done
+
+insertEnvVar()
+{
+  echo " - $updateName = $updateVal"
+  cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+    '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
+    > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
+
+}
 
 ICON="$(cat "${SCRIPTS_DIR}/sync-che-olm-to-crw-olm.icon.txt")"
 for CSVFILE in \
@@ -169,6 +178,18 @@ for CSVFILE in \
  		changed="$(cat "${CSVFILE}" | yq  -Y --arg updateName "${updateName}" --arg updateVal "${operator_replacements[$updateName]}" \
 		 	'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]')" && \
  		echo "${changed}" > "${CSVFILE}"
+	done
+
+	# insert keycloak image references for s390x and ppc64le
+	SSO_IMAGE=$(cat "${CSVFILE}" | \
+yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[].spec.template.spec.containers[].env? | .[] | select(.name == $updateName) | .value')
+	declare -A operator_insertions=(
+		["RELATED_IMAGE_keycloak_s390x"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
+		["RELATED_IMAGE_keycloak_ppc64le"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
+	)
+	for updateName in "${!operator_insertions[@]}"; do
+		updateVal="${operator_insertions[$updateName]}"
+		insertEnvVar
 	done
 
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries

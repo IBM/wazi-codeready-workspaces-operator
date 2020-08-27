@@ -64,7 +64,7 @@ CRW_BROKER_ARTIFACTS_IMAGE="${CRW_RRIO}/pluginbroker-artifacts-rhel8:${CRW_VERSI
 CRW_JWTPROXY_IMAGE="${CRW_RRIO}/jwtproxy-rhel8:${CRW_VERSION}"
 UBI_IMAGE="registry.access.redhat.com/ubi8-minimal:${UBI_TAG}"
 POSTGRES_IMAGE="registry.redhat.io/rhel8/postgresql-96:${POSTGRES_TAG}"
-SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}"
+SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8 too
 
 # global / generic changes
 pushd "${SOURCEDIR}" >/dev/null
@@ -119,7 +119,6 @@ pushd "${SOURCEDIR}" >/dev/null
 		fi
 	done <   <(find pkg/deploy -type f -name "defaults_test.go" -print0)
 
-
 	# yq changes - transform env vars from Che to CRW values
 
 	# header to reattach to yaml files after yq transform removes it
@@ -160,7 +159,23 @@ yq  -y 'del(.spec.template.spec.containers[0].env[] | select(.name == "RELATED_I
 			echo "${COPYRIGHT}${changed}" > "${TARGETDIR}/${d}"
 		done
 		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
-			echo "Converted (yq) ${d}"
+			echo "Converted (yq #1) ${d}"
+		fi
+	done <   <(find deploy -type f -name "operator*.yaml" -print0)
+
+	declare -A operator_insertions=(
+		["RELATED_IMAGE_keycloak_s390x"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
+		["RELATED_IMAGE_keycloak_ppc64le"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
+	)
+	while IFS= read -r -d '' d; do
+		for updateName in "${!operator_insertions[@]}"; do
+			changed="$(cat "${TARGETDIR}/${d}" | \
+yq -y --arg updateName "${updateName}" --arg updateVal "${operator_insertions[$updateName]}" \
+'.spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]')" && \
+			echo "${COPYRIGHT}${changed}" > "${TARGETDIR}/${d}"
+		done
+		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
+			echo "Converted (yq #2) ${d}"
 		fi
 	done <   <(find deploy -type f -name "operator*.yaml" -print0)
 
@@ -174,7 +189,7 @@ yq  -y '.spec.auth.identityProviderAdminUserName="admin"|.spec.auth.identityProv
 yq  -y 'del(.spec.k8s)')" && \
 		echo "${COPYRIGHT}${changed}" > "${TARGETDIR}/${d}"
 		if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
-			echo "Converted (yq) ${d}"
+			echo "Converted (yq #3) ${d}"
 		fi
 	done <   <(find deploy/crds -type f -name "org_v1_che_cr.yaml" -print0)
 
