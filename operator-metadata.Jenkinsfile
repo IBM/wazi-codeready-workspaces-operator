@@ -146,19 +146,21 @@ CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/c
   sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
 CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; 
 echo "[INFO] CSV_FILE = ${CSV_FILE}"
-# CRW-878 generate CSV and update CRD from upstream
-cd ${WORKSPACE}/targetmid/build/scripts
-./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
-cd ${WORKSPACE}/targetmid/
-# if anything has changed other than the createdAt date, then we commit this
-if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
-  git add manifests/ build/scripts/ || true
-  git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ controller-manifests/ build/scripts/ || true
-  git push origin ''' + MIDSTM_BRANCH + ''' || true
-else # no need to push this so revert
-  echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
-  git checkout manifests/ build/scripts/
-fi
+# if [[ ! ${CSV_FILE} ]]; then 
+  # CRW-878 generate CSV and update CRD from upstream
+  cd ${WORKSPACE}/targetmid/build/scripts
+  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
+  cd ${WORKSPACE}/targetmid/
+  # if anything has changed other than the createdAt date, then we commit this
+  if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
+    git add manifests/ build/scripts/
+    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ controller-manifests/ build/scripts/
+    git push origin ''' + MIDSTM_BRANCH + '''
+  else # no need to push this so revert
+    echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
+    git checkout manifests/ build/scripts/
+  fi
+# fi
 
 cd ${WORKSPACE}/targetmid
 /tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} -maxdepth 1 || true
@@ -207,7 +209,7 @@ sed -r \
     -e "s|registry.redhat.io/codeready-workspaces/(pluginregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
     -e "s|registry.redhat.io/codeready-workspaces/(devfileregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
     `# in all other cases (including operator) use published quay images to compute digests` \
-    -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g" \
+    `# do not use quay refs anymore -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g"` \
     -i "${CSV_FILE}"
 
 # 2. generate digests
@@ -215,10 +217,8 @@ pushd ${WORKSPACE}/targetdwn >/dev/null
 # TODO digest scripts from upstream do not work - https://github.com/eclipse/che/issues/17432
 # ./build/scripts/addDigests.sh -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION}
 
-# TODO make sure generated CSV is not mangled by yq
-
-# TODO CRW-1044 merge in upstream disgest scripts here
-./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
+# TODO CRW-1044 merge in upstream digests scripts here? or just enable downstream pinning
+# ./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
 popd >/dev/null
 
 # 3. revert to OSBS image refs, since digest pinning will automatically switch them to RHCC values
