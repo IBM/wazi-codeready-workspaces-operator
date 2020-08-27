@@ -59,4 +59,4 @@ spec:
     oAuthSecret: ''
     identityProviderImage: ''
   metrics:
-    enable: false
+    enable: true
