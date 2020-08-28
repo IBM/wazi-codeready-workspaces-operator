@@ -13,7 +13,8 @@
 # Builds an image that is used by the CatalogSource definition in OCP.
 
 FROM quay.io/operator-framework/upstream-registry-builder:latest as builder
-ADD controller-manifests manifests/
+COPY controller-manifests manifests/
+COPY metadata/annotations.yaml /metadata/annotations.yaml
 RUN ./bin/initializer --permissive true -o ./bundles.db
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest

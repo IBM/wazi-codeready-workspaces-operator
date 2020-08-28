@@ -13,8 +13,6 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
-  name: wazi-codeready-operator.v1.1.0
-  namespace: placeholder
   annotations:
     alm-examples: |-
       [
@@ -27,7 +25,7 @@ metadata:
           "spec": {
              "server": {
                 "cheImageTag": "",
-                "cheFlavor":"codeready",
+                "cheFlavor": "codeready",
                 "devfileRegistryImage": "",
                 "pluginRegistryImage": "",
                 "tlsSupport": false,
@@ -53,6 +51,9 @@ metadata:
                 "pvcStrategy": "per-workspace",
                 "pvcClaimSize": "1Gi",
                 "preCreateSubPaths": true
+             },
+             "metrics": {
+               "enable": true
              }
           }
         }
@@ -60,42 +61,46 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "true"
-    containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:56259f1d0159144dde4765c56209d799b2352054e2423a05d211f4743362edb9
-    createdAt: '2020-01-20T11:59:59+00:00'
-    description: Personal z/OS® cloud IDE for development and testing.
+    containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:aae42a2298875c4dc271ef846f38cf96bd2f8ead8403aed2832065ae2a505084
+    createdAt: "2020-08-17T14:55:32+00:00"
+    description: Personal z/OS cloud IDE for development and testing.
+    operatorframework.io/suggested-namespace: openshift-workspaces
+    operatorframework.io/cluster-monitoring: "true"
     repository: https://github.com/IBM/wazi-codeready-workspaces-operator
     support: IBM
+  name: wazi-codeready-operator.v1.1.0
+  namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-      - displayName: IBM Wazi Development Client
-        description: Personal z/OS® cloud IDE for development and testing.
+      - description: Personal z/OS cloud IDE for development and testing.
+        displayName: IBM Wazi Development Client
         kind: CheCluster
         name: checlusters.org.eclipse.che
         specDescriptors:
-          - description: IBM Wazi Development Client - OpenShift oAuth
+          - description: IBM Wazi Development Client - OpenShift Credentials
             displayName: OpenShift oAuth
             path: auth.openShiftoAuth
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-          - description: IBM Wazi Development Client - TLS Mode
+          - description: IBM Wazi Development Client - TLS Routes
             displayName: TLS Mode
             path: server.tlsSupport
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
-          - description: IBM Wazi Development Client - URL
+          - description: IBM Wazi Development Client - URL Route
             displayName: IBM Wazi Development Client URL
             path: cheURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: IBM Wazi Development Client - Admin Console
+          - description: IBM Wazi Development Client - SSO Admin Console Route
             displayName: IBM Wazi Development Client SSO Admin Console URL
             path: keycloakURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: IBM Wazi Development Client - Che Version
+          - description: IBM Wazi Development Client - Che Server Version
             displayName: Che Version
             path: cheVersion
             x-descriptors:
@@ -121,40 +126,39 @@ spec:
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
         version: v1
-  displayName: IBM Wazi Development Client
   description: |
-    IBM&reg; Wazi for Red Hat&reg; CodeReady Workspaces (IBM&reg; Wazi Development Client), delivers cloud-native developer experience, enabling development and testing of IBM z/OS application components in containerized, z/OS sandbox environment on Red Hat OpenShift Container Platform running on x86 hardware, and providing capability to deploy applications into production on native z/OS running on IBM Z hardware. IBM&reg; Wazi Development Client is a development environment that provides an in-browser IDE with a single-click developer workspace with the capabilities to code, edit, build, and debug.  
+    IBM&reg; Wazi for Red Hat&reg; CodeReady Workspaces (IBM Wazi Development Client), delivers cloud-native developer experience, enabling development and testing of IBM z/OS application components in containerized, z/OS sandbox environment on Red Hat OpenShift Container Platform running on x86 hardware, and providing capability to deploy applications into production on native z/OS running on IBM Z hardware. IBM Wazi Development Client is a development environment that provides an in-browser IDE with a single-click developer workspace with the capabilities to code, edit, build, and debug.  
       
-    IBM&reg; Wazi Development Client is built on the Red Hat&reg; CodeReady Workspaces project. The core functionality for Red Hat&reg; CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Development Client uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z&reg; platform.  
+    IBM Wazi Development Client is built on the Red Hat CodeReady Workspaces project. The core functionality for Red Hat CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Development Client uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z platform.  
       
-    IBM&reg; Wazi Development Client provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe&trade; and Red Hat CodeReady Workspaces, IBM&reg; Wazi Development Client offers an easy, streamlined on-boarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM&reg; Wazi Development Client brings the necessary technology to the task at hand.
+    IBM Wazi Development Client provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe&trade; and Red Hat CodeReady Workspaces, IBM Wazi Development Client offers an easy, streamlined on-boarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Development Client brings the necessary technology to the task at hand.
 
     ## Features
 
-    IBM&reg; Wazi Development Client provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
+    IBM Wazi Development Client provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
 
-    - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I that provide language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM&reg; Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
+    - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I that provide language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
     - Source code management (SCM) integration to enable integration with any flavor of Git, a popular and modern parallel development SCM
     - Intelligent build capability that enables developers to perform a user build with IBM Dependency Based Build for any flavor of Git
-    - Integrations that enable developers to work with z/OS resources such as MVS&trade; and UNIX&reg; files and JES jobs
+    - Integrations that enable developers to work with z/OS resources such as MVS&trade; and UNIX files and JES jobs
     - Connectivity to Z host using [Zowe&trade; Explorer](https://marketplace.visualstudio.com/items?itemName=Zowe.vscode-extension-for-zowe)
-    - Running user builds using [IBM&reg; Z User Build](https://www.ibm.com/support/knowledgecenter/SSCH39_1.0.0/com.ibm.wazi.development.client.doc/user_build_setup_run.html)
-    - Interacting with the [IBM&reg; Remote System Explorer API](https://ibm.github.io/zopeneditor-about/Docs/interact_zos_overview.html)
-    - Mainframe Development package with custom plugin and devfile registry support using the [IBM&reg; Wazi Development Client stack](https://github.com/IBM/wazi-codeready-workspaces)
+    - Running user builds using [IBM Z User Build](https://www.ibm.com/support/knowledgecenter/SSCH39_1.0.0/com.ibm.wazi.development.client.doc/user_build_setup_run.html)
+    - Interacting with the [IBM Remote System Explorer API](https://ibm.github.io/zopeneditor-about/Docs/interact_zos_overview.html)
+    - Mainframe Development package with custom plugin and devfile registry support using the [IBM Wazi Development Client stack](https://github.com/IBM/wazi-codeready-workspaces)
       
-    Read our official documentation on the [IBM&reg; Knowledge Center](http://ibm.biz/ibmwazidoc) to learn more about IBM&reg; Wazi Development Client. 
+    Read our official documentation on the [IBM Knowledge Center](http://ibm.biz/ibmwazidoc) to learn more about IBM Wazi Development Client. 
 
     ## Installing
     Press the **Install** button, select the namespace, choose the update strategy, click the Subscribe button, and wait for the **Succeeded** Operator status.
 
-    When the operator is installed, create a new instance of the IBM&reg; Wazi Development Client (click the **Create Instance** button).  
+    When the operator is installed, create a new instance of the IBM Wazi Development Client (click the **Create Instance** button).  
 
-    IBM&reg; Wazi Development Client spec contains all defaults (see below).
+    IBM Wazi Development Client spec contains all defaults (see below).
 
-    You can start using the IBM&reg; Wazi Development Client when the status is set to **Available**, and you see a URL.
+    You can start using the IBM Wazi Development Client when the status is set to **Available**, and you see a URL.
 
     ### Defaults
-    By default, the operator deploys the IBM&reg; Wazi Development Client with:
+    By default, the operator deploys the IBM Wazi Development Client with:
 
     - Bundled PostgreSQL and Red Hat SSO
     - Per-Workspace PVC strategy
@@ -163,7 +167,7 @@ spec:
     - Built-in authentication ([RH-SSO](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.1/html/administration_guide/managing-users_crw#configuring-authorization_crw))
 
     ### Installation Options
-    IBM&reg; Wazi Development Client operator installation options include:
+    IBM Wazi Development Client operator installation options include:
 
     - PVC strategy (per-workspace, common, unique)
     - External Database and Red Hat SSO
@@ -178,7 +182,7 @@ spec:
 
     To instruct the operator to skip deploying PostgreSQL and Red Hat SSO and connect to an existing DB and Red Hat SSO instead:
 
-    - set respective fields to `true` in the spec when creating an instance of the IBM&reg; Wazi Development Client
+    - set respective fields to `true` in the spec when creating an instance of the IBM Wazi Development Client
     - provide the operator with connection and authentication details:
       
       `externalDb: true`
@@ -203,7 +207,7 @@ spec:
 
     #### Self Signed Certificate and TLS Support
 
-    To use IBM&reg; Wazi Development Client with TLS enabled, an OpenShift router must use a signed certificate. A certificate signed by a public authority can automatically be fetched, however when the certificate is self-signed further configuration is required.
+    To use IBM Wazi Development Client with TLS enabled, an OpenShift router must use a signed certificate. A certificate signed by a public authority can automatically be fetched, however when the certificate is self-signed further configuration is required.
     If using a self-signed certificate generated by the operator set the respective field to `true` (in the `server` block):
       
     ```
@@ -224,37 +228,15 @@ spec:
 
     #### Authentication Support
 
-    [OpenShift&reg; OAuth](https://docs.openshift.com/container-platform/4.4/authentication/understanding-authentication.html) authentication support requires oAuth to be configured in the cluster. To enable OpenShift&reg; OAuth authentication set the respective field in the spec to `true` (in the `server` block):
+    [OpenShift&reg; OAuth](https://docs.openshift.com/container-platform/4.4/authentication/understanding-authentication.html) authentication support requires oAuth to be configured in the cluster. To enable OpenShift OAuth authentication set the respective field in the spec to `true` (in the `server` block):
 
     ```
     openShiftoAuth: true
     ```
-  keywords:
-    - workspaces
-    - devtools
-    - developer
-    - ide
-    - java
-  maintainers:
-    - name: IBM
-  provider:
-    name: IBM
-  labels:
-    name: wazi-codeready-operator
-    version: 1.1.0
-  version: 1.1.0
-  replaces: wazi-codeready-operator.v1.0.0
-  links:
-    - name: Product Page
-      url: https://www.ibm.com/products/wazi-for-red-hat-codeready-workspaces
-    - name: Documentation
-      url: http://ibm.biz/ibmwazidoc
-    - name: Support
-      url: https://github.com/IBM/wazi-codeready-workspaces/issues
+  displayName: IBM Wazi Development Client
   icon:
     - base64data: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDojZmZmO30uY2xzLTJ7ZmlsbDp1cmwoI2xpbmVhci1ncmFkaWVudCk7fS5jbHMtM3tmaWxsOiMwNjFmODA7fS5jbHMtNHttYXNrOnVybCgjbWFzayk7fS5jbHMtNXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50LTIpO308L3N0eWxlPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iLTMyLjg5IiB5MT0iMi4xNyIgeDI9Ii0yOS4wMiIgeTI9IjQuNCIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjUsIDEuNTYsIC0wLjg3LCAwLjksIDMxLjA5LCA3My45OCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMC45Ii8+PC9saW5lYXJHcmFkaWVudD48bWFzayBpZD0ibWFzayIgeD0iMCIgeT0iMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yOSwxNUgyN1Y5LjU3TDE2LDMuMTYsMTMsNC45M1YxMkgxMVY0LjM1YTEsMSwwLDAsMSwuNDktLjg2bDQtMi4zNWExLDEsMCwwLDEsMSwwbDEyLDdBMSwxLDAsMCwxLDI5LDlaIi8+PHJlY3QgY2xhc3M9ImNscy0xIiB4PSI3IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE1LjUsMzAuODZsLTEyLTdBMSwxLDAsMCwxLDMsMjNWOUg1VjIyLjQzbDExLjUsNi43MVoiLz48cmVjdCBjbGFzcz0iY2xzLTIiIHg9IjExLjI1IiB5PSIyNC41IiB3aWR0aD0iMy4wNSIgaGVpZ2h0PSI4LjA2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTguMzIgMjUuMzMpIHJvdGF0ZSgtNjApIi8+PC9tYXNrPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50LTIiIHkxPSIzMiIgeDI9IjMyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwLjEiIHN0b3AtY29sb3I9IiNiOThjZmQiLz48c3RvcCBvZmZzZXQ9IjAuOSIgc3RvcC1jb2xvcj0iIzQxOGFmYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjx0aXRsZT5hcHAtaWNvbi1saWdodC08L3RpdGxlPjxnIGlkPSJNb2RpZmllciI+PHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjUuNTIsMjFoLS4zOGE0LjQyLDQuNDIsMCwwLDAtMS44Ny41Niw4LjQ2LDguNDYsMCwwLDAtMS4yMi44OEEyLjQ5LDIuNDksMCwxLDEsMjMsMjAuNXMwLC4wNywwLC4xMUE1LjMzLDUuMzMsMCwwLDEsMjUsMjBhNC40OSw0LjQ5LDAsMSwwLTQuNDUsNWguMTFMMjEsMjVhNS40OCw1LjQ4LDAsMCwwLDEuOTMtLjYzQTcuNDEsNy40MSwwLDAsMCwyNCwyMy40OXYwYTEuNjQsMS42NCwwLDAsMSwuMjYtLjJBMi40LDIuNCwwLDAsMSwyNS41LDIzLDIuNSwyLjUsMCwxLDEsMjMsMjUuNXYwYTQuNzgsNC43OCwwLDAsMS0xLjk1LjUxLDQuNDksNC40OSwwLDEsMCw0LjQ3LTVaIi8+PC9nPjxnIGlkPSJfMTVfZ3JpZCIgZGF0YS1uYW1lPSIxNcKwIGdyaWQiPjxnIGNsYXNzPSJjbHMtNCI+PHJlY3QgY2xhc3M9ImNscy01IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz48L2c+PC9nPjwvc3ZnPg==
       mediatype: image/svg+xml
-  maturity: stable
   install:
     spec:
       clusterPermissions:
@@ -276,8 +258,11 @@ spec:
               resources:
                 - infrastructures
                 - oauths
+                - proxies
               verbs:
                 - get
+                - list
+                - watch
             - apiGroups:
                 - user.openshift.io
               resources:
@@ -324,29 +309,29 @@ spec:
                       - name: OPERATOR_NAME
                         value: wazi-codeready-operator
                       - name: CHE_VERSION
-                        value: '2.2'
-                      - name: IMAGE_default_che_server
-                        value: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:3b21569f219e84019d0a8bf6c88f6cf7d710aee657bf14a686a3b15721c9764a
-                      - name: IMAGE_default_plugin_registry
+                        value: 2.3.0
+                      - name: RELATED_IMAGE_che_server
+                        value: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:d26410be1404842262a35de0709080349dce798a7fcdc08a33dbb0a5cd74d550
+                      - name: RELATED_IMAGE_plugin_registry
                         value: docker.io/ibmcom/wazi-code-plugin:latest
-                      - name: IMAGE_default_devfile_registry
+                      - name: RELATED_IMAGE_devfile_registry
                         value: docker.io/ibmcom/wazi-code-dev-file:latest
-                      - name: IMAGE_default_pvc_jobs
-                        value: registry.access.redhat.com/ubi8-minimal@sha256:d5fd7063f568804e3e0500badd1c6e5134d4f0b24b748d58dfbf43d95b896daf
-                      - name: IMAGE_default_postgres
-                        value: registry.redhat.io/rhel8/postgresql-96@sha256:ad64ed5f3683b84e1d289a0f3fd9e9a31bc3a38c8f32063ce3958aaee7e78b97
-                      - name: IMAGE_default_keycloak
-                        value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:36437d88558206f2e0ca99f2e8617fcf917112bef4b4d1732a35bd942edc3a22
-                      - name: IMAGE_default_che_workspace_plugin_broker_metadata
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:f383980f397a25b2044dfef1b1d58ee7c4675183f752b862c56478a5c5aeb754
-                      - name: IMAGE_default_che_workspace_plugin_broker_artifacts
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:c5197d4c43d3a99492d7bfa1ea97d5a1dc515fcf407a6e50d94115ba171c994f
-                      - name: IMAGE_default_che_server_secure_exposer_jwt_proxy_image
-                        value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:f65afa92c6067601c5e66408c4c5503c2d16d8bcb15e3e985fd9d9b7aee1c3d2
+                      - name: RELATED_IMAGE_pvc_jobs
+                        value: registry.access.redhat.com/ubi8-minimal@sha256:372622021a90893d9e25c298e045c804388c7666f3e756cd48f75d20172d9e55
+                      - name: RELATED_IMAGE_postgres
+                        value: registry.redhat.io/rhel8/postgresql-96@sha256:343c2d6b3f72ee48dc1e26352633fa7e8439b60282c3cd213761a289f0118639
+                      - name: RELATED_IMAGE_keycloak
+                        value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:649b5c92d25fbbf85bf3182ae7ac0488cdd8ccc4c5131b48eb26fa0451e0b61b
+                      - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
+                        value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:bb64697b628c4702ac6887e75378f7d37d6f01b22c07c427844f521410dc945c
+                      - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
+                        value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:19ee9a624f66127f224b8e74f5b8c7a9c70eec5d249346157323a59d2e23595a
+                      - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
+                        value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:4bd319a7069fb10a98545ac927b4b20efa6766b2d1c809447267b6668051a05f
                       - name: CHE_FLAVOR
                         value: codeready
                       - name: CONSOLE_LINK_NAME
-                        value: workspaces
+                        value: che
                       - name: CONSOLE_LINK_DISPLAY_NAME
                         value: CodeReady Workspaces
                       - name: CONSOLE_LINK_SECTION
@@ -359,7 +344,37 @@ spec:
                         value: che-identity-postgres-secret
                       - name: CHE_POSTGRES_SECRET
                         value: che-postgres-secret
-                    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:56259f1d0159144dde4765c56209d799b2352054e2423a05d211f4743362edb9
+                      - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
+                        value: ca-certs
+                      - name: RELATED_IMAGE_codeready_workspaces_machineexec
+                        value: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:3aff2947315ac256777fa1409b8f48c8080321d8e5c92167e242c6c72a741de0
+                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:cc6641ec663307133274080b6af1ea4e4cd01bb34a013cda5c42b3d4213a9c72
+                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:b6e36406e7f8ff86f462f370f55143446ceb0c555b86b13593436f5e71b7cab1
+                      - name: RELATED_IMAGE_codeready_workspaces_plugin_kubernetes
+                        value: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:686d407134b8815371e8b2fd82bb3aa5e55b177c9b7795a0e87b76657963cae8
+                      - name: RELATED_IMAGE_codeready_workspaces_plugin_openshift
+                        value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:b1653b065892cd043dda060f93b4ef3bbc546e93e4bd9487c84e0d21874d57df
+                      - name: RELATED_IMAGE_codeready_workspaces_stacks_cpp
+                        value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:a2faef0e9dad547af9b83167f449662b1e5cf5a715bfd5ae8eafaa3b5502fde9
+                      - name: RELATED_IMAGE_codeready_workspaces_stacks_dotnet
+                        value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:bba4ea84a89306cd056de4407300860514ce6a25d1577cd4933d61d709e1fed3
+                      - name: RELATED_IMAGE_codeready_workspaces_stacks_golang
+                        value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:2f32a9bc762d8e5a3045c8f3a2c0a6931340275f71377014c4da35c7f7681197
+                      - name: RELATED_IMAGE_codeready_workspaces_stacks_php
+                        value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:87064855b214db1ba2aeb0fab62b4477a8e639e51c0cac65f83a4ec5b15ae54c
+                      - name: RELATED_IMAGE_codeready_workspaces_theia_endpoint
+                        value: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:434278f521fceca36f651700a2138f3a6a8565d56651719a658c29481725ce5e
+                      - name: RELATED_IMAGE_codeready_workspaces_theia
+                        value: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:57b32e56adf4548e3da62ccc9028ab0a3ce2144d9276bb0e3fb8ed54d3f41bbb
+                      - name: RELATED_IMAGE_jboss_eap_7_eap73_openjdk8_openshift_rhel7
+                        value: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:24dea0cfc154a23c1aeb6b46ade182d0f981362f36b7e6fb9c7d8531ac639fe0
+                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp1_openjdk11_openshift
+                        value: registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8@sha256:94e1cd4eb4196a358e301c1992663258c0016c80247f507fd1c39cf9a73da833
+                      - name: RELATED_IMAGE_rhscl_mongodb_36_rhel7
+                        value: registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
+                    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:aae42a2298875c4dc271ef846f38cf96bd2f8ead8403aed2832065ae2a505084
                     imagePullPolicy: Always
                     name: wazi-codeready-operator
                     ports:
@@ -454,13 +469,33 @@ spec:
       type: MultiNamespace
     - supported: false
       type: AllNamespaces
+  keywords:
+    - workspaces
+    - devtools
+    - developer
+    - ide
+    - java
+  links:
+    - name: Product Page
+      url: https://www.ibm.com/products/wazi-for-red-hat-codeready-workspaces
+    - name: Documentation
+      url: https://www.ibm.com/support/knowledgecenter/SSCH39
+    - name: Support
+      url: https://github.com/IBM/wazi-codeready-workspaces/issues
+  maintainers:
+    - name: IBM
+  maturity: stable
+  provider:
+    name: IBM
+  replaces: wazi-codeready-operator.v1.0.0
+  version: 1.1.0
   relatedImages:
     - name: crw-2-rhel8-operator
-      image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:56259f1d0159144dde4765c56209d799b2352054e2423a05d211f4743362edb9
-      # tag: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.2
+      image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:aae42a2298875c4dc271ef846f38cf96bd2f8ead8403aed2832065ae2a505084
+      # tag: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.3
     - name: server-rhel8
-      image: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:3b21569f219e84019d0a8bf6c88f6cf7d710aee657bf14a686a3b15721c9764a
-      # tag: registry.redhat.io/codeready-workspaces/server-rhel8:2.2
+      image: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:d26410be1404842262a35de0709080349dce798a7fcdc08a33dbb0a5cd74d550
+      # tag: registry.redhat.io/codeready-workspaces/server-rhel8:2.3
     - name: wazi-code-plugin
       image: docker.io/ibmcom/wazi-code-plugin:latest
       # tag: docker.io/ibmcom/wazi-code-plugin:1.1.0
@@ -468,62 +503,62 @@ spec:
       image: docker.io/ibmcom/wazi-code-dev-file:latest
       # tag: docker.io/ibmcom/wazi-code-dev-file:1.1.0
     - name: ubi8-minimal
-      image: registry.access.redhat.com/ubi8-minimal@sha256:d5fd7063f568804e3e0500badd1c6e5134d4f0b24b748d58dfbf43d95b896daf
+      image: registry.access.redhat.com/ubi8-minimal@sha256:372622021a90893d9e25c298e045c804388c7666f3e756cd48f75d20172d9e55
       # tag: registry.access.redhat.com/ubi8-minimal:8.2
     - name: postgresql-96
-      image: registry.redhat.io/rhel8/postgresql-96@sha256:ad64ed5f3683b84e1d289a0f3fd9e9a31bc3a38c8f32063ce3958aaee7e78b97
+      image: registry.redhat.io/rhel8/postgresql-96@sha256:343c2d6b3f72ee48dc1e26352633fa7e8439b60282c3cd213761a289f0118639
       # tag: registry.redhat.io/rhel8/postgresql-96:1
     - name: sso74-openshift-rhel8
-      image: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:36437d88558206f2e0ca99f2e8617fcf917112bef4b4d1732a35bd942edc3a22
+      image: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:649b5c92d25fbbf85bf3182ae7ac0488cdd8ccc4c5131b48eb26fa0451e0b61b
       # tag: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4
     - name: pluginbroker-metadata-rhel8
-      image: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:f383980f397a25b2044dfef1b1d58ee7c4675183f752b862c56478a5c5aeb754
-      # tag: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.2
+      image: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:bb64697b628c4702ac6887e75378f7d37d6f01b22c07c427844f521410dc945c
+      # tag: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.3
     - name: pluginbroker-artifacts-rhel8
-      image: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:c5197d4c43d3a99492d7bfa1ea97d5a1dc515fcf407a6e50d94115ba171c994f
-      # tag: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.2
+      image: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:19ee9a624f66127f224b8e74f5b8c7a9c70eec5d249346157323a59d2e23595a
+      # tag: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.3
     - name: jwtproxy-rhel8
-      image: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:f65afa92c6067601c5e66408c4c5503c2d16d8bcb15e3e985fd9d9b7aee1c3d2
-      # tag: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.2
+      image: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:4bd319a7069fb10a98545ac927b4b20efa6766b2d1c809447267b6668051a05f
+      # tag: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.3
     - name: machineexec-rhel8
-      image: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:02689e6bf8b88138458243d2b6b264b9d41ea7259b7d3552020ff78b627c6679
-      # tag: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:02689e6bf8b88138458243d2b6b264b9d41ea7259b7d3552020ff78b627c6679
+      image: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:3aff2947315ac256777fa1409b8f48c8080321d8e5c92167e242c6c72a741de0
+      # tag: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.3
     - name: plugin-java11-rhel8
-      image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:8b6a89e4c7bb16d764767fc494a28735b0b9c05b50277e7f46fc55e0bcda8258
-      # tag: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:8b6a89e4c7bb16d764767fc494a28735b0b9c05b50277e7f46fc55e0bcda8258
+      image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:cc6641ec663307133274080b6af1ea4e4cd01bb34a013cda5c42b3d4213a9c72
+      # tag: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3
     - name: plugin-java8-rhel8
-      image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:663781fb227e06ec8f75ab7e26fcd80141ffcd093c56a35ed6c393845b36701a
-      # tag: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:663781fb227e06ec8f75ab7e26fcd80141ffcd093c56a35ed6c393845b36701a
+      image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:b6e36406e7f8ff86f462f370f55143446ceb0c555b86b13593436f5e71b7cab1
+      # tag: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3
     - name: plugin-kubernetes-rhel8
-      image: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:cffcbd65b4dc306158f8c294a764fe5b0e565d5bc3fcee2c794badb1cc7af034
-      # tag: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:cffcbd65b4dc306158f8c294a764fe5b0e565d5bc3fcee2c794badb1cc7af034
+      image: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:686d407134b8815371e8b2fd82bb3aa5e55b177c9b7795a0e87b76657963cae8
+      # tag: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.3
     - name: plugin-openshift-rhel8
-      image: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:9b99d38ad3774d1206ad775e499378f633e8e2c7137c0fce3af1fb36ea93556c
-      # tag: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:9b99d38ad3774d1206ad775e499378f633e8e2c7137c0fce3af1fb36ea93556c
+      image: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:b1653b065892cd043dda060f93b4ef3bbc546e93e4bd9487c84e0d21874d57df
+      # tag: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.3
     - name: stacks-cpp-rhel8
-      image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:5b24af4f3009f41d64385cd58bf8121c82d9d77bec8764b0b12c40ce3917af1a
-      # tag: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:5b24af4f3009f41d64385cd58bf8121c82d9d77bec8764b0b12c40ce3917af1a
+      image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:a2faef0e9dad547af9b83167f449662b1e5cf5a715bfd5ae8eafaa3b5502fde9
+      # tag: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.3
     - name: stacks-dotnet-rhel8
-      image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:a79239d2b02f32275a4622fe2b2ab13851b0ac2f2744afae583ef47b9a645df0
-      # tag: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:a79239d2b02f32275a4622fe2b2ab13851b0ac2f2744afae583ef47b9a645df0
+      image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:bba4ea84a89306cd056de4407300860514ce6a25d1577cd4933d61d709e1fed3
+      # tag: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.3
     - name: stacks-golang-rhel8
-      image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:fad33764563f831a1c787de62ad9e9ba0dd922479caed3364a487fae9352a08c
-      # tag: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:fad33764563f831a1c787de62ad9e9ba0dd922479caed3364a487fae9352a08c
-    - name: stacks-java-rhel8
-      image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8@sha256:573ca673f972ba6a73d21da03cef927f753604d7a4e452f44ea6ee76d9d03394
-      # tag: registry.redhat.io/codeready-workspaces/stacks-java-rhel8@sha256:573ca673f972ba6a73d21da03cef927f753604d7a4e452f44ea6ee76d9d03394
+      image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:2f32a9bc762d8e5a3045c8f3a2c0a6931340275f71377014c4da35c7f7681197
+      # tag: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.3
     - name: stacks-php-rhel8
-      image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:2f6b1f177a3d4163b28978dbc5bd9de5ce4614452ba67529d12a55e4ec7c56c5
-      # tag: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:2f6b1f177a3d4163b28978dbc5bd9de5ce4614452ba67529d12a55e4ec7c56c5
+      image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:87064855b214db1ba2aeb0fab62b4477a8e639e51c0cac65f83a4ec5b15ae54c
+      # tag: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.3
     - name: theia-endpoint-rhel8
-      image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:38ef6428c882032f3109d35f9b9e235cffa5e5e4febf575da1eb1392a831e276
-      # tag: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:38ef6428c882032f3109d35f9b9e235cffa5e5e4febf575da1eb1392a831e276
+      image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:434278f521fceca36f651700a2138f3a6a8565d56651719a658c29481725ce5e
+      # tag: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.3
     - name: theia-rhel8
-      image: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:b179f261278812cb565ee18b7249d04283aa30413f161ad12839df0b4f3babc3
-      # tag: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:b179f261278812cb565ee18b7249d04283aa30413f161ad12839df0b4f3babc3
+      image: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:57b32e56adf4548e3da62ccc9028ab0a3ce2144d9276bb0e3fb8ed54d3f41bbb
+      # tag: registry.redhat.io/codeready-workspaces/theia-rhel8:2.3
     - name: eap73-openjdk8-openshift-rhel7
-      image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:f355c9673c09f98c223e73c64ab424dc9f5f756fdeb74a4d33f387411fa27738
-      # tag: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:f355c9673c09f98c223e73c64ab424dc9f5f756fdeb74a4d33f387411fa27738
+      image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:24dea0cfc154a23c1aeb6b46ade182d0f981362f36b7e6fb9c7d8531ac639fe0
+      # tag: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.1
+    - name: eap-xp1-openjdk11-openshift-rhel8
+      image: registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8@sha256:94e1cd4eb4196a358e301c1992663258c0016c80247f507fd1c39cf9a73da833
+      # tag: registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8:1.0-3
     - name: mongodb-36-rhel7
       image: registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
-      # tag: registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
+      # tag: registry.redhat.io/rhscl/mongodb-36-rhel7:1-50
