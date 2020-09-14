@@ -224,7 +224,7 @@ spec:
 
     #### Authentication Support
 
-    [OpenShift&reg; OAuth](https://docs.openshift.com/container-platform/4.4/authentication/understanding-authentication.html) authentication support requires oAuth to be configured in the cluster. To enable OpenShift OAuth authentication set the respective field in the spec to `true` (in the `server` block):
+    [OpenShift OAuth](https://docs.openshift.com/container-platform/4.4/authentication/understanding-authentication.html) authentication support requires oAuth to be configured in the cluster. To enable OpenShift OAuth authentication set the respective field in the spec to `true` (in the `server` block):
 
     ```
     openShiftoAuth: true
