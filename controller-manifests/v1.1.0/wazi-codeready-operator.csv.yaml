@@ -28,8 +28,8 @@ metadata:
                 "cheFlavor": "codeready",
                 "devfileRegistryImage": "",
                 "pluginRegistryImage": "",
-                "tlsSupport": false,
-                "selfSignedCert": false
+                "tlsSupport": true,
+                "selfSignedCert": true
              },
              "database": {
                 "externalDb": false,
@@ -70,90 +70,91 @@ spec:
   customresourcedefinitions:
     owned:
       - description: Personal z/OS cloud IDE for development and testing.
-        displayName: IBM Wazi Development Client
+        displayName: IBM Wazi Developer for Workspaces
         kind: CheCluster
         name: checlusters.org.eclipse.che
         specDescriptors:
-          - description: IBM Wazi Development Client - OpenShift Credentials
+          - description: IBM Wazi Developer for Workspaces - OpenShift Credentials
             displayName: OpenShift oAuth
             path: auth.openShiftoAuth
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-          - description: IBM Wazi Development Client - TLS Routes
+          - description: IBM Wazi Developer for Workspaces - TLS Routes
             displayName: TLS Mode
             path: server.tlsSupport
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
-          - description: IBM Wazi Development Client - URL Route
-            displayName: IBM Wazi Development Client URL
+          - description: IBM Wazi Developer for Workspaces - URL Route
+            displayName: IBM Wazi Developer for Workspaces URL
             path: cheURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: IBM Wazi Development Client - SSO Admin Console Route
-            displayName: IBM Wazi Development Client SSO Admin Console URL
+          - description: IBM Wazi Developer for Workspaces - SSO Admin Console Route
+            displayName: IBM Wazi Developer for Workspaces SSO Admin Console URL
             path: keycloakURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: IBM Wazi Development Client - Che Server Version
+          - description: IBM Wazi Developer for Workspaces - Che Server Version
             displayName: Che Version
             path: cheVersion
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:label
-          - description: IBM Wazi Development Client - Status
+          - description: IBM Wazi Developer for Workspaces - Status
             displayName: Status
             path: cheClusterRunning
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: IBM Wazi Development Client - Reason
+          - description: IBM Wazi Developer for Workspaces - Reason
             displayName: Reason
             path: reason
             x-descriptors:
               - urn:alm:descriptor:text
-          - description: IBM Wazi Development Client - Message
+          - description: IBM Wazi Developer for Workspaces - Message
             displayName: Message
             path: message
             x-descriptors:
               - urn:alm:descriptor:text
-          - description: IBM Wazi Development Client - Help URL
+          - description: IBM Wazi Developer for Workspaces - Help URL
             displayName: Help URL
             path: helpLink
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
         version: v1
   description: |
-    IBM&reg; Wazi for Red Hat&reg; CodeReady Workspaces (IBM Wazi Development Client), delivers cloud-native developer experience, enabling development and testing of IBM z/OS application components in containerized, z/OS sandbox environment on Red Hat OpenShift Container Platform running on x86 hardware, and providing capability to deploy applications into production on native z/OS running on IBM Z hardware. IBM Wazi Development Client is a development environment that provides an in-browser IDE with a single-click developer workspace with the capabilities to code, edit, build, and debug.  
+    IBM Wazi Developer for Red Hat CodeReady Workspaces (IBM Wazi Developer for Workspaces), delivers cloud-native developer experience, enabling development and testing of IBM z/OS application components in containerized, z/OS sandbox environment on Red Hat OpenShift Container Platform running on x86 hardware, and providing capability to deploy applications into production on native z/OS running on IBM Z hardware. IBM Wazi Developer is a development environment that provides an in-browser IDE with a single-click developer workspace with the capabilities to code, edit, build, and debug.  
       
-    IBM Wazi Development Client is built on the Red Hat CodeReady Workspaces project. The core functionality for Red Hat CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Development Client uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z platform.  
+    IBM Wazi Developer for Workspaces is built on the Red Hat CodeReady Workspaces project. The core functionality for Red Hat CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Developer for Workspaces uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z platform.  
       
-    IBM Wazi Development Client provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe&trade; and Red Hat CodeReady Workspaces, IBM Wazi Development Client offers an easy, streamlined on-boarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Development Client brings the necessary technology to the task at hand.
+    IBM Wazi Developer for Workspaces provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe and Red Hat CodeReady Workspaces, IBM Wazi Developer for Workspaces offers an easy, streamlined on-boarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Developer for Workspaces brings the necessary technology to the task at hand.
 
     ## Features
 
-    IBM Wazi Development Client provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
+    IBM Wazi Developer for Workspaces provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
 
     - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I that provide language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
     - Source code management (SCM) integration to enable integration with any flavor of Git, a popular and modern parallel development SCM
     - Intelligent build capability that enables developers to perform a user build with IBM Dependency Based Build for any flavor of Git
-    - Integrations that enable developers to work with z/OS resources such as MVS&trade; and UNIX files and JES jobs
-    - Connectivity to Z host using [Zowe&trade; Explorer](https://marketplace.visualstudio.com/items?itemName=Zowe.vscode-extension-for-zowe)
+    - Integrations that enable developers to work with z/OS resources such as MVS and UNIX files and JES jobs
+    - Connectivity to Z host using [Zowe Explorer](https://marketplace.visualstudio.com/items?itemName=Zowe.vscode-extension-for-zowe)
     - Running user builds using [IBM Z User Build](https://www.ibm.com/support/knowledgecenter/SSCH39_1.0.0/com.ibm.wazi.development.client.doc/user_build_setup_run.html)
+    - Debugging COBOL and PL/I applications using [IBM Z Open Debug](https://developer.ibm.com/mainframe/2020/06/12/introducing-ibm-z-open-debug/)
     - Interacting with the [IBM Remote System Explorer API](https://ibm.github.io/zopeneditor-about/Docs/interact_zos_overview.html)
-    - Mainframe Development package with custom plugin and devfile registry support using the [IBM Wazi Development Client stack](https://github.com/IBM/wazi-codeready-workspaces)
+    - Mainframe Development package with custom plugin and devfile registry support using the [IBM Wazi Developer stack](https://github.com/IBM/wazi-codeready-workspaces)
       
-    Read our official documentation on the [IBM Knowledge Center](http://ibm.biz/ibmwazidoc) to learn more about IBM Wazi Development Client. 
+    Read our official documentation on the [IBM Knowledge Center](https://www.ibm.com/support/knowledgecenter/SSCH39) to learn more about IBM Wazi Developer. 
 
     ## Installing
     Press the **Install** button, select the namespace, choose the update strategy, click the Subscribe button, and wait for the **Succeeded** Operator status.
 
-    When the operator is installed, create a new instance of the IBM Wazi Development Client (click the **Create Instance** button).  
+    When the operator is installed, create a new instance of the IBM Wazi Developer for Workspaces (click the **Create Instance** button).  
 
-    IBM Wazi Development Client spec contains all defaults (see below).
+    IBM Wazi Developer for Workspaces spec contains all defaults (see below).
 
-    You can start using the IBM Wazi Development Client when the status is set to **Available**, and you see a URL.
+    You can start using the IBM Wazi Developer for Workspaces when the status is set to **Available**, and you see a URL.
 
     ### Defaults
-    By default, the operator deploys the IBM Wazi Development Client with:
+    By default, the operator deploys the IBM Wazi Developer for Workspaces with:
 
     - Bundled PostgreSQL and Red Hat SSO
     - Per-Workspace PVC strategy
@@ -162,7 +163,7 @@ spec:
     - Built-in authentication ([RH-SSO](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.1/html/administration_guide/managing-users_crw#configuring-authorization_crw))
 
     ### Installation Options
-    IBM Wazi Development Client operator installation options include:
+    IBM Wazi Developer operator installation options include:
 
     - PVC strategy (per-workspace, common, unique)
     - External Database and Red Hat SSO
@@ -177,7 +178,7 @@ spec:
 
     To instruct the operator to skip deploying PostgreSQL and Red Hat SSO and connect to an existing DB and Red Hat SSO instead:
 
-    - set respective fields to `true` in the spec when creating an instance of the IBM Wazi Development Client
+    - set respective fields to `true` in the spec when creating an instance of the IBM Wazi Developer for Workspaces
     - provide the operator with connection and authentication details:
       
       `externalDb: true`
@@ -202,7 +203,7 @@ spec:
 
     #### Self Signed Certificate and TLS Support
 
-    To use IBM Wazi Development Client with TLS enabled, an OpenShift router must use a signed certificate. A certificate signed by a public authority can automatically be fetched, however when the certificate is self-signed further configuration is required.
+    To use IBM Wazi Developer for Workspaces with TLS enabled, an OpenShift router must use a signed certificate. A certificate signed by a public authority can automatically be fetched, however when the certificate is self-signed further configuration is required.
     If using a self-signed certificate generated by the operator set the respective field to `true` (in the `server` block):
       
     ```
@@ -228,7 +229,7 @@ spec:
     ```
     openShiftoAuth: true
     ```
-  displayName: IBM Wazi Development Client
+  displayName: IBM Wazi Developer for Workspaces
   icon:
     - base64data: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDojZmZmO30uY2xzLTJ7ZmlsbDp1cmwoI2xpbmVhci1ncmFkaWVudCk7fS5jbHMtM3tmaWxsOiMwNjFmODA7fS5jbHMtNHttYXNrOnVybCgjbWFzayk7fS5jbHMtNXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50LTIpO308L3N0eWxlPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iLTMyLjg5IiB5MT0iMi4xNyIgeDI9Ii0yOS4wMiIgeTI9IjQuNCIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjUsIDEuNTYsIC0wLjg3LCAwLjksIDMxLjA5LCA3My45OCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMC45Ii8+PC9saW5lYXJHcmFkaWVudD48bWFzayBpZD0ibWFzayIgeD0iMCIgeT0iMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yOSwxNUgyN1Y5LjU3TDE2LDMuMTYsMTMsNC45M1YxMkgxMVY0LjM1YTEsMSwwLDAsMSwuNDktLjg2bDQtMi4zNWExLDEsMCwwLDEsMSwwbDEyLDdBMSwxLDAsMCwxLDI5LDlaIi8+PHJlY3QgY2xhc3M9ImNscy0xIiB4PSI3IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE1LjUsMzAuODZsLTEyLTdBMSwxLDAsMCwxLDMsMjNWOUg1VjIyLjQzbDExLjUsNi43MVoiLz48cmVjdCBjbGFzcz0iY2xzLTIiIHg9IjExLjI1IiB5PSIyNC41IiB3aWR0aD0iMy4wNSIgaGVpZ2h0PSI4LjA2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTguMzIgMjUuMzMpIHJvdGF0ZSgtNjApIi8+PC9tYXNrPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50LTIiIHkxPSIzMiIgeDI9IjMyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwLjEiIHN0b3AtY29sb3I9IiNiOThjZmQiLz48c3RvcCBvZmZzZXQ9IjAuOSIgc3RvcC1jb2xvcj0iIzQxOGFmYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjx0aXRsZT5hcHAtaWNvbi1saWdodC08L3RpdGxlPjxnIGlkPSJNb2RpZmllciI+PHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjUuNTIsMjFoLS4zOGE0LjQyLDQuNDIsMCwwLDAtMS44Ny41Niw4LjQ2LDguNDYsMCwwLDAtMS4yMi44OEEyLjQ5LDIuNDksMCwxLDEsMjMsMjAuNXMwLC4wNywwLC4xMUE1LjMzLDUuMzMsMCwwLDEsMjUsMjBhNC40OSw0LjQ5LDAsMSwwLTQuNDUsNWguMTFMMjEsMjVhNS40OCw1LjQ4LDAsMCwwLDEuOTMtLjYzQTcuNDEsNy40MSwwLDAsMCwyNCwyMy40OXYwYTEuNjQsMS42NCwwLDAsMSwuMjYtLjJBMi40LDIuNCwwLDAsMSwyNS41LDIzLDIuNSwyLjUsMCwxLDEsMjMsMjUuNXYwYTQuNzgsNC43OCwwLDAsMS0xLjk1LjUxLDQuNDksNC40OSwwLDEsMCw0LjQ3LTVaIi8+PC9nPjxnIGlkPSJfMTVfZ3JpZCIgZGF0YS1uYW1lPSIxNcKwIGdyaWQiPjxnIGNsYXNzPSJjbHMtNCI+PHJlY3QgY2xhc3M9ImNscy01IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz48L2c+PC9nPjwvc3ZnPg==
       mediatype: image/svg+xml

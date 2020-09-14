@@ -18,13 +18,26 @@ RUN ./bin/initializer --permissive true -o ./bundles.db
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
-ENV PRODUCT="IBM Wazi for CodeReady Workspaces Development Client" \
+ENV PRODUCT="IBM Wazi Developer for Red Hat CodeReady Workspaces" \
     COMPANY="IBM" \
     VERSION="1.1.0" \
     RELEASE="1" \
-    SUMMARY="IBM Wazi for CodeReady Workspaces Development Client" \
-    DESCRIPTION="IBM Wazi for CodeReady Workspaces Development Client - CodeReady Operator Catalog"
+    SUMMARY="IBM Wazi Developer for Workspaces" \
+    DESCRIPTION="IBM Wazi Developer for Red Hat CodeReady Workspaces - Operator" \
+    PRODTAG="wazi-code-operator-catalog"
 
+LABEL name="$PRODUCT" \
+      vendor="$COMPANY" \
+      version="$VERSION" \
+      release="$RELEASE" \
+      summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="$SUMMARY" \
+      io.openshift.tags="$PRODTAG,$COMPANY" \
+      com.redhat.component="$PRODTAG" \
+      io.openshift.expose-services=""
+          
 RUN microdnf update -y && \
     microdnf clean all && \
     rm -rf /var/cache/yum && \
@@ -46,10 +59,3 @@ EXPOSE 50051
 
 ENTRYPOINT ["/bin/registry-server"]
 CMD ["--database", "/bundles.db", "--termination-log=log.txt"]
-
-LABEL name="$COMPANY-$PRODUCT" \
-      vendor="$COMPANY" \
-      version="$VERSION" \
-      release="$RELEASE" \
-      summary="$SUMMARY" \
-      description="$DESCRIPTION"
