@@ -49,8 +49,8 @@ RUN chgrp -R 0 /registry && \
     chmod -R g+rwx /registry
     
 COPY LICENSE /licenses/
-COPY --from=builder /build/bundles.db /bundles.db
-COPY --from=builder /build/bin/registry-server /bin/registry-server
+COPY --from=builder /bundles.db /bundles.db
+COPY --from=builder /bin/registry-server /bin/registry-server
 COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
 
 USER 1001
