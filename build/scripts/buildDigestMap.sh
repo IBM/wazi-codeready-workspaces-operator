@@ -23,6 +23,17 @@ if [[ ! -x $PODMAN ]]; then
   fi
 fi
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
+command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
+checkVersion() {
+  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+    #echo "[INFO] $3 version $2 >= $1, can proceed."
+    true
+  else 
+    echo "[ERROR] Must install $3 version >= $1"
+    exit 1
+  fi
+}
+checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 usage () {
 	echo "Usage:   $0 [-w WORKDIR] -c [/path/to/csv.yaml] "
@@ -79,11 +90,21 @@ for image in ${OPERATOR_IMAGE} ${IMAGE_LIST} ${REGISTRY_IMAGES_ALL}; do
         . ${SCRIPTS_DIR}/buildDigestMapAlternateURLs.sh
       fi
       if [[ ${digest} ]]; then
-        if [[ ! "${QUIET}" ]]; then echo -n "[INFO] Got digest"; fi
+        if [[ ! "${QUIET}" ]]; then echo -n "[INFO] + Got digest "; fi
         echo "    $digest # ${image}"
       else
+        if [[ ! "${QUIET}" ]]; then echo -n "[INFO] - Get digest for ${image}"; fi
         image="${orig_image}"
-        digest="$(skopeo inspect --tls-verify=false docker://${image} 2>/dev/null | jq -r '.Digest')"
+        ARCH_OVERRIDE="" # optional override so that an image without amd64 won't return a failure when searching on amd64 arch machines
+        if [[ ${image} == *"-openj9"* ]]; then
+          ARCH_OVERRIDE="--override-arch s390x"
+        fi
+        digest="$(skopeo ${ARCH_OVERRIDE} inspect --tls-verify=false docker://${image} 2>/dev/null | jq -r '.Digest')"
+        if [[ ! "${QUIET}" ]]; then echo -n "[INFO] - Got digest "; fi
+        echo "    $digest # ${orig_image}"
+        if [[ ! ${digest} ]]; then
+          echo "[ERROR] Could not retrieve digest for '${orig_image}' or '${alt_image}': fail!"; exit 1
+        fi
       fi
       withoutTag="$(echo "${image}" | sed -e 's/^\(.*\):[^:]*$/\1/')"
       withDigest="${withoutTag}@${digest}";;
