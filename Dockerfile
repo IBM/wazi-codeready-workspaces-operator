@@ -12,7 +12,7 @@
 
 # Builds an image that is used by the CatalogSource definition in OCP.
 
-FROM quay.io/operator-framework/upstream-registry-builder:latest as builder
+FROM quay.io/operator-framework/upstream-registry-builder:v1.13.8 as builder
 COPY controller-manifests manifests/
 RUN ./bin/initializer --permissive true -o ./bundles.db
 
@@ -49,8 +49,8 @@ RUN chgrp -R 0 /registry && \
     chmod -R g+rwx /registry
     
 COPY LICENSE /licenses/
-COPY --from=builder /bundles.db /bundles.db
-COPY --from=builder /bin/registry-server /bin/registry-server
+COPY --from=builder /build/bundles.db /bundles.db
+COPY --from=builder /build/bin/registry-server /bin/registry-server
 COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
 
 USER 1001
