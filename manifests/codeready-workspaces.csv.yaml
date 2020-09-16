@@ -50,7 +50,7 @@ metadata:
     categories: Developer Tools, OpenShift Optional
     certified: "true"
     containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator@sha256:44a44cf515078008184c8ec92760eebaf32e6005966368c1cba8e7b2bf64a59f
-    createdAt: "2020-09-16T16:14:07+00:00"
+    createdAt: "2020-09-16T18:58:47+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     operatorframework.io/suggested-namespace: openshift-workspaces
@@ -299,21 +299,21 @@ spec:
                       - name: RELATED_IMAGE_che_server
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-server-rhel8@sha256:e0d9eec0ece81aaa13ad7c46cb05c7bf3b6200d0d191c04d4dbd317377430892
                       - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8@sha256:21fda518131662e4901bf5ceafa5e869851936b43dcf511a12bbc5afed6bef9e
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8@sha256:59124ba5732c54ae2687b2fc57a1bef3919d08a3ab1c04811357c036dabd7dc3
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-artifacts-rhel8@sha256:8a73b1c45f17855c57dd03b2099e6ea936f6bdf0a949c58bc528be496f6aa903
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-metadata-rhel8@sha256:fb92b6186e358f9b1f1f1f49406ae4dac30e72a47e7ec1b105dd9861c9ae6582
                       - name: RELATED_IMAGE_codeready_workspaces_machineexec
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-machineexec-rhel8@sha256:ceb4dc67ecac9c9590447e9d6698e327e4db22d6c3d49312920922275e1384ce
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-machineexec-rhel8@sha256:d32eba7beff2cb50a36c1edfe34c7e3d39aae5c119622be83cb0f6991f3a52af
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-rhel8@sha256:9ca5d40fa5332101b822847fcf18ff0ccba12b7ce059be9b8a9282b41074a261
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:e990bebaba724f72d64957044246c7b365346601b383444b3bdc4e4cf4f09229
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:26b1c44df60c7538a6c583cda22b01c172ad9300442eb89c567089e00ad52000
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:e990bebaba724f72d64957044246c7b365346601b383444b3bdc4e4cf4f09229
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:26b1c44df60c7538a6c583cda22b01c172ad9300442eb89c567089e00ad52000
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:e990bebaba724f72d64957044246c7b365346601b383444b3bdc4e4cf4f09229
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:26b1c44df60c7538a6c583cda22b01c172ad9300442eb89c567089e00ad52000
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java8-rhel8@sha256:028014ddf39ac3d84fd9f1ffb3e2ad9de55116b850a358ba8ac6441ce988fda2
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_openj9
@@ -325,7 +325,7 @@ spec:
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_kubernetes
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-kubernetes-rhel8@sha256:767927486e91217e9ce6613516779689d9b12a80f80bb9a7dd18292a2ea6ddef
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_openshift
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-openshift-rhel8@sha256:9abac36f76e9c2ab445391ab5050dcaae4e2c283c5b1a64843607b805742c917
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-openshift-rhel8@sha256:9b0a9426a56db0b06f040b124b829b526b53c3678c3142381fe2fde4e4a00210
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_cpp
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-stacks-cpp-rhel8@sha256:74946020787106f39f647e29f1a1c79d00edbef46f81b6da4d663881d2013d32
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_dotnet
@@ -339,7 +339,7 @@ spec:
                       - name: RELATED_IMAGE_codeready_workspaces_theia_endpoint
                         value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-endpoint-rhel8@sha256:d076c370bf0c7089adc0007f8cafb8166d65f6880430e79abbebe6b54fd3649a
                       - name: RELATED_IMAGE_devfile_registry
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8@sha256:da18ae4db9ddfafb719c9ecaaaa66f5e50924067eae4b66a9a45a2c59f0f227a
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8@sha256:b229aa2e09a35f64c0984a2c2102c4d9aabe99707b4aa85922d0688074124f61
                       - name: RELATED_IMAGE_jboss_eap_7_eap73_openjdk8_openshift_rhel7
                         value: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:24dea0cfc154a23c1aeb6b46ade182d0f981362f36b7e6fb9c7d8531ac639fe0
                       - name: RELATED_IMAGE_jboss_eap_7_eap_xp1_openj9_11_openshift
@@ -357,7 +357,7 @@ spec:
                       - name: RELATED_IMAGE_keycloak_s390x
                         value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:8e6c7874247053df431c25552c6e2edb050b2627ae21907149f419e0d9909135
                       - name: RELATED_IMAGE_plugin_registry
-                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8@sha256:d64262adf1de376eb72f1aa7be8ee796af2406e2279fbca5afa432b97f9c0f87
+                        value: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8@sha256:b812fea608e1cf8f0696d1664ab682b8208f52280641f45f836bea8e24a6f259
                       - name: RELATED_IMAGE_postgres
                         value: registry.redhat.io/rhel8/postgresql-96@sha256:fdc2398a25530547354714f2538c691d91b700e0cedef5361a3e7d96ddfd4e11
                       - name: RELATED_IMAGE_pvc_jobs
@@ -493,7 +493,7 @@ spec:
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-server-rhel8@sha256:e0d9eec0ece81aaa13ad7c46cb05c7bf3b6200d0d191c04d4dbd317377430892
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-server-rhel8:2.4
     - name: codeready-workspaces-jwtproxy-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8@sha256:21fda518131662e4901bf5ceafa5e869851936b43dcf511a12bbc5afed6bef9e
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8@sha256:59124ba5732c54ae2687b2fc57a1bef3919d08a3ab1c04811357c036dabd7dc3
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-jwtproxy-rhel8:2.4
     - name: codeready-workspaces-pluginbroker-artifacts-rhel8
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-artifacts-rhel8@sha256:8a73b1c45f17855c57dd03b2099e6ea936f6bdf0a949c58bc528be496f6aa903
@@ -502,13 +502,13 @@ spec:
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-metadata-rhel8@sha256:fb92b6186e358f9b1f1f1f49406ae4dac30e72a47e7ec1b105dd9861c9ae6582
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginbroker-metadata-rhel8:2.4
     - name: codeready-workspaces-machineexec-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-machineexec-rhel8@sha256:ceb4dc67ecac9c9590447e9d6698e327e4db22d6c3d49312920922275e1384ce
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-machineexec-rhel8@sha256:d32eba7beff2cb50a36c1edfe34c7e3d39aae5c119622be83cb0f6991f3a52af
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-machineexec-rhel8:2.4
     - name: codeready-workspaces-plugin-java11-rhel8
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-rhel8@sha256:9ca5d40fa5332101b822847fcf18ff0ccba12b7ce059be9b8a9282b41074a261
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-rhel8:2.4
     - name: codeready-workspaces-plugin-java11-openj9-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:e990bebaba724f72d64957044246c7b365346601b383444b3bdc4e4cf4f09229
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8@sha256:26b1c44df60c7538a6c583cda22b01c172ad9300442eb89c567089e00ad52000
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java11-openj9-rhel8:2.4
     - name: codeready-workspaces-plugin-java8-rhel8
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java8-rhel8@sha256:028014ddf39ac3d84fd9f1ffb3e2ad9de55116b850a358ba8ac6441ce988fda2
@@ -520,7 +520,7 @@ spec:
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-kubernetes-rhel8@sha256:767927486e91217e9ce6613516779689d9b12a80f80bb9a7dd18292a2ea6ddef
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-kubernetes-rhel8:2.4
     - name: codeready-workspaces-plugin-openshift-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-openshift-rhel8@sha256:9abac36f76e9c2ab445391ab5050dcaae4e2c283c5b1a64843607b805742c917
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-openshift-rhel8@sha256:9b0a9426a56db0b06f040b124b829b526b53c3678c3142381fe2fde4e4a00210
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-openshift-rhel8:2.4
     - name: codeready-workspaces-stacks-cpp-rhel8
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-stacks-cpp-rhel8@sha256:74946020787106f39f647e29f1a1c79d00edbef46f81b6da4d663881d2013d32
@@ -541,7 +541,7 @@ spec:
       image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-endpoint-rhel8@sha256:d076c370bf0c7089adc0007f8cafb8166d65f6880430e79abbebe6b54fd3649a
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-endpoint-rhel8:2.4
     - name: codeready-workspaces-devfileregistry-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8@sha256:da18ae4db9ddfafb719c9ecaaaa66f5e50924067eae4b66a9a45a2c59f0f227a
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8@sha256:b229aa2e09a35f64c0984a2c2102c4d9aabe99707b4aa85922d0688074124f61
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-devfileregistry-rhel8:2.4
     - name: eap73-openjdk8-openshift-rhel7
       image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:24dea0cfc154a23c1aeb6b46ade182d0f981362f36b7e6fb9c7d8531ac639fe0
@@ -559,7 +559,7 @@ spec:
       image: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:8e6c7874247053df431c25552c6e2edb050b2627ae21907149f419e0d9909135
       # tag: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8:7.4
     - name: codeready-workspaces-pluginregistry-rhel8
-      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8@sha256:d64262adf1de376eb72f1aa7be8ee796af2406e2279fbca5afa432b97f9c0f87
+      image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8@sha256:b812fea608e1cf8f0696d1664ab682b8208f52280641f45f836bea8e24a6f259
       # tag: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8:2.4
     - name: postgresql-96
       image: registry.redhat.io/rhel8/postgresql-96@sha256:fdc2398a25530547354714f2538c691d91b700e0cedef5361a3e7d96ddfd4e11
