@@ -4,12 +4,14 @@
 // SOURCE_BRANCH = "7.16.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
 // FORCE_BUILD = "false"
 
+import groovy.transform.Field
+
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" // GH repo to use as target for deploy/ folder
 def DWNSTM_REPO = "containers/codeready-workspaces-operator" // dist-git repo to use as target for everything
 
-def MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
+@Field String MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
 def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
@@ -18,11 +20,43 @@ def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
 def OLD_SHA_MID=""
 def OLD_SHA_DWN=""
 
+@Field String CRW_VERSION_F = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION_F.equals("")) {
+    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION_F
+}
+
+def installSkopeo(String CRW_VERSION)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane's build
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+    sudo curl -sSLO https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
+    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+    sudo chmod 755 /usr/local/bin/skopeo
+    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
+'''
+}
+
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
       cleanWs()
+      CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+      println "CRW_VERSION = '" + CRW_VERSION + "'"
+      installSkopeo(CRW_VERSION)
 	    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM',
@@ -191,7 +225,7 @@ rm -fr ${WORKSPACE}/targetdwn/olm/eclipse-che-preview-openshift ${WORKSPACE}/tar
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/targetdwn/Dockerfile
 
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
+CRW_VERSION="''' + CRW_VERSION_F + '''"
 #apply patches
 sed -i ${WORKSPACE}/targetdwn/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
