@@ -329,7 +329,7 @@ FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
 
     curl \
-"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_''' + MIDSTM_BRANCH + '''/buildWithParameters?\
+"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_''' + CRW_VERSION_F + '''/buildWithParameters?\
 token=CI_BUILD&cause=build+crwctl+for+operator+sync+from+${BUILD_TAG}&versionSuffix=CI"
   done
 fi
