@@ -17,6 +17,12 @@ metadata:
   namespace: openshift-marketplace
   labels:
     name: wazi-codeready-operator-catalog
+    app.kubernetes.io/name: wazi-codeready-operator-catalog
+    app.kubernetes.io/instance: wazi-codeready-operator-catalog-1.1.0
+    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/component: workspaces
+    app.kubernetes.io/part-of: wazi-developer
+    app.kubernetes.io/managed-by: operator
 spec:
   sourceType: grpc
   displayName: IBM Wazi Developer for Red Hat CodeReady Workspaces
