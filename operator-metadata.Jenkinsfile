@@ -13,8 +13,8 @@ def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sy
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
 
-@Field String MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
-def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
+def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator-metadata" // also used for the Brew dockerfile params
@@ -211,7 +211,7 @@ cd ..
 
           sh BOOTSTRAP + '''
 # rsync files in github midstream to dist-git downstream
-# TODO CRW 2.4 / OCP 4.6 switch to use manifests metadata folders
+# TODO CRW 2.5 / OCP 4.6 switch to use manifests metadata folders
 for d in ''' + SYNC_FILES_MID2DWN + '''; do
   if [[ -f ${WORKSPACE}/targetmid/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/targetmid/${d} ${WORKSPACE}/targetdwn/${d}

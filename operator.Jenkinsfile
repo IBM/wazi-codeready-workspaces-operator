@@ -11,8 +11,8 @@ def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sy
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" // GH repo to use as target for deploy/ folder
 def DWNSTM_REPO = "containers/codeready-workspaces-operator" // dist-git repo to use as target for everything
 
-@Field String MIDSTM_BRANCH = "crw-2.4-rhel-8" // target branch in GH repo, eg., crw-2.4-rhel-8
-def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
+def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params

@@ -19,7 +19,7 @@ SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 CSV_VERSION=2.y.0 # csv 2.y.0
 CRW_VERSION=${CSV_VERSION%.*} # tag 2.y
 CSV_VERSION_PREV=2.x.0
-MIDSTM_BRANCH=crw-2.4-rhel-8
+MIDSTM_BRANCH=crw-2.5-rhel-8
 
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
