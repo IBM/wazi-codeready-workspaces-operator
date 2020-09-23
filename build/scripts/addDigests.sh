@@ -55,10 +55,10 @@ mkdir -p ${BASE_DIR}/generated/${CSV_NAME}/
 cp -R ${BASE_DIR}/${SRC_DIR}/* ${BASE_DIR}/generated/${CSV_NAME}/
 
 # TODO: CRW-1044 support OCP 4.5 format until we switch to OCP 4.6
-if [[ -d $(find ${BASE_DIR}/generated/${CSV_NAME}/v${VERSION}/ || true) ]]; then
+if [[ -d ${BASE_DIR}/generated/${CSV_NAME}/v${VERSION} ]]; then
   CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/v${VERSION}/ -name "${CSV_NAME}.*${VERSION}.clusterserviceversion.yaml" -o -name "${CSV_NAME}.csv.yaml" | tail -1)"
 fi
-if [[ ! $CSV_FILE ]]; then 
+if [[ -z "${CSV_FILE}" ]]; then
   CSV_FILE="$(find ${BASE_DIR}/generated/${CSV_NAME}/ -name "${CSV_NAME}.csv.yaml" | tail -1)"
 fi
 if [[ ! ${CSV_FILE} ]]; then echo "[ERROR] ${0##*/} :: Could not find CSV to generate in ${BASE_DIR}/generated/${CSV_NAME}/ !"; exit 1; fi
