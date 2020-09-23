@@ -62,13 +62,13 @@ CONTAINERS_UNIQ=()
 for c in $CONTAINERS; do if [[ ! "${CONTAINERS_UNIQ[@]}" =~ "${c}" ]]; then CONTAINERS_UNIQ+=($c); fi; done
 IFS=$'\n' CONTAINERS=($(sort <<<"${CONTAINERS_UNIQ[*]}")); unset IFS
 
+# same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
 insertEnvVar()
 {
-  echo " - $updateName = $updateVal"
+  echo "[INFO] ${0##*/} :: $updateName = $updateVal"
   cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
     '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
-
 }
 
 CSVFILE=${TARGETDIR}/manifests/codeready-workspaces.csv.yaml
@@ -94,9 +94,9 @@ done
 
 # replace external crw refs with internal ones
 sed -r -i $CSVFILE \
-  -e "s@registry.redhat.io/codeready-workspaces/@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-@g#" \
-  -e "s@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-crw-2-rhel8-operator@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator@g" \
   -e "s@registry.access.redhat.com/ubi8-minimal@registry.redhat.io/ubi8-minimal@g"
+  # -e "s@registry.redhat.io/codeready-workspaces/@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-@g#" \
+  # -e "s@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-crw-2-rhel8-operator@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator@g" \
 
 # echo list of RELATED_IMAGE_ entries after adding them above
 # cat $CSVFILE | grep RELATED_IMAGE_ -A1
