@@ -35,10 +35,10 @@ checkVersion() {
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 usage () {
-	echo "Usage:   $0 -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version] [--crw-branch crw-repo-branch]"
-	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1598450052"
-	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --crw-branch ${MIDSTM_BRANCH}"
-	echo "Example: $0 -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
+	echo "Usage:   ${0##*/} -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version] [--crw-branch crw-repo-branch]"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1598450052"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --crw-branch ${MIDSTM_BRANCH}"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
 	exit
 }
 
@@ -76,26 +76,27 @@ pushd "${SOURCEDIR}" >/dev/null || exit
 # CRW-1044 do we need these? 
 # Copy digests scripts & adjust help messages
 # for d in addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh; do rsync -zrltq "${SOURCEDIR}/olm/${d}" "${SCRIPTS_DIR}"; done
-# sed -r -e 's|("Example:).*"|\1 $0 -w $(pwd) -s manifests -r \\".*.csv.yaml\\" -t '${CRW_VERSION}'"|g' \
+# sed -r -e 's|("Example:).*"|\1 ${0##*/} -w $(pwd) -s manifests -r \\".*.csv.yaml\\" -t '${CRW_VERSION}'"|g' \
 # 	-i "${SCRIPTS_DIR}/addDigests.sh"
-# sed -r -e 's|("Example:).*"|\1 $0 -w $(pwd) -c $(pwd)/manifests/codeready-workspaces.csv.yaml -t '${CRW_VERSION}'"|g' \
+# sed -r -e 's|("Example:).*"|\1 ${0##*/} -w $(pwd) -c $(pwd)/manifests/codeready-workspaces.csv.yaml -t '${CRW_VERSION}'"|g' \
 # 	-i "${SCRIPTS_DIR}/buildDigestMap.sh"
 
 # simple copy
 mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/
+
 for CRDFILE in \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/deploy/crds/org_v1_che_crd.yaml"; do
 	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
 done
 
+# same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
 insertEnvVar()
 {
-  echo " - $updateName = $updateVal"
+  echo "[INFO] ${0##*/} :: $updateName = $updateVal"
   cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
     '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
-
 }
 
 ICON="$(cat "${SCRIPTS_DIR}/sync-che-olm-to-crw-olm.icon.txt")"
@@ -163,16 +164,16 @@ for CSVFILE in \
 			-i "${CSVFILE}"
 	fi
 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
-		echo "Converted (sed) ${CSVFILE}"
+		echo "[INFO] ${0##*/} :: Converted (sed) ${CSVFILE}"
 	fi
 
 	# yq changes - transform env vars from Che to CRW values
 	changed="$(cat "${CSVFILE}" | yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 		echo "${changed}" > "${CSVFILE}"
 	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
-		echo "Converted (yq #1) ${CSVFILE}:"
+		echo "[INFO] ${0##*/} :: Converted (yq #1) ${CSVFILE}:"
 		for updateName in ".spec.displayName"; do 
-			echo -n " * $updateName: "
+			echo -n "[INFO] ${0##*/} ::  * $updateName: "
 			cat  "${CSVFILE}" | yq "${updateName}" 2>/dev/null
 		done
 	fi
@@ -210,7 +211,7 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 	mv "${CSVFILE}.2" "${CSVFILE}"
 
 	if [[ $(diff -q -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
-		echo "Converted + inserted (yq #2) ${CSVFILE}:"
+		echo "[INFO] ${0##*/} :: Converted + inserted (yq #2) ${CSVFILE}:"
 		for updateName in "${!operator_replacements[@]}"; do 
 			echo -n " * $updateName: "
 			cat "${CSVFILE}" | yq --arg updateName "${updateName}" '.spec.install.spec.deployments[].spec.template.spec.containers[].env? | .[] | select(.name == $updateName) | .value' 2>/dev/null
