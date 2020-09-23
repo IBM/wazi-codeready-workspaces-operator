@@ -23,6 +23,13 @@ metadata:
     app.kubernetes.io/component: workspaces
     app.kubernetes.io/part-of: wazi-developer
     app.kubernetes.io/managed-by: operator
+  annotations:
+    productID: "9d41d2d8126f4200b62ba1acc0dffa2e"
+    productName: "IBM Wazi Developer for Red Hat CodeReady Workspaces"
+    productMetric: "VIRTUAL_PROCESSOR_CORE"
+    productChargedContainers: "All"
+    productVersion: "1.1.0"
+            
 spec:
   sourceType: grpc
   displayName: IBM Wazi Developer for Red Hat CodeReady Workspaces

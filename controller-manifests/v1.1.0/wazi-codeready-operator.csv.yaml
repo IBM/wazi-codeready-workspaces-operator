@@ -63,6 +63,11 @@ metadata:
     description: Personal z/OS cloud IDE for development and testing.
     repository: https://github.com/IBM/wazi-codeready-workspaces-operator
     support: IBM
+    productID: "9d41d2d8126f4200b62ba1acc0dffa2e"
+    productName: "IBM Wazi Developer for Red Hat CodeReady Workspaces"
+    productMetric: "VIRTUAL_PROCESSOR_CORE"
+    productChargedContainers: "All"
+    productVersion: "1.1.0"
   name: wazi-codeready-operator.v1.1.0
   namespace: placeholder
 spec:
