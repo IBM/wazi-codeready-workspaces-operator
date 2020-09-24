@@ -246,14 +246,7 @@ sed -r \
     `# do not use quay refs anymore -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g"` \
     -i "${CSV_FILE}"
 
-# 2. generate digests
-pushd ${WORKSPACE}/targetdwn >/dev/null
-# TODO digest scripts from upstream do not work - https://github.com/eclipse/che/issues/17432
-# ./build/scripts/addDigests.sh -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION}
-
-# TODO CRW-1044 merge in upstream digests scripts here? or just enable downstream pinning
-./build/scripts/addDigests.sh -s controller-manifests -n codeready-workspaces -v ${CSV_VERSION} -t ${CRW_VERSION}
-popd >/dev/null
+# 2. generation of digests already done as part of sync-che-olm-to-crw-olm.sh above
 
 # 3. revert to OSBS image refs, since digest pinning will automatically switch them to RHCC values
 sed -r \
