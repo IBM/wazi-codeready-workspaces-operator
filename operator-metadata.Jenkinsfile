@@ -1,24 +1,22 @@
 #!/usr/bin/env groovy
 
-// PARAMETERS for this pipeline:
-// CSV_VERSION_CHE = latest Che CSV to use to generate CRW CSV, eg., a nightly like 9.9.9-nightly.1594657566 or an actual release like 7.15.2
-// CSV_VERSION_PREV = "2.2.0"
-// SOURCE_BRANCH = "7.16.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
-// FORCE_BUILD = "false"
-
 import groovy.transform.Field
 
-def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
+// PARAMETERS for this pipeline:
+// FORCE_BUILD = "false"
 
+@Field String SOURCE_BRANCH = "7.19.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
+@Field String CSV_VERSION_CHE = "9.9.9-nightly.1598450052" // latest Che CSV to use to generate CRW CSV, eg., a nightly like 9.9.9-nightly.timestamp
+@Field String CSV_VERSION_PREV = "2.4.0"
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
+
+def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-operator-metadata" // dist-git repo to use as target
-
-@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
-def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator-metadata" // also used for the Brew dockerfile params
-
 def OLD_SHA_DWN=""
 
 @Field String CRW_VERSION_F = ""

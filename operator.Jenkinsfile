@@ -1,22 +1,20 @@
 #!/usr/bin/env groovy
 
-// PARAMETERS for this pipeline:
-// SOURCE_BRANCH = "7.16.x" or "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
-// FORCE_BUILD = "false"
-
 import groovy.transform.Field
 
-def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
+// PARAMETERS for this pipeline:
+// FORCE_BUILD = "false"
 
+@Field String SOURCE_BRANCH = "7.19.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
+
+def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces-operator" // GH repo to use as target for deploy/ folder
 def DWNSTM_REPO = "containers/codeready-workspaces-operator" // dist-git repo to use as target for everything
-
-@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
-def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator" // also used for the Brew dockerfile params
-
 def OLD_SHA_MID=""
 def OLD_SHA_DWN=""
 
