@@ -32,6 +32,10 @@ spec:
     serverMemoryLimit: ''
     workspaceNamespaceDefault: ''
     allowUserDefinedWorkspaceNamespaces: false
+    serverExposureStrategy: ''
+    singleHostGatewayImage: ''
+    singleHostGatewayConfigSidecarImage: ''
+    singleHostGatewayConfigMapLabels: {}
   database:
     externalDb: false
     chePostgresHostName: ''
