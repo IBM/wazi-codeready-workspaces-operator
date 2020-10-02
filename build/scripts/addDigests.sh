@@ -27,7 +27,7 @@ command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1
 usage () {
 	echo "Usage:   ${0##*/} [-w WORKDIR] -s [SOURCE_PATH] -n [csv name] -v [VERSION] -t [TAG]"
 	echo "Example: ${0##*/} -w $(pwd) -s eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift -n eclipse-che-preview-openshift -v 7.9.0"
-	echo "Example: ${0##*/} -w $(pwd) -s controller-manifests -n codeready-workspaces -v 2.y.0 -t 2.y"
+	echo "Example: ${0##*/} -w $(pwd) -s manifests -n codeready-workspaces -v 2.y.0 -t 2.y"
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -64,19 +64,13 @@ fi
 if [[ ! ${CSV_FILE} ]]; then echo "[ERROR] ${0##*/} :: Could not find CSV to generate in ${BASE_DIR}/generated/${CSV_NAME}/ !"; exit 1; fi
 echo "[INFO] ${0##*/} :: CSV to generate: ${CSV_FILE}"
 
-# update the correct file (either in manifests/ or controller-manifests/v${VERSION}/)
-if [[ -d ${SRC_DIR}/v${VERSION} ]]; then
-  CSV_FILE_ORIG=$(find ${SRC_DIR}/v${VERSION} -maxdepth 2 -name "${CSV_FILE##*/}" | grep -v generated | sort | tail -1)
-else
-  CSV_FILE_ORIG=$(find ${SRC_DIR}/ -maxdepth 2 -name "${CSV_FILE##*/}" | grep -v generated | sort | tail -1)
-fi
+CSV_FILE_ORIG=$(find ${SRC_DIR}/ -maxdepth 2 -name "${CSV_FILE##*/}" | grep -v generated | sort | tail -1)
 echo "[INFO] ${0##*/} :: CSV to update:   ${BASE_DIR}/${CSV_FILE_ORIG}"
 
 ${SCRIPTS_DIR}/buildDigestMap.sh -w ${BASE_DIR} -c ${CSV_FILE} -t ${TAG} -v ${VERSION} ${QUIET}
 
 # inject relatedImages block
 names=" "
-count=1
 RELATED_IMAGES='. * { spec : { relatedImages: [ '
 # if [[ ! "${QUIET}" ]]; then cat ${BASE_DIR}/generated/digests-mapping.txt; fi
 for mapping in $(cat ${BASE_DIR}/generated/digests-mapping.txt)

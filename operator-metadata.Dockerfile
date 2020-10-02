@@ -13,8 +13,7 @@
 # https://docs.engineering.redhat.com/display/CFC/Migration
 FROM scratch
 
-# TODO CRW-1044 switch to manifests folder for bundle format
-COPY controller-manifests /manifests/
-COPY metadata/annotations.yaml /metadata/annotations.yaml
+COPY manifests /manifests/
+COPY metadata /metadata/
 
 # append Brew metadata here (it will be appended via https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Jenkinsfile)

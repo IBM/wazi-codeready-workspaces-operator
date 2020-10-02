@@ -186,7 +186,7 @@ echo "[INFO] CSV_FILE = ${CSV_FILE}"
   # if anything has changed other than the createdAt date, then we commit this
   if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
     git add manifests/ build/scripts/
-    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ controller-manifests/ build/scripts/
+    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ build/scripts/
     git push origin ''' + MIDSTM_BRANCH + '''
   else # no need to push this so revert
     echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
@@ -200,7 +200,7 @@ cd ..
 '''
               }
 
-          def SYNC_FILES_MID2DWN = "controller-manifests manifests metadata build" // folders in mid/dwn
+          def SYNC_FILES_MID2DWN = "manifests metadata build" // folders in mid/dwn
 
           OLD_SHA_DWN = sh(script: BOOTSTRAP + '''
           cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
@@ -240,8 +240,6 @@ sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
     -e "s|registry.redhat.io/codeready-workspaces/(pluginregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
     -e "s|registry.redhat.io/codeready-workspaces/(devfileregistry-rhel8:.+)|registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-\\1|g" \
-    `# in all other cases (including operator) use published quay images to compute digests` \
-    `# do not use quay refs anymore -e "s|registry.redhat.io/codeready-workspaces/(.+)|quay.io/crw/\\1|g"` \
     -i "${CSV_FILE}"
 
 # 2. generation of digests already done as part of sync-che-olm-to-crw-olm.sh above
@@ -250,12 +248,20 @@ sed -r \
 sed -r \
     -e "s#(quay.io/crw/|registry.redhat.io/codeready-workspaces/)#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#g" \
     -i "${CSV_FILE}"
-# TODO CRW-1044 switch to operators.operatorframework.io.bundle LABELs
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
     COMPNAME="''' + QUAY_PROJECT + '''" \r
-LABEL summary="$SUMMARY" \\\r
+LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1 \\\r
+      operators.operatorframework.io.bundle.manifests.v1=manifests/ \\\r
+      operators.operatorframework.io.bundle.metadata.v1=metadata/ \\\r
+      operators.operatorframework.io.bundle.package.v1=codeready-workspaces \\\r
+      operators.operatorframework.io.bundle.channels.v1=latest \\\r
+      operators.operatorframework.io.bundle.channel.default.v1=latest \\\r
+      com.redhat.delivery.operator.bundle="true" \\\r
+      com.redhat.openshift.versions="v4.5,v4.6" \\\r
+      com.redhat.delivery.backport=true \\\r 
+      summary="$SUMMARY" \\\r
       description="$DESCRIPTION" \\\r
       io.k8s.description="$DESCRIPTION" \\\r
       io.k8s.display-name=\"$DESCRIPTION" \\\r
@@ -266,7 +272,6 @@ LABEL summary="$SUMMARY" \\\r
       license="EPLv2" \\\r
       maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
       io.openshift.expose-services="" \\\r
-      com.redhat.delivery.appregistry="true" \\\r
       usage="" \r'
 
 echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
