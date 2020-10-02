@@ -6,7 +6,6 @@ import groovy.transform.Field
 // FORCE_BUILD = "false"
 
 @Field String SOURCE_BRANCH = "7.19.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
-@Field String CSV_VERSION_CHE = "9.9.9-nightly.1598450052" // latest Che CSV to use to generate CRW CSV, eg., a nightly like 9.9.9-nightly.timestamp
 @Field String CSV_VERSION_PREV = "2.4.0"
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
 
@@ -18,6 +17,18 @@ def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "operator-metadata" // also used for the Brew dockerfile params
 def OLD_SHA_DWN=""
+
+@Field String CSV_VERSION = ""
+def String getCSVVersion(String MIDSTM_BRANCH) {
+  if (CSV_VERSION.equals("")) {
+    // DO NOT use csv file to compute version since this job can change that value; instead, read pom.xml and compute version from there
+    CSV_VERSION = sh(script: '''#!/bin/bash -xe
+    curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
+    sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")"
+    ''', returnStdout: true).trim()
+  }
+  return CSV_VERSION
+}
 
 @Field String CRW_VERSION_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
@@ -55,6 +66,8 @@ timeout(120) {
       CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
       println "CRW_VERSION = '" + CRW_VERSION + "'"
       installSkopeo(CRW_VERSION)
+      CSV_VERSION = getCSVVersion(MIDSTM_BRANCH)
+      println "CSV_VERSION = '" + CSV_VERSION + "'"
       withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM',
@@ -174,19 +187,17 @@ for d in ''' + SYNC_FILES_UP2MID + '''; do
 done
 
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
 CSV_FILE="\$( { find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1; } || true)"; 
 echo "[INFO] CSV_FILE = ${CSV_FILE}"
 # if [[ ! ${CSV_FILE} ]]; then 
   # CRW-878 generate CSV and update CRD from upstream
   cd ${WORKSPACE}/targetmid/build/scripts
-  ./sync-che-olm-to-crw-olm.sh -v ${CSV_VERSION} -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --che ''' + CSV_VERSION_CHE + '''
+  ./sync-che-olm-to-crw-olm.sh -v ''' + CSV_VERSION + ''' -p ''' + CSV_VERSION_PREV + ''' -s ${WORKSPACE}/sources -t ${WORKSPACE}/targetmid --crw-branch ''' + MIDSTM_BRANCH + '''
   cd ${WORKSPACE}/targetmid/
   # if anything has changed other than the createdAt date, then we commit this
   if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
     git add manifests/ build/scripts/
-    git commit -s -m "[csv] Add CSV ${CSV_VERSION}" manifests/ build/scripts/
+    git commit -s -m "[csv] Add CSV ''' + CSV_VERSION + '''" manifests/ build/scripts/
     git push origin ''' + MIDSTM_BRANCH + '''
   else # no need to push this so revert
     echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
@@ -233,8 +244,6 @@ sed -i ${WORKSPACE}/targetdwn/Dockerfile \
 # generate digests from tags
 # 1. convert csv to use brew container refs so we can resolve stuff
 CSV_NAME="codeready-workspaces"
-CSV_VERSION="$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-  sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")" # 2.y.0 but not 2.y.0.GA
 CSV_FILE="\$(find ${WORKSPACE}/targetdwn/manifests/ -name "${CSV_NAME}.csv.yaml" | tail -1)"; # echo "[INFO] CSV = ${CSV_FILE}"
 sed -r \
     `# for plugin & devfile registries, use internal Brew versions` \
