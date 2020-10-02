@@ -28,7 +28,7 @@ POSTGRES_TAG=1
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 checkVersion() {
-  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+  if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
     # echo "[INFO] $3 version $2 >= $1, can proceed."
 	true
   else 
