@@ -107,7 +107,7 @@ done
 
 replaceSpecField()
 {
-  echo "[INFO] ${0##*/} :: .spec.$updateName = $updateVal"
+  echo "[INFO] ${0##*/} :: * .spec.${updateName}: ${updateVal}"
   cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
     '.spec.'${updateName}' = $updateVal' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
@@ -116,7 +116,7 @@ replaceSpecField()
 # same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
 insertEnvVar()
 {
-  echo "[INFO] ${0##*/} :: $updateName = $updateVal"
+  echo "[INFO] ${0##*/} :: ${updateName}: ${updateVal}"
   cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
     '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
@@ -243,7 +243,7 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 	done
 
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries
-	${SCRIPTS_DIR}/insert-related-images-to-csv.sh -v ${CSV_VERSION} -t ${TARGETDIR}
+	${SCRIPTS_DIR}/insert-related-images-to-csv.sh -v ${CSV_VERSION} -t ${TARGETDIR} --crw-branch ${MIDSTM_BRANCH}
 
 	# sort env vars
 	cat "${CSVFILE}" | yq -Y '.spec.install.spec.deployments[].spec.template.spec.containers[].env |= sort_by(.name)' > "${CSVFILE}.2"

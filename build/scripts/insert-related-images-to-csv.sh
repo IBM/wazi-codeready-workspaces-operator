@@ -13,16 +13,17 @@
 # insert RELATED_IMAGE_ fields for images referenced by the plugin and devfile registries
 
 set -e
-SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
+# SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 
 # defaults
 CSV_VERSION=2.y.0
 CRW_VERSION=${CSV_VERSION%.*}
+MIDSTM_BRANCH=crw-2.5-rhel8
 
 # TODO handle cmdline input
 usage () {
-	echo "Usage:   $0 -v [CRW CSV_VERSION] -t [/path/to/generated]"
-	echo "Example: $0 -v 2.y.0 -t `pwd`"
+	echo "Usage:   $0 -v [CRW CSV_VERSION] -t [/path/to/generated] --crw-branch ${MIDSTM_BRANCH}"
+	echo "Example: $0 -v 2.y.0 -t $(pwd) --crw-branch crw-2.5-rhel8"
   exit
 }
 
@@ -30,9 +31,10 @@ if [[ $# -lt 4 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	# for CSV_VERSION = 2.y.0, get CRW_VERSION = 2.y
-	'-v') CSV_VERSION="$2"; CRW_VERSION="${CSV_VERSION%.*}"; shift 1;;
-	'-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
+  # for CSV_VERSION = 2.y.0, get CRW_VERSION = 2.y
+  '-v') CSV_VERSION="$2"; CRW_VERSION="${CSV_VERSION%.*}"; shift 1;;
+  '-t') TARGETDIR="$2"; TARGETDIR="${TARGETDIR%/}"; shift 1;;
+  '--crw-branch') MIDSTM_BRANCH="$2"; shift 1;; # branch of redhat-developer/codeready-workspaces/ - check registries' referenced images
 	'--help'|'-h') usage;;
   esac
   shift 1
@@ -44,6 +46,9 @@ CONTAINERS=""
 tmpdir=$(mktemp -d); mkdir -p $tmpdir; pushd $tmpdir >/dev/null
     # check out crw sources
     rm -fr crw && git clone -q https://github.com/redhat-developer/codeready-workspaces crw
+    cd crw/
+    git checkout ${MIDSTM_BRANCH} || true
+    cd ..
 
     # collect containers referred to by devfiles
     CONTAINERS="${CONTAINERS} $(cd crw/dependencies/che-devfile-registry; ./build/scripts/list_referenced_images.sh devfiles/)"
@@ -65,7 +70,7 @@ IFS=$'\n' CONTAINERS=($(sort <<<"${CONTAINERS_UNIQ[*]}")); unset IFS
 # same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
 insertEnvVar()
 {
-  echo "[INFO] ${0##*/} :: $updateName = $updateVal"
+  echo "[INFO] ${0##*/} :: * ${updateName}: ${updateVal}"
   cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
     '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
@@ -95,11 +100,9 @@ done
 # replace external crw refs with internal ones
 sed -r -i $CSVFILE \
   -e "s@registry.access.redhat.com/ubi8-minimal@registry.redhat.io/ubi8-minimal@g" \
+  -e "s@registry.access.redhat.com/ubi8/ubi-minimal@registry.redhat.io/ubi8/ubi-minimal@g" \
   `# CRW-1254 use ubi8/ubi-minimal for airgap mirroring` \
   -e "s@/ubi8-minimal@/ubi8/ubi-minimal@g"
-  # CRW-1237 temporarily disable switching to registry-proxy URLs - might have to re-enable these if osbs application broken
-  # -e "s@registry.redhat.io/codeready-workspaces/@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-@g#" \
-  # -e "s@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-crw-2-rhel8-operator@registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator@g" \
 
 # echo list of RELATED_IMAGE_ entries after adding them above
 # cat $CSVFILE | grep RELATED_IMAGE_ -A1
