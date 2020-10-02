@@ -32,7 +32,7 @@ metadata:
             
 spec:
   sourceType: grpc
-  displayName: IBM Wazi Developer for Red Hat CodeReady Workspaces
+  displayName: IBM Wazi Developer Operators
   publisher: IBM
   image: docker.io/ibmcom/wazi-code-operator-catalog:latest
   # tag: docker.io/ibmcom/wazi-code-operator-catalog:1.1.0
