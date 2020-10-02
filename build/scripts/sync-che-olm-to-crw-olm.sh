@@ -40,9 +40,9 @@ checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 usage () {
 	echo "Usage:   ${0##*/} -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--che che.csv.version] [--crw-branch crw-repo-branch]"
-	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --che 9.9.9-nightly.1598450052"
-	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` --crw-branch ${MIDSTM_BRANCH}"
-	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t `pwd` [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) --che 9.9.9-nightly.1598450052"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) --crw-branch ${MIDSTM_BRANCH}"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
 	echo "Options:
 	--sso-tag 7.4
 	--ubi-tag 8.2
@@ -103,8 +103,16 @@ mkdir -p ${TARGETDIR}/deploy/crds ${TARGETDIR}/manifests/
 for CRDFILE in \
 	"${TARGETDIR}/manifests/codeready-workspaces.crd.yaml" \
 	"${TARGETDIR}/deploy/crds/org_v1_che_crd.yaml"; do
-	cp "${SOURCEDIR}"/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*crd.yaml "${CRDFILE}"
+	cp "${SOURCEDIR}"/deploy/olm-catalog/eclipse-che-preview-openshift/manifests/*crd.yaml "${CRDFILE}"
 done
+
+replaceSpecField()
+{
+  echo "[INFO] ${0##*/} :: .spec.$updateName = $updateVal"
+  cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+    '.spec.'${updateName}' = $updateVal' \
+    > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
+}
 
 # same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
 insertEnvVar()
@@ -115,10 +123,11 @@ insertEnvVar()
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
 }
 
+SOURCE_CSVFILE="${SOURCEDIR}/deploy/olm-catalog/eclipse-che-preview-openshift/manifests/che-operator.clusterserviceversion.yaml"
+
 ICON="$(cat "${SCRIPTS_DIR}/sync-che-olm-to-crw-olm.icon.txt")"
-for CSVFILE in \
-	${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
-	cp olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/"${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}"
+for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
+	cp "${SOURCE_CSVFILE}" "${CSVFILE}"
 	# transform resulting file
 	NOW="$(date -u +%FT%T+00:00)"
 	sed -r \
@@ -132,7 +141,7 @@ for CSVFILE in \
 		-e "s|Eclipse Che|CodeReady Workspaces|g" \
 		-e "s|Eclipse Foundation|Red Hat, Inc.|g" \
 		\
-		-e "s|name: .+preview-openshift.v${CHE_VERSION}|name: crwoperator.v${CSV_VERSION}|g" \
+		-e "s|name: .+preview-openshift.v.+|name: crwoperator.v${CSV_VERSION}|g" \
 		\
 		-e 's|Keycloak|Red Hat SSO|g' \
 		-e 's|my-keycloak|my-rhsso|' \
@@ -146,8 +155,8 @@ for CSVFILE in \
 		\
 		-e 's|/usr/local/bin/codeready-operator|/usr/local/bin/che-operator|' \
 		-e 's|imagePullPolicy: IfNotPresent|imagePullPolicy: Always|' \
-		-e "s|replaces: eclipse-che-preview-openshift.v.+|replaces: crwoperator.v${CSV_VERSION_PREV}|" \
-		-e "s|version: ${CHE_VERSION}|version: ${CSV_VERSION}|g" \
+		`# -e "s|replaces: eclipse-che-preview-openshift.v.+|replaces: crwoperator.v${CSV_VERSION_PREV}|"` \
+		`# -e "s|version: .+nightly|version: ${CSV_VERSION}|g"` \
 		\
 		-e 's|"cheImageTag": "nightly"|"cheImageTag": ""|' \
 		-e 's|"devfileRegistryImage":.".+"|"devfileRegistryImage": ""|' \
@@ -184,14 +193,14 @@ for CSVFILE in \
 		sed -r '/.*"cheImageTag": ".*",/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "cheFlavor": "codeready",' \
 			-i "${CSVFILE}"
 	fi
-	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
+	if [[ $(diff -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted (sed) ${CSVFILE}"
 	fi
 
 	# yq changes - transform env vars from Che to CRW values
 	changed="$(cat "${CSVFILE}" | yq  -Y '.spec.displayName="Red Hat CodeReady Workspaces"')" && \
 		echo "${changed}" > "${CSVFILE}"
-	if [[ $(diff -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
+	if [[ $(diff -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted (yq #1) ${CSVFILE}:"
 		for updateName in ".spec.displayName"; do 
 			echo -n "[INFO] ${0##*/} ::  * $updateName: "
@@ -224,6 +233,16 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 		insertEnvVar
 	done
 
+	# insert replaces: field
+	declare -A spec_insertions=(
+		["replaces"]="crwoperator.v${CSV_VERSION_PREV}"
+		["version"]="${CSV_VERSION}"
+	)
+	for updateName in "${!spec_insertions[@]}"; do
+		updateVal="${spec_insertions[$updateName]}"
+		replaceSpecField
+	done
+
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries
 	${SCRIPTS_DIR}/insert-related-images-to-csv.sh -v ${CSV_VERSION} -t ${TARGETDIR}
 
@@ -231,7 +250,7 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 	cat "${CSVFILE}" | yq -Y '.spec.install.spec.deployments[].spec.template.spec.containers[].env |= sort_by(.name)' > "${CSVFILE}.2"
 	mv "${CSVFILE}.2" "${CSVFILE}"
 
-	if [[ $(diff -q -u "${SOURCEDIR}/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/${CHE_VERSION}"/*clusterserviceversion.yaml "${CSVFILE}") ]]; then
+	if [[ $(diff -q -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted + inserted (yq #2) ${CSVFILE}:"
 		for updateName in "${!operator_replacements[@]}"; do 
 			echo -n " * $updateName: "
@@ -241,9 +260,9 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 done
 
 # CRW-1202 old way of injecting digests from tags, until we switch to OSBS digest pinning
-pushd ${TARGETDIR} >/dev/null
-	${SCRIPTS_DIR}/addDigests.sh -w ${TARGETDIR} -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION} \
-		-n codeready-workspaces -v ${CSV_VERSION}
-popd >/dev/null
+#pushd ${TARGETDIR} >/dev/null
+#	${SCRIPTS_DIR}/addDigests.sh -w ${TARGETDIR} -s manifests -r ".*.csv.yaml" -t ${CRW_VERSION} \
+#		-n codeready-workspaces -v ${CSV_VERSION}
+#popd >/dev/null
 
 popd >/dev/null || exit
