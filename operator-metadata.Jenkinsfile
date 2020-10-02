@@ -24,7 +24,7 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     // DO NOT use csv file to compute version since this job can change that value; instead, read pom.xml and compute version from there
     CSV_VERSION = sh(script: '''#!/bin/bash -xe
     curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/pom.xml | grep "<version>" | head -2 | tail -1 | \
-    sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##")"
+    sed -r -e "s#.*<version>(.+)</version>.*#\\1#" -e "s#\\.GA##"
     ''', returnStdout: true).trim()
   }
   return CSV_VERSION
