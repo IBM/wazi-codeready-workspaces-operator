@@ -25,10 +25,6 @@ SSO_TAG=7.4
 UBI_TAG=8.2
 POSTGRES_TAG=1
 
-# TODO CRW-1260 replace these with brew built images
-TRAEFIK_IMAGE="quay.io/crw/traefik:v2.2.8"
-CONFIGBUMP_IMAGE="quay.io/crw/configbump:0.1.4"
-
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 checkVersion() {
@@ -92,6 +88,11 @@ fi
 UBI_IMAGE="registry.redhat.io/ubi8/ubi-minimal:${UBI_TAG}"
 POSTGRES_IMAGE="registry.redhat.io/rhel8/postgresql-96:${POSTGRES_TAG}"
 SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8 too
+
+# TODO CRW-1260 replace these with real brew built images; disable them for now by directing them to UBI_IMAGE
+TRAEFIK_IMAGE="${UBI_IMAGE}" # quay.io/crw/traefik:v2.2.8
+CONFIGBUMP_IMAGE="${UBI_IMAGE}" # quay.io/crw/configbump:0.1.4
+
 pushd "${SOURCEDIR}" >/dev/null || exit
 
 # CRW-1044 do we need these? 
