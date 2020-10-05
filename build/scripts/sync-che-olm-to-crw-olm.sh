@@ -25,6 +25,10 @@ SSO_TAG=7.4
 UBI_TAG=8.2
 POSTGRES_TAG=1
 
+# TODO CRW-1260 replace these with brew built images
+TRAEFIK_IMAGE="quay.io/crw/traefik:v2.2.8"
+CONFIGBUMP_IMAGE="quay.io/crw/configbump:0.1.4"
+
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 checkVersion() {
@@ -39,8 +43,8 @@ checkVersion() {
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 usage () {
-	echo "Usage:   ${0##*/} -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [--crw-branch crw-repo-branch]"
-	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) --crw-branch ${MIDSTM_BRANCH}"
+	echo "Usage:   ${0##*/} -v [CRW CSV_VERSION] -p [CRW CSV_VERSION_PREV] -s [/path/to/sources] -t [/path/to/generated] [-b crw-repo-branch]"
+	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) -b ${MIDSTM_BRANCH}"
 	echo "Example: ${0##*/} -v ${CSV_VERSION} -p ${CSV_VERSION_PREV} -s ${HOME}/che-operator -t $(pwd) [if no che.version, use value from codeready-workspaces/crw-branch/pom.xml]"
 	echo "Options:
 	--sso-tag 7.4
@@ -55,7 +59,7 @@ if [[ $# -lt 8 ]]; then usage; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--che') CHE_VERSION="$2"; shift 1;;
-    '--crw-branch') MIDSTM_BRANCH="$2"; shift 1;; # branch of redhat-developer/codeready-workspaces/pom.xml to check as default CHE_VERSION
+    '-b'|'--crw-branch') MIDSTM_BRANCH="$2"; shift 1;; # branch of redhat-developer/codeready-workspaces/pom.xml to check as default CHE_VERSION
 	# for CSV_VERSION = 2.2.0, get CRW_VERSION = 2.2
 	'-v') CSV_VERSION="$2"; CRW_VERSION="${CSV_VERSION%.*}"; shift 1;;
 	# previous version to set in CSV
@@ -73,8 +77,11 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+if [[ ! -d "${SOURCEDIR}" ]]; then usage; fi
+if [[ ! -d "${TARGETDIR}" ]]; then usage; fi
+
 # if current CSV and previous CVS version not set, die
-if [ "${CSV_VERSION}" == "2.y.0" ]; then usage; fi
+if [[ "${CSV_VERSION}" == "2.y.0" ]]; then usage; fi
 if [[ "${CSV_VERSION_PREV}" == "2.x.0" ]]; then usage; fi
 
 # get che version from crw server root pom, eg., 7.14.3
@@ -85,7 +92,6 @@ fi
 UBI_IMAGE="registry.redhat.io/ubi8/ubi-minimal:${UBI_TAG}"
 POSTGRES_IMAGE="registry.redhat.io/rhel8/postgresql-96:${POSTGRES_TAG}"
 SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8 too
-
 pushd "${SOURCEDIR}" >/dev/null || exit
 
 # CRW-1044 do we need these? 
@@ -105,21 +111,33 @@ for CRDFILE in \
 	cp "${SOURCEDIR}"/deploy/olm-catalog/eclipse-che-preview-openshift/manifests/*crd.yaml "${CRDFILE}"
 done
 
-replaceSpecField()
+replaceField()
 {
-  echo "[INFO] ${0##*/} :: * .spec.${updateName}: ${updateVal}"
-  cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-    '.spec.'${updateName}' = $updateVal' \
+  echo "[INFO] ${0##*/} :: * ${updateName}: ${updateVal}"
+  cat ${CSVFILE} | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+    ${updateName}' = $updateVal' \
     > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
 }
 
-# same method used in both insert-related-images-to-csv.sh and sync-che-olm-to-crw-olm.sh
-insertEnvVar()
+# similar method to insertEnvVar() used in insert-related-images-to-csv.sh; uses += instead of =
+replaceEnvVar()
 {
-  echo "[INFO] ${0##*/} :: ${updateName}: ${updateVal}"
-  cat $CSVFILE | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-    '.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
-    > ${CSVFILE}.2; mv ${CSVFILE}.2 ${CSVFILE}
+  # don't do anything if the existing value is the same as the replacement one
+  if [[ "$(cat ${CSVFILE} | yq -r --arg updateName "${updateName}" '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name == $updateName).value')" != "${updateVal}" ]]; then
+	echo "[INFO] ${0##*/} :: ${updateName}: ${updateVal}"
+	cat ${CSVFILE} | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+		'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]' \
+		> ${CSVFILE}.2
+		# echo "replaced?"
+		# diff -u ${CSVFILE} ${CSVFILE}.2 || true
+		if [[ ! $(diff -u ${CSVFILE} ${CSVFILE}.2) ]]; then
+		# echo "insert $updateName = $updateVal"
+		cat ${CSVFILE} | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+			'.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
+			> ${CSVFILE}.2
+		fi
+		mv ${CSVFILE}.2 ${CSVFILE}
+	fi
 }
 
 SOURCE_CSVFILE="${SOURCEDIR}/deploy/olm-catalog/eclipse-che-preview-openshift/manifests/che-operator.clusterserviceversion.yaml"
@@ -226,20 +244,22 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 	declare -A operator_insertions=(
 		["RELATED_IMAGE_keycloak_s390x"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
 		["RELATED_IMAGE_keycloak_ppc64le"]="${SSO_IMAGE/-openshift-/-openj9-openshift-}"
+		["RELATED_IMAGE_single_host_gateway"]="${TRAEFIK_IMAGE}"
+		["RELATED_IMAGE_single_host_gateway_config_sidecar"]="${CONFIGBUMP_IMAGE}"
 	)
 	for updateName in "${!operator_insertions[@]}"; do
 		updateVal="${operator_insertions[$updateName]}"
-		insertEnvVar
+		replaceEnvVar
 	done
 
 	# insert replaces: field
 	declare -A spec_insertions=(
-		["replaces"]="crwoperator.v${CSV_VERSION_PREV}"
-		["version"]="${CSV_VERSION}"
+		[".spec.replaces"]="crwoperator.v${CSV_VERSION_PREV}"
+		[".spec.version"]="${CSV_VERSION}"
 	)
 	for updateName in "${!spec_insertions[@]}"; do
 		updateVal="${spec_insertions[$updateName]}"
-		replaceSpecField
+		replaceField
 	done
 
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries
