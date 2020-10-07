@@ -49,8 +49,8 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools, OpenShift Optional
     certified: "true"
-    containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.5
-    createdAt: "2020-10-05T21:26:44+00:00"
+    containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.5
+    createdAt: "2020-10-07T19:10:35+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     operatorframework.io/suggested-namespace: openshift-workspaces
@@ -372,7 +372,7 @@ spec:
                         valueFrom:
                           fieldRef:
                             fieldPath: metadata.annotations['olm.targetNamespaces']
-                    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.5
+                    image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.5
                     imagePullPolicy: Always
                     name: codeready-operator
                     ports:

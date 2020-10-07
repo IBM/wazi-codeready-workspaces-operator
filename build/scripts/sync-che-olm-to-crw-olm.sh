@@ -197,8 +197,8 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 		-e "s|centos/postgresql-96-centos7:9.6|${POSTGRES_IMAGE}|" \
 		-e "s|quay.io/eclipse/che-keycloak:.+|${SSO_IMAGE}|" \
 		\
-		-e "s|quay.io/eclipse/codeready-operator:nightly|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_VERSION}|" \
-		-e "s|quay.io/eclipse/codeready-operator:${CHE_VERSION}|registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:${CRW_VERSION}|" \
+		`# use internal image for operator, as codeready-workspaces-crw-2-rhel8-operator only exists in RHEC and Quay repos` \
+		-e "s#quay.io/eclipse/codeready-operator:(nightly|${CHE_VERSION})#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:${CRW_VERSION}#" \
 		-e 's|IMAGE_default_|RELATED_IMAGE_|' \
 		\
 		` # CRW-927 set suggested namespace, append cluster-monitoring = true (removed from upstream as not supported in community operators)` \
