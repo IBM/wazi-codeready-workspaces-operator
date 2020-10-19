@@ -279,7 +279,7 @@ LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1 \\\r
       name="$PRODNAME/$COMPNAME" \\\r
       version="'$CRW_VERSION'" \\\r
       license="EPLv2" \\\r
-      maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
+      maintainer="Nick Boldt <nboldt@redhat.com>, Dmytro Nochevnov <dnochevn@redhat.com>" \\\r
       io.openshift.expose-services="" \\\r
       usage="" \r'
 
