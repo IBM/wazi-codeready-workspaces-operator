@@ -88,10 +88,8 @@ fi
 UBI_IMAGE="registry.redhat.io/ubi8/ubi-minimal:${UBI_TAG}"
 POSTGRES_IMAGE="registry.redhat.io/rhel8/postgresql-96:${POSTGRES_TAG}"
 SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8 too
-
-# TODO CRW-1260 replace these with real brew built images; disable them for now by directing them to UBI_IMAGE
-TRAEFIK_IMAGE="${UBI_IMAGE}" # quay.io/crw/traefik:v2.2.8
-CONFIGBUMP_IMAGE="${UBI_IMAGE}" # quay.io/crw/configbump:0.1.4
+TRAEFIK_IMAGE="registry.redhat.io/codeready-workspaces/traefik-rhel8:2.5"
+CONFIGBUMP_IMAGE="registry.redhat.io/codeready-workspaces/configbump-rhel8:2.5"
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
