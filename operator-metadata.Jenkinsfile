@@ -196,8 +196,8 @@ echo "[INFO] CSV_FILE = ${CSV_FILE}"
   cd ${WORKSPACE}/targetmid/
   # if anything has changed other than the createdAt date, then we commit this
   if [[ $(git diff | grep -v createdAt | egrep "^(-|\\+) ") ]]; then
-    git add manifests/ build/scripts/
-    git commit -s -m "[csv] Add CSV ''' + CSV_VERSION + '''" manifests/ build/scripts/
+    git add . -A -f
+    git commit -s -m "[csv] Add CSV ''' + CSV_VERSION + '''" .
     git push origin ''' + MIDSTM_BRANCH + '''
   else # no need to push this so revert
     echo "[INFO] No significant changes (other than createdAt date) so revert and do not commit"
