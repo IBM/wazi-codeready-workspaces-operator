@@ -54,7 +54,7 @@ metadata:
     categories: Developer Tools, OpenShift Optional
     certified: "true"
     containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.5
-    createdAt: "2020-11-02T13:52:35+00:00"
+    createdAt: "2020-11-09T22:04:55+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     operatorframework.io/suggested-namespace: openshift-workspaces
@@ -310,8 +310,6 @@ spec:
                         value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_machineexec
                         value: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.5
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_intellij
-                        value: registry.redhat.io/codeready-workspaces/plugin-intellij-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
                         value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
