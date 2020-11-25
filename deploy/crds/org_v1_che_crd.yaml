@@ -19,7 +19,6 @@ spec:
     listKind: CheClusterList
     plural: checlusters
     singular: checluster
-  preserveUnknownFields: false
   scope: Namespaced
   subresources:
     status: {}
@@ -668,9 +667,8 @@ spec:
                 the pod is in this state.
               type: string
           type: object
-      type: object
   version: v1
   versions:
-    - name: v1
-      served: true
-      storage: true
+  - name: v1
+    served: true
+    storage: true
