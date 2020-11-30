@@ -5,8 +5,8 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 // FORCE_BUILD = "false"
 
-@Field String SOURCE_BRANCH = "7.20.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
-@Field String CSV_VERSION_PREV = "2.4.0"
+@Field String SOURCE_BRANCH = "7.22.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
+@Field String CSV_VERSION_PREV = "2.5.1"
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
 
 def SOURCE_REPO = "eclipse/che-operator" //source repo from which to find and sync commits to pkgs.devel repo
