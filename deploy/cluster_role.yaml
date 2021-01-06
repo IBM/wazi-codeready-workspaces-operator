@@ -52,3 +52,12 @@ rules:
       - update
       - patch
       - delete
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - clusterrolebindings
+    verbs:
+      - list
+      - create
+      - watch
+      - update

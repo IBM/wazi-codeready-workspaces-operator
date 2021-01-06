@@ -8,43 +8,75 @@ metadata:
           "apiVersion": "org.eclipse.che/v1",
           "kind": "CheCluster",
           "metadata": {
-             "name": "eclipse-che"
+            "name": "eclipse-che"
           },
           "spec": {
+            "auth": {
+              "externalIdentityProvider": false,
+              "identityProviderAdminUserName": "",
+              "identityProviderClientId": "",
+              "identityProviderImage": "",
+              "identityProviderPassword": "",
+              "identityProviderRealm": "",
+              "identityProviderURL": "",
+              "oAuthClientName": "",
+              "oAuthSecret": ""
+            },
+            "database": {
+              "chePostgresDb": "",
+              "chePostgresHostName": "",
+              "chePostgresPassword": "",
+              "chePostgresPort": "",
+              "chePostgresUser": "",
+              "externalDb": false,
+              "postgresImage": ""
+            },
             "k8s": {
-                "ingressDomain": "",
-                "tlsSecretName": ""
-              },
-             "server": {
-                "cheImageTag": "nightly",
-                "devfileRegistryImage": "quay.io/eclipse/che-devfile-registry:nightly",
-                "pluginRegistryImage": "quay.io/eclipse/che-plugin-registry:nightly",
-                "tlsSupport": true,
-                "selfSignedCert": false
-             },
-             "database": {
-                "externalDb": false,
-                "chePostgresHostName": "",
-                "chePostgresPort": "",
-                "chePostgresUser": "",
-                "chePostgresPassword": "",
-                "chePostgresDb": ""
-             },
-             "auth": {
-                "identityProviderImage": "quay.io/eclipse/che-keycloak:nightly",
-                "externalIdentityProvider": false,
-                "identityProviderURL": "",
-                "identityProviderRealm": "",
-                "identityProviderClientId": ""
-             },
-             "storage": {
-                "pvcStrategy": "per-workspace",
-                "pvcClaimSize": "1Gi",
-                "preCreateSubPaths": true
-             },
-             "metrics": {
-                "enable": true
-             }
+              "ingressClass": "",
+              "ingressDomain": "",
+              "ingressStrategy": "",
+              "securityContextFsGroup": "",
+              "securityContextRunAsUser": "",
+              "singleHostExposureType": "",
+              "tlsSecretName": "che-tls"
+            },
+            "metrics": {
+              "enable": true
+            },
+            "server": {
+              "allowUserDefinedWorkspaceNamespaces": false,
+              "cheClusterRoles": "",
+              "cheFlavor": "",
+              "cheImage": "",
+              "cheImageTag": "",
+              "cheWorkspaceClusterRole": "",
+              "devfileRegistryImage": "",
+              "gitSelfSignedCert": false,
+              "nonProxyHosts": "",
+              "pluginRegistryImage": "",
+              "proxyPassword": "",
+              "proxyPort": "",
+              "proxyURL": "",
+              "proxyUser": "",
+              "serverExposureStrategy": "",
+              "serverMemoryLimit": "",
+              "serverMemoryRequest": "",
+              "serverTrustStoreConfigMapName": "",
+              "singleHostGatewayConfigMapLabels": {},
+              "singleHostGatewayConfigSidecarImage": "",
+              "singleHostGatewayImage": "",
+              "tlsSupport": true,
+              "useInternalClusterSVCNames": true,
+              "workspaceNamespaceDefault": ""
+            },
+            "storage": {
+              "postgresPVCStorageClassName": "",
+              "preCreateSubPaths": true,
+              "pvcClaimSize": "1Gi",
+              "pvcJobsImage": "",
+              "pvcStrategy": "common",
+              "workspacePVCStorageClassName": ""
+            }
           }
         }
       ]
@@ -52,64 +84,73 @@ metadata:
     categories: Developer Tools
     certified: "false"
     containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
-    createdAt: "2020-10-14T09:49:09Z"
+    createdAt: "2020-12-14T15:43:45Z"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces.
     operatorframework.io/suggested-namespace: eclipse-che
     repository: https://github.com/eclipse/che-operator
     support: Eclipse Foundation
-  name: codeready-workspaces-preview-kubernetes.v7.20.0-14.nightly
+  name: codeready-workspaces-preview-kubernetes.v7.23.0-48.nightly
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-      - description: CodeReady Workspaces cluster with DB and Auth Server
+      - description: The `CheCluster` custom resource allows defining and managing
+          a Che server installation
         displayName: CodeReady Workspaces Cluster
         kind: CheCluster
         name: checlusters.org.eclipse.che
         specDescriptors:
-          - description: TLS routes
-            displayName: TLS Mode
+          - description: Deprecated. Instructs the operator to deploy Che in TLS mode.
+              This is enabled by default. Disabling TLS may cause malfunction of some
+              Che components.
+            displayName: Tls support
             path: server.tlsSupport
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
-          - description: Ingress to access CodeReady Workspaces
-            displayName: CodeReady Workspaces URL
-            path: cheURL
-            x-descriptors:
-              - urn:alm:descriptor:org.w3:link
-          - description: Ingress to access Keycloak Admin Console
-            displayName: Keycloak Admin Console URL
-            path: keycloakURL
-            x-descriptors:
-              - urn:alm:descriptor:org.w3:link
-          - description: CodeReady Workspaces server version
-            displayName: CodeReady Workspaces version
-            path: cheVersion
-            x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:label
-          - description: The current status of the application
+          - description: Status of a Che installation. Can be `Available`, `Unavailable`,
+              or `Available, Rolling Update in Progress`
             displayName: Status
             path: cheClusterRunning
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: Reason of the current status
-            displayName: Reason
-            path: reason
+          - description: Public URL to the Che server
+            displayName: CodeReady Workspaces URL
+            path: cheURL
             x-descriptors:
-              - urn:alm:descriptor:text
-          - description: Message explaining the current status
-            displayName: Message
-            path: message
+              - urn:alm:descriptor:org.w3:link
+          - description: Current installed Che version
+            displayName: 'displayName: CodeReady Workspaces version'
+            path: cheVersion
             x-descriptors:
-              - urn:alm:descriptor:text
-          - description: Link providing help related to the current status
+              - urn:alm:descriptor:org.w3:link
+          - description: A URL that can point to some URL where to find help related
+              to the current Operator status.
             displayName: Help link
             path: helpLink
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
+          - description: Public URL to the Identity Provider server (Keycloak / RH
+              SSO).
+            displayName: Keycloak Admin Console URL
+            path: keycloakURL
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
+          - description: A human readable message indicating details about why the
+              pod is in this condition.
+            displayName: Message
+            path: message
+            x-descriptors:
+              - urn:alm:descriptor:text
+          - description: A brief CamelCase message indicating details about why the
+              pod is in this state.
+            displayName: Reason
+            path: reason
+            x-descriptors:
+              - urn:alm:descriptor:io.kubernetes.phase:reason
+              - urn:alm:descriptor:text
         version: v1
   description: |
     A collaborative Kubernetes-native development solution that delivers Kubernetes workspaces and in-browser IDE for rapid cloud application development.
@@ -222,6 +263,27 @@ spec:
       mediatype: image/png
   install:
     spec:
+      clusterPermissions:
+        - rules:
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterrolebindings
+              verbs:
+                - list
+                - create
+                - watch
+                - update
+          serviceAccountName: codeready-operator
+        - rules:
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - update
+                - get
+          serviceAccountName: che-namespace-editor
       deployments:
         - name: codeready-operator
           spec:
@@ -260,9 +322,9 @@ spec:
                       - name: RELATED_IMAGE_che_tls_secrets_creation_job
                         value: quay.io/eclipse/che-tls-secret-creator:alpine-d1ed4ad
                       - name: RELATED_IMAGE_pvc_jobs
-                        value: registry.access.redhat.com/ubi8-minimal:8.2-349
+                        value: registry.access.redhat.com/ubi8-minimal:8.3-201
                       - name: RELATED_IMAGE_postgres
-                        value: centos/postgresql-96-centos7:9.6
+                        value: quay.io/eclipse/che--centos--postgresql-96-centos7:9.6-b681d78125361519180a6ac05242c296f8906c11eab7e207b5ca9a89b6344392
                       - name: RELATED_IMAGE_keycloak
                         value: quay.io/eclipse/che-keycloak:nightly
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
@@ -371,6 +433,36 @@ spec:
                 - '*'
               verbs:
                 - '*'
+            - apiGroups:
+                - metrics.k8s.io
+              resources:
+                - pods
+                - nodes
+              verbs:
+                - get
+                - list
+                - watch
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - kubernetesimagepullers
+              verbs:
+                - '*'
+            - apiGroups:
+                - operators.coreos.com
+              resources:
+                - subscriptions
+                - clusterserviceversions
+                - operatorgroups
+              verbs:
+                - '*'
+            - apiGroups:
+                - packages.operators.coreos.com
+              resources:
+                - packagemanifests
+              verbs:
+                - get
+                - list
           serviceAccountName: codeready-operator
     strategy: deployment
   installModes:
@@ -402,4 +494,4 @@ spec:
   maturity: stable
   provider:
     name: Eclipse Foundation
-  version: 7.20.0-14.nightly
+  version: 7.23.0-48.nightly

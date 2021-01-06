@@ -14,11 +14,13 @@ metadata:
   name: codeready-workspaces
 spec:
   server:
+    useInternalClusterSVCNames: true
     cheImage: ''
     cheImageTag: ''
     devfileRegistryImage: ''
     pluginRegistryImage: ''
     cheFlavor: codeready
+    cheClusterRoles: ''
     cheWorkspaceClusterRole: ''
     serverTrustStoreConfigMapName: ''
     gitSelfSignedCert: false
