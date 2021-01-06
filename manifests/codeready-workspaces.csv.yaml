@@ -12,41 +12,68 @@ metadata:
           "apiVersion": "org.eclipse.che/v1",
           "kind": "CheCluster",
           "metadata": {
-             "name": "codeready-workspaces"
+            "name": "codeready-workspaces"
           },
           "spec": {
-             "server": {
-                "cheImageTag": "",
+            "auth": {
+              "externalIdentityProvider": false,
+              "identityProviderAdminUserName": "",
+              "identityProviderClientId": "",
+              "identityProviderImage": "",
+              "identityProviderPassword": "",
+              "identityProviderRealm": "",
+              "identityProviderURL": "",
+              "oAuthClientName": "",
+              "oAuthSecret": "",
+              "openShiftoAuth": true
+            },
+            "database": {
+              "chePostgresDb": "",
+              "chePostgresHostName": "",
+              "chePostgresPassword": "",
+              "chePostgresPort": "",
+              "chePostgresUser": "",
+              "externalDb": false,
+              "postgresImage": ""
+            },
+            "metrics": {
+              "enable": true
+            },
+            "server": {
+              "allowUserDefinedWorkspaceNamespaces": false,
+              "cheClusterRoles": "",
+              "cheFlavor": "",
+              "cheImage": "",
+              "cheImageTag": "",
                 "cheFlavor": "codeready",
-                "devfileRegistryImage": "",
-                "pluginRegistryImage": "",
-                "tlsSupport": true,
-                "selfSignedCert": false
-             },
-             "database": {
-                "externalDb": false,
-                "chePostgresHostName": "",
-                "chePostgresPort": "",
-                "chePostgresUser": "",
-                "chePostgresPassword": "",
-                "chePostgresDb": ""
-             },
-             "auth": {
-                "openShiftoAuth": true,
-                "identityProviderImage": "",
-                "externalIdentityProvider": false,
-                "identityProviderURL": "",
-                "identityProviderRealm": "",
-                "identityProviderClientId": ""
-             },
-             "storage": {
-                "pvcStrategy": "per-workspace",
-                "pvcClaimSize": "1Gi",
-                "preCreateSubPaths": true
-             },
-             "metrics": {
-                "enable": true
-             }
+              "cheWorkspaceClusterRole": "",
+              "devfileRegistryImage": "",
+              "gitSelfSignedCert": false,
+              "nonProxyHosts": "",
+              "pluginRegistryImage": "",
+              "proxyPassword": "",
+              "proxyPort": "",
+              "proxyURL": "",
+              "proxyUser": "",
+              "serverExposureStrategy": "",
+              "serverMemoryLimit": "",
+              "serverMemoryRequest": "",
+              "serverTrustStoreConfigMapName": "",
+              "singleHostGatewayConfigMapLabels": {},
+              "singleHostGatewayConfigSidecarImage": "",
+              "singleHostGatewayImage": "",
+              "tlsSupport": true,
+              "useInternalClusterSVCNames": true,
+              "workspaceNamespaceDefault": ""
+            },
+            "storage": {
+              "postgresPVCStorageClassName": "",
+              "preCreateSubPaths": true,
+              "pvcClaimSize": "1Gi",
+              "pvcJobsImage": "",
+              "pvcStrategy": "common",
+              "workspacePVCStorageClassName": ""
+            }
           }
         }
       ]
@@ -54,7 +81,7 @@ metadata:
     categories: Developer Tools, OpenShift Optional
     certified: "true"
     containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.5
-    createdAt: "2020-11-02T13:52:35+00:00"
+    createdAt: "2021-01-06T21:56:43+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     operatorframework.io/suggested-namespace: openshift-workspaces
@@ -67,57 +94,61 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-      - description: CodeReady Workspaces cluster with DB and Auth Server
+      - description: The `CheCluster` custom resource allows defining and managing
+          a Che server installation
         displayName: CodeReady Workspaces Cluster
         kind: CheCluster
         name: checlusters.org.eclipse.che
         specDescriptors:
-          - description: Log in to CodeReady Workspaces with OpenShift credentials
-            displayName: OpenShift oAuth
-            path: auth.openShiftoAuth
-            x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-          - description: TLS routes
-            displayName: TLS Mode
+          - description: Deprecated. Instructs the operator to deploy Che in TLS mode.
+              This is enabled by default. Disabling TLS may cause malfunction of some
+              Che components.
+            displayName: Tls support
             path: server.tlsSupport
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
-          - description: Route to access CodeReady Workspaces
-            displayName: CodeReady Workspaces URL
-            path: cheURL
-            x-descriptors:
-              - urn:alm:descriptor:org.w3:link
-          - description: Route to access Red Hat SSO Admin Console
-            displayName: Red Hat SSO Admin Console URL
-            path: keycloakURL
-            x-descriptors:
-              - urn:alm:descriptor:org.w3:link
-          - description: CodeReady Workspaces server version
-            displayName: CodeReady Workspaces version
-            path: cheVersion
-            x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:label
-          - description: The current status of the application
+          - description: Status of a Che installation. Can be `Available`, `Unavailable`,
+              or `Available, Rolling Update in Progress`
             displayName: Status
             path: cheClusterRunning
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: Reason of the current status
-            displayName: Reason
-            path: reason
+          - description: Public URL to the Che server
+            displayName: CodeReady Workspaces URL
+            path: cheURL
             x-descriptors:
-              - urn:alm:descriptor:text
-          - description: Message explaining the current status
-            displayName: Message
-            path: message
+              - urn:alm:descriptor:org.w3:link
+          - description: Current installed Che version
+            displayName: 'displayName: CodeReady Workspaces version'
+            path: cheVersion
             x-descriptors:
-              - urn:alm:descriptor:text
-          - description: Link providing help related to the current status
+              - urn:alm:descriptor:org.w3:link
+          - description: A URL that can point to some URL where to find help related
+              to the current Operator status.
             displayName: Help link
             path: helpLink
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
+          - description: Public URL to the Identity Provider server (Red Hat SSO /
+              RH SSO).
+            displayName: Red Hat SSO Admin Console URL
+            path: keycloakURL
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
+          - description: A human readable message indicating details about why the
+              pod is in this condition.
+            displayName: Message
+            path: message
+            x-descriptors:
+              - urn:alm:descriptor:text
+          - description: A brief CamelCase message indicating details about why the
+              pod is in this state.
+            displayName: Reason
+            path: reason
+            x-descriptors:
+              - urn:alm:descriptor:io.kubernetes.phase:reason
+              - urn:alm:descriptor:text
         version: v1
   description: |
     A collaborative Kubernetes-native development solution that delivers OpenShift workspaces and in-browser IDE for rapid cloud application development.
@@ -256,7 +287,25 @@ spec:
                 - update
                 - patch
                 - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterrolebindings
+              verbs:
+                - list
+                - create
+                - watch
+                - update
           serviceAccountName: codeready-operator
+        - rules:
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - update
+                - get
+          serviceAccountName: che-namespace-editor
       deployments:
         - name: codeready-operator
           spec:
@@ -310,36 +359,30 @@ spec:
                         value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_machineexec
                         value: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.5
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_intellij
-                        value: registry.redhat.io/codeready-workspaces/plugin-intellij-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_openj9
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_ppc64le
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_s390x
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.5
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_kubernetes
-                        value: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.5
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_openshift
-                        value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_cpp
-                        value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_dotnet
-                        value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_golang
-                        value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_php
-                        value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.5
+                        value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.6
                       - name: RELATED_IMAGE_codeready_workspaces_theia
                         value: registry.redhat.io/codeready-workspaces/theia-rhel8:2.5
                       - name: RELATED_IMAGE_codeready_workspaces_theia_endpoint
@@ -365,7 +408,7 @@ spec:
                       - name: RELATED_IMAGE_plugin_registry
                         value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.5
                       - name: RELATED_IMAGE_postgres
-                        value: registry.redhat.io/rhel8/postgresql-96:1
+                        value: quay.io/eclipse/che--centos--postgresql-96-centos7:9.6-b681d78125361519180a6ac05242c296f8906c11eab7e207b5ca9a89b6344392
                       - name: RELATED_IMAGE_pvc_jobs
                         value: registry.redhat.io/ubi8/ubi-minimal:8.2
                       - name: RELATED_IMAGE_rhscl_mongodb_36_rhel7
@@ -463,6 +506,36 @@ spec:
                 - '*'
               verbs:
                 - '*'
+            - apiGroups:
+                - metrics.k8s.io
+              resources:
+                - pods
+                - nodes
+              verbs:
+                - get
+                - list
+                - watch
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - kubernetesimagepullers
+              verbs:
+                - '*'
+            - apiGroups:
+                - operators.coreos.com
+              resources:
+                - subscriptions
+                - clusterserviceversions
+                - operatorgroups
+              verbs:
+                - '*'
+            - apiGroups:
+                - packages.operators.coreos.com
+              resources:
+                - packagemanifests
+              verbs:
+                - get
+                - list
           serviceAccountName: codeready-operator
     strategy: deployment
   installModes:
@@ -494,4 +567,4 @@ spec:
   provider:
     name: Red Hat
   version: 2.5.0
-  replaces: crwoperator.v2.4.0
+  replaces: crwoperator.v2.5.1
