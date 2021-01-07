@@ -193,6 +193,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 		-e "s|registry.access.redhat.com/ubi8/ubi-minimal:.+|${UBI_IMAGE}|g" \
 		\
 		-e "s|centos/postgresql-96-centos7:9.6|${POSTGRES_IMAGE}|" \
+		-e "s|quay.io/eclipse/che--centos--postgresql-96-centos7.+|${POSTGRES_IMAGE}|" \
 		-e "s|quay.io/eclipse/che-keycloak:.+|${SSO_IMAGE}|" \
 		\
 		`# use internal image for operator, as codeready-workspaces-crw-2-rhel8-operator only exists in RHEC and Quay repos` \
