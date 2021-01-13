@@ -19,7 +19,7 @@ SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 CSV_VERSION=2.y.0 # csv 2.y.0
 CRW_VERSION=${CSV_VERSION%.*} # tag 2.y
 CSV_VERSION_PREV=2.x.0
-MIDSTM_BRANCH=crw-2.5-rhel-8
+MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 
 SSO_TAG=7.4
 UBI_TAG=8.2
@@ -73,6 +73,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+if [[ ! -d "${MIDSTM_BRANCH}" ]]; then usage; fi
 if [[ ! -d "${SOURCEDIR}" ]]; then usage; fi
 if [[ ! -d "${TARGETDIR}" ]]; then usage; fi
 
