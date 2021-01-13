@@ -19,7 +19,6 @@ spec:
     listKind: CheClusterList
     plural: checlusters
     singular: checluster
-  preserveUnknownFields: false
   scope: Namespaced
   subresources:
     status: {}
@@ -162,7 +161,7 @@ spec:
                   description: 'Enables the integration of the identity provider (Keycloak
                     / RHSSO) with OpenShift OAuth. Empty value on the OpenShift platform
                     by default. If user changes this empty value to true/false, then
-                    che-operator respect this value. Otherwise che-operator tries
+                    codeready-operator respect this value. Otherwise che-operator tries
                     to auto detect if Openshift oAuth can be enabled and change empty
                     value, correspondly to auto-detection result. This property allows
                     users to directly login with their Openshift user through the
@@ -355,7 +354,7 @@ spec:
                   type: boolean
                 cheClusterRoles:
                   description: Comma-separated list of ClusterRoles that will be assigned
-                    to che ServiceAccount. Be aware that che-operator has to already
+                    to che ServiceAccount. Be aware that codeready-operator has to already
                     have all permissions in these ClusterRoles to be able to grant
                     them.
                   type: string
@@ -728,6 +727,6 @@ spec:
       type: object
   version: v1
   versions:
-    - name: v1
-      served: true
-      storage: true
+  - name: v1
+    served: true
+    storage: true
