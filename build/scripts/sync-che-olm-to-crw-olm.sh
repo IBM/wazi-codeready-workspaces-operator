@@ -31,7 +31,7 @@ checkVersion() {
   if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
     # echo "[INFO] $3 version $2 >= $1, can proceed."
 	true
-  else 
+  else
     echo "[ERROR] Must install $3 version >= $1"
     exit 1
   fi
@@ -94,7 +94,7 @@ CONFIGBUMP_IMAGE="registry.redhat.io/codeready-workspaces/configbump-rhel8:2.5"
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
-# CRW-1044 do we need these? 
+# CRW-1044 do we need these?
 # Copy digests scripts & adjust help messages
 # for d in addDigests.sh buildDigestMap.sh digestExcludeList images.sh olm.sh; do rsync -zrltq "${SOURCEDIR}/olm/${d}" "${SCRIPTS_DIR}"; done
 # sed -r -e 's|("Example:).*"|\1 ${0##*/} -w $(pwd) -s manifests -r \\".*.csv.yaml\\" -t '${CRW_VERSION}'"|g' \
@@ -208,9 +208,8 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 		-e '/annotations\:/i \ \ labels:\n    operatorframework.io/arch.amd64\: supported\n    operatorframework.io/arch.ppc64le\: supported\n    operatorframework.io/arch.s390x\: supported' \
 		-i "${CSVFILE}"
 	# insert missing cheFlavor annotation
-	if [[ ! $(grep -E '"cheFlavor":"codeready",' "${CSVFILE}") ]]; then 
-		sed -r '/.*"cheImageTag": ".*",/a \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "cheFlavor": "codeready",' \
-			-i "${CSVFILE}"
+	if [[ ! $(grep -E '"cheFlavor": "codeready",' "${CSVFILE}") ]]; then
+		sed 's|"cheFlavor":.*|"cheFlavor": "codeready",|' -i "${CSVFILE}
 	fi
 	if [[ $(diff -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted (sed) ${CSVFILE}"
@@ -221,7 +220,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 		echo "${changed}" > "${CSVFILE}"
 	if [[ $(diff -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted (yq #1) ${CSVFILE}:"
-		for updateName in ".spec.displayName"; do 
+		for updateName in ".spec.displayName"; do
 			echo -n "[INFO] ${0##*/} ::  * $updateName: "
 			cat  "${CSVFILE}" | yq "${updateName}" 2>/dev/null
 		done
@@ -273,7 +272,7 @@ yq -r --arg updateName "RELATED_IMAGE_keycloak" '.spec.install.spec.deployments[
 
 	if [[ $(diff -q -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted + inserted (yq #2) ${CSVFILE}:"
-		for updateName in "${!operator_replacements[@]}"; do 
+		for updateName in "${!operator_replacements[@]}"; do
 			echo -n " * $updateName: "
 			cat "${CSVFILE}" | yq --arg updateName "${updateName}" '.spec.install.spec.deployments[].spec.template.spec.containers[].env? | .[] | select(.name == $updateName) | .value' 2>/dev/null
 		done

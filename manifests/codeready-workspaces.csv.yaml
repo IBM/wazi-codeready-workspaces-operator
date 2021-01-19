@@ -41,10 +41,9 @@ metadata:
             "server": {
               "allowUserDefinedWorkspaceNamespaces": false,
               "cheClusterRoles": "",
-              "cheFlavor": "",
+              "cheFlavor": "codeready",
               "cheImage": "",
               "cheImageTag": "",
-                "cheFlavor": "codeready",
               "cheWorkspaceClusterRole": "",
               "devfileRegistryImage": "",
               "gitSelfSignedCert": false,
