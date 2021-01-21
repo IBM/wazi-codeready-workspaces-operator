@@ -73,7 +73,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ! -d "${MIDSTM_BRANCH}" ]]; then usage; fi
+if [[ ! "${MIDSTM_BRANCH}" ]]; then usage; fi
 if [[ ! -d "${SOURCEDIR}" ]]; then usage; fi
 if [[ ! -d "${TARGETDIR}" ]]; then usage; fi
 
@@ -209,7 +209,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 		-i "${CSVFILE}"
 	# insert missing cheFlavor annotation
 	if [[ ! $(grep -E '"cheFlavor": "codeready",' "${CSVFILE}") ]]; then
-		sed 's|"cheFlavor":.*|"cheFlavor": "codeready",|' -i "${CSVFILE}
+		sed 's|"cheFlavor":.*|"cheFlavor": "codeready",|' -i "${CSVFILE}"
 	fi
 	if [[ $(diff -u "${SOURCE_CSVFILE}" "${CSVFILE}") ]]; then
 		echo "[INFO] ${0##*/} :: Converted (sed) ${CSVFILE}"
