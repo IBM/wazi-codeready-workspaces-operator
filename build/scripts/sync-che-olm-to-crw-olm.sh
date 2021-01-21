@@ -89,8 +89,8 @@ fi
 UBI_IMAGE="registry.redhat.io/ubi8/ubi-minimal:${UBI_TAG}"
 POSTGRES_IMAGE="registry.redhat.io/rhel8/postgresql-96:${POSTGRES_TAG}"
 SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8 too
-TRAEFIK_IMAGE="registry.redhat.io/codeready-workspaces/traefik-rhel8:2.5"
-CONFIGBUMP_IMAGE="registry.redhat.io/codeready-workspaces/configbump-rhel8:2.5"
+TRAEFIK_IMAGE="registry.redhat.io/codeready-workspaces/traefik-rhel8:${CRW_VERSION}"
+CONFIGBUMP_IMAGE="registry.redhat.io/codeready-workspaces/configbump-rhel8:${CRW_VERSION}"
 
 pushd "${SOURCEDIR}" >/dev/null || exit
 
