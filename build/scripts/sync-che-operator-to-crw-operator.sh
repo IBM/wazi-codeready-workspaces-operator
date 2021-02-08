@@ -19,7 +19,7 @@ SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
 CSV_VERSION=2.y.0 # csv 2.y.0
 CRW_VERSION=${CSV_VERSION%.*} # tag 2.y
 SSO_TAG=7.4
-UBI_TAG=8.2
+UBI_TAG=8.3
 POSTGRES_TAG=1
 
 usage () {
@@ -27,7 +27,7 @@ usage () {
 	echo "Example: $0 -v 2.y.0 -s ${HOME}/projects/che-operator -t /tmp/crw-operator"
 	echo "Options:
 	--sso-tag 7.4
-	--ubi-tag 8.2
+	--ubi-tag 8.3
 	--postgres-tag 1
 	"
 	exit
