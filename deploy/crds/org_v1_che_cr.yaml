@@ -32,7 +32,7 @@ spec:
     nonProxyHosts: ''
     serverMemoryRequest: ''
     serverMemoryLimit: ''
-    workspaceNamespaceDefault: ''
+    workspaceNamespaceDefault: <username>-codeready
     allowUserDefinedWorkspaceNamespaces: false
     serverExposureStrategy: ''
     singleHostGatewayImage: ''

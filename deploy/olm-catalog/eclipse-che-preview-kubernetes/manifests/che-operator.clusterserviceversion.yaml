@@ -84,13 +84,13 @@ metadata:
     categories: Developer Tools
     certified: "false"
     containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
-    createdAt: "2021-01-08T12:41:34Z"
+    createdAt: "2021-01-26T10:44:47Z"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces.
     operatorframework.io/suggested-namespace: eclipse-che
     repository: https://github.com/eclipse/che-operator
     support: Eclipse Foundation
-  name: codeready-workspaces-preview-kubernetes.v7.24.0-64.nightly
+  name: codeready-workspaces-preview-kubernetes.v7.25.0-84.nightly
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -291,7 +291,8 @@ spec:
             selector:
               matchLabels:
                 app: codeready-operator
-            strategy: {}
+            strategy:
+              type: RollingUpdate
             template:
               metadata:
                 labels:
@@ -357,11 +358,40 @@ spec:
                         value: ca-certs
                     image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
                     imagePullPolicy: Always
+                    livenessProbe:
+                      failureThreshold: 10
+                      httpGet:
+                        path: /healthz
+                        port: 6789
+                      initialDelaySeconds: 15
+                      periodSeconds: 10
+                      successThreshold: 1
+                      timeoutSeconds: 5
                     name: codeready-operator
                     ports:
                       - containerPort: 60000
                         name: metrics
-                    resources: {}
+                    readinessProbe:
+                      exec:
+                        command:
+                          - stat
+                          - /tmp/operator-sdk-ready
+                      failureThreshold: 10
+                      initialDelaySeconds: 5
+                      periodSeconds: 10
+                      successThreshold: 1
+                      timeoutSeconds: 5
+                    resources:
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                      requests:
+                        cpu: 100m
+                        memory: 64Mi
+                    securityContext:
+                      capabilities:
+                        drop:
+                          - ALL
                 restartPolicy: Always
                 serviceAccountName: codeready-operator
                 terminationGracePeriodSeconds: 5
@@ -494,4 +524,4 @@ spec:
   maturity: stable
   provider:
     name: Eclipse Foundation
-  version: 7.24.0-64.nightly
+  version: 7.25.0-84.nightly
