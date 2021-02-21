@@ -313,9 +313,9 @@ spec:
                       - name: RELATED_IMAGE_che_server
                         value: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:d26410be1404842262a35de0709080349dce798a7fcdc08a33dbb0a5cd74d550
                       - name: RELATED_IMAGE_plugin_registry
-                        value: docker.io/ibmcom/wazi-code-plugin:latest
+                        value: docker.io/ibmcom/wazi-code-plugin@sha256:3997b50fd8a1940bb1328f4ea530156eecb6e34b16e8a26c9f4587187959a23f
                       - name: RELATED_IMAGE_devfile_registry
-                        value: docker.io/ibmcom/wazi-code-dev-file:latest
+                        value: docker.io/ibmcom/wazi-code-dev-file@sha256:0aa798917576211c2ea59829f1db4d96462d9a42fb7cc2245a24938d15fbedc4
                       - name: RELATED_IMAGE_pvc_jobs
                         value: registry.access.redhat.com/ubi8-minimal@sha256:372622021a90893d9e25c298e045c804388c7666f3e756cd48f75d20172d9e55
                       - name: RELATED_IMAGE_postgres
@@ -497,10 +497,10 @@ spec:
       image: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:d26410be1404842262a35de0709080349dce798a7fcdc08a33dbb0a5cd74d550
       # tag: registry.redhat.io/codeready-workspaces/server-rhel8:2.3
     - name: wazi-code-plugin
-      image: docker.io/ibmcom/wazi-code-plugin:latest
+      image: docker.io/ibmcom/wazi-code-plugin@sha256:3997b50fd8a1940bb1328f4ea530156eecb6e34b16e8a26c9f4587187959a23f
       # tag: docker.io/ibmcom/wazi-code-plugin:1.1.0
     - name: wazi-code-dev-file
-      image: docker.io/ibmcom/wazi-code-dev-file:latest
+      image: docker.io/ibmcom/wazi-code-dev-file@sha256:0aa798917576211c2ea59829f1db4d96462d9a42fb7cc2245a24938d15fbedc4
       # tag: docker.io/ibmcom/wazi-code-dev-file:1.1.0
     - name: ubi8-minimal
       image: registry.access.redhat.com/ubi8-minimal@sha256:372622021a90893d9e25c298e045c804388c7666f3e756cd48f75d20172d9e55

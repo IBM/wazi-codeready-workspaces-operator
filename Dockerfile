@@ -1,5 +1,5 @@
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020-2021
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -10,17 +10,15 @@
 #   IBM Corporation - implementation
 #
 
-# Builds an image that is used by the CatalogSource definition in OCP.
-
-FROM quay.io/operator-framework/upstream-registry-builder:v1.13.8 as builder
-COPY controller-manifests manifests/
+FROM quay.io/operator-framework/upstream-registry-builder:v1.15.3 as builder
+COPY manifests manifests/
 RUN ./bin/initializer --permissive true -o ./bundles.db
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 ENV PRODUCT="IBM Wazi Developer for Red Hat CodeReady Workspaces" \
     COMPANY="IBM" \
-    VERSION="1.1.0" \
+    VERSION="1.2.0" \
     RELEASE="1" \
     SUMMARY="IBM Wazi Developer for Workspaces" \
     DESCRIPTION="IBM Wazi Developer for Red Hat CodeReady Workspaces - Operator" \
@@ -57,8 +55,8 @@ RUN chgrp -R 0 /registry && \
     chmod -R g+rwx /registry
     
 COPY LICENSE /licenses/
-COPY --from=builder /build/bundles.db /bundles.db
-COPY --from=builder /build/bin/registry-server /bin/registry-server
+COPY --from=builder bundles.db /bundles.db
+COPY --from=builder /bin/registry-server /bin/registry-server
 COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
 
 USER 1001
