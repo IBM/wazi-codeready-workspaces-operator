@@ -67,7 +67,7 @@ metadata:
               "singleHostGatewayImage": "",
               "tlsSupport": true,
               "useInternalClusterSVCNames": true,
-              "workspaceNamespaceDefault": ""
+              "workspaceNamespaceDefault": "<username>-che"
             },
             "storage": {
               "postgresPVCStorageClassName": "",
@@ -84,13 +84,13 @@ metadata:
     categories: Developer Tools
     certified: "false"
     containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
-    createdAt: "2021-01-26T10:44:47Z"
+    createdAt: "2021-02-10T17:04:13Z"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces.
     operatorframework.io/suggested-namespace: eclipse-che
     repository: https://github.com/eclipse/che-operator
     support: Eclipse Foundation
-  name: codeready-workspaces-preview-kubernetes.v7.25.0-84.nightly
+  name: codeready-workspaces-preview-kubernetes.v7.26.0-92.nightly
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -102,50 +102,49 @@ spec:
         kind: CheCluster
         name: checlusters.org.eclipse.che
         specDescriptors:
-          - description: Deprecated. Instructs the operator to deploy Che in TLS mode.
-              This is enabled by default. Disabling TLS may cause malfunction of some
-              Che components.
-            displayName: Tls support
+          - description: Deprecated. Instructs the Operator to deploy Che in TLS mode.
+              This is enabled by default. Disabling TLS sometimes cause malfunction
+              of some Che components.
+            displayName: TLS support
             path: server.tlsSupport
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
           - description: Status of a Che installation. Can be `Available`, `Unavailable`,
-              or `Available, Rolling Update in Progress`
+              or `Available, Rolling Update in Progress`.
             displayName: Status
             path: cheClusterRunning
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: Public URL to the Che server
+          - description: Public URL to the Che server.
             displayName: CodeReady Workspaces URL
             path: cheURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: Current installed Che version
+          - description: Current installed Che version.
             displayName: 'displayName: CodeReady Workspaces version'
             path: cheVersion
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: A URL that can point to some URL where to find help related
+          - description: A URL that points to some URL where to find help related
               to the current Operator status.
             displayName: Help link
             path: helpLink
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: Public URL to the Identity Provider server (Keycloak / RH
-              SSO).
+          - description: Public URL to the Identity Provider server, Keycloak or RH-SSO,.
             displayName: Keycloak Admin Console URL
             path: keycloakURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
           - description: A human readable message indicating details about why the
-              pod is in this condition.
+              Pod is in this condition.
             displayName: Message
             path: message
             x-descriptors:
               - urn:alm:descriptor:text
           - description: A brief CamelCase message indicating details about why the
-              pod is in this state.
+              Pod is in this state.
             displayName: Reason
             path: reason
             x-descriptors:
@@ -274,6 +273,151 @@ spec:
                 - create
                 - watch
                 - update
+                - get
+                - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterroles
+              verbs:
+                - list
+                - create
+                - watch
+                - update
+                - get
+                - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - roles
+              verbs:
+                - get
+                - create
+                - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - rolebindings
+              verbs:
+                - get
+                - create
+                - update
+                - delete
+            - apiGroups:
+                - org.eclipse.che
+              resources:
+                - checlusters
+                - checlusters/finalizers
+              verbs:
+                - '*'
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - get
+                - create
+                - update
+            - apiGroups:
+                - ""
+              resources:
+                - serviceaccounts
+              verbs:
+                - get
+                - create
+                - watch
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - create
+            - apiGroups:
+                - apps
+              resources:
+                - secrets
+              verbs:
+                - list
+            - apiGroups:
+                - ""
+              resources:
+                - secrets
+              verbs:
+                - list
+                - create
+                - delete
+            - apiGroups:
+                - ""
+              resources:
+                - persistentvolumeclaims
+              verbs:
+                - create
+                - get
+                - list
+                - watch
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+              verbs:
+                - get
+                - list
+                - create
+                - watch
+                - delete
+            - apiGroups:
+                - apps
+              resources:
+                - deployments
+              verbs:
+                - get
+                - list
+                - create
+                - patch
+                - watch
+                - delete
+            - apiGroups:
+                - ""
+              resources:
+                - services
+              verbs:
+                - list
+                - create
+                - delete
+            - apiGroups:
+                - ""
+              resources:
+                - configmaps
+              verbs:
+                - get
+                - create
+                - delete
+                - list
+            - apiGroups:
+                - ""
+              resources:
+                - events
+              verbs:
+                - watch
+            - apiGroups:
+                - apps
+              resources:
+                - replicasets
+              verbs:
+                - list
+                - get
+                - patch
+                - delete
+            - apiGroups:
+                - extensions
+              resources:
+                - ingresses
+              verbs:
+                - list
+                - create
+                - watch
+                - get
+                - delete
           serviceAccountName: codeready-operator
         - rules:
             - apiGroups:
@@ -282,6 +426,8 @@ spec:
                 - namespaces
               verbs:
                 - update
+                - list
+                - create
                 - get
           serviceAccountName: che-namespace-editor
       deployments:
@@ -297,6 +443,10 @@ spec:
               metadata:
                 labels:
                   app: codeready-operator
+                  app.kubernetes.io/component: codeready-operator
+                  app.kubernetes.io/instance: che
+                  app.kubernetes.io/managed-by: olm
+                  app.kubernetes.io/name: che
               spec:
                 containers:
                   - command:
@@ -394,7 +544,7 @@ spec:
                           - ALL
                 restartPolicy: Always
                 serviceAccountName: codeready-operator
-                terminationGracePeriodSeconds: 5
+                terminationGracePeriodSeconds: 20
       permissions:
         - rules:
             - apiGroups:
@@ -460,7 +610,9 @@ spec:
             - apiGroups:
                 - org.eclipse.che
               resources:
-                - '*'
+                - checlusters
+                - checlusters/status
+                - checlusters/finalizers
               verbs:
                 - '*'
             - apiGroups:
@@ -524,4 +676,4 @@ spec:
   maturity: stable
   provider:
     name: Eclipse Foundation
-  version: 7.25.0-84.nightly
+  version: 7.26.0-92.nightly

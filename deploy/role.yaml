@@ -13,6 +13,10 @@ kind: Role
 metadata:
   creationTimestamp: null
   name: codeready-operator
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/component: codeready-operator
 rules:
 - apiGroups:
   - extensions
@@ -84,7 +88,9 @@ rules:
 - apiGroups:
   - org.eclipse.che
   resources:
-  - '*'
+  - checlusters
+  - checlusters/status
+  - checlusters/finalizers
   verbs:
   - '*'
 - apiGroups:

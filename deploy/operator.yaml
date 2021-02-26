@@ -23,10 +23,13 @@ spec:
     metadata:
       labels:
         app: codeready-operator
+        app.kubernetes.io/name: che
+        app.kubernetes.io/instance: che
+        app.kubernetes.io/component: codeready-operator
     spec:
       containers:
         - name: codeready-operator
-          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.7
+          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
           ports:
             - containerPort: 60000
               name: metrics
@@ -65,9 +68,9 @@ spec:
             - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
               value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.7
             - name: RELATED_IMAGE_single_host_gateway
-              value: registry.redhat.io/codeready-workspaces/traefik-rhel8:2.7
+              value: docker.io/traefik:v2.2.8
             - name: RELATED_IMAGE_single_host_gateway_config_sidecar
-              value: registry.redhat.io/codeready-workspaces/configbump-rhel8:2.7
+              value: quay.io/che-incubator/configbump:0.1.4
             - name: CHE_FLAVOR
               value: codeready
             - name: CONSOLE_LINK_NAME
@@ -122,4 +125,4 @@ spec:
               cpu: 500m
       restartPolicy: Always
       serviceAccountName: codeready-operator
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 20

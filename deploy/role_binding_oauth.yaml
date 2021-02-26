@@ -12,6 +12,10 @@ kind: Template
 apiVersion: v1
 metadata:
   name: codeready-operator
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/component: codeready-operator
 objects:
 - kind: ClusterRoleBinding
   apiVersion: rbac.authorization.k8s.io/v1
