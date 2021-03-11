@@ -15,10 +15,6 @@ metadata:
 spec:
   server:
     useInternalClusterSVCNames: true
-    cheImage: ''
-    cheImageTag: ''
-    devfileRegistryImage: ''
-    pluginRegistryImage: ''
     cheFlavor: codeready
     cheClusterRoles: ''
     cheWorkspaceClusterRole: ''
@@ -30,14 +26,11 @@ spec:
     proxyUser: ''
     proxyPassword: ''
     nonProxyHosts: ''
-    serverMemoryRequest: ''
-    serverMemoryLimit: ''
-    workspaceNamespaceDefault: ''
+    workspaceNamespaceDefault: <username>-codeready
     allowUserDefinedWorkspaceNamespaces: false
     serverExposureStrategy: ''
-    singleHostGatewayImage: ''
-    singleHostGatewayConfigSidecarImage: ''
-    singleHostGatewayConfigMapLabels: {}
+    devfileRegistryImage: ''
+    pluginRegistryImage: ''
   database:
     externalDb: false
     chePostgresHostName: ''
@@ -45,15 +38,14 @@ spec:
     chePostgresUser: ''
     chePostgresPassword: ''
     chePostgresDb: ''
-    postgresImage: ''
   storage:
     pvcStrategy: per-workspace
     pvcClaimSize: 1Gi
     preCreateSubPaths: true
-    pvcJobsImage: ''
     postgresPVCStorageClassName: ''
     workspacePVCStorageClassName: ''
   auth:
+    initialOpenShiftOAuthUser: true
     externalIdentityProvider: false
     identityProviderURL: ''
     identityProviderAdminUserName: admin
@@ -65,3 +57,5 @@ spec:
     identityProviderImage: ''
   metrics:
     enable: true
+  devWorkspace:
+    enable: false

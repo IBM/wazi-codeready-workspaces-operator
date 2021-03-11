@@ -19,6 +19,7 @@ spec:
     listKind: CheClusterList
     plural: checlusters
     singular: checluster
+  preserveUnknownFields: false
   scope: Namespaced
   subresources:
     status: {}
@@ -305,28 +306,19 @@ spec:
                     `latest` images, and `IfNotPresent` in other cases.
                   type: string
               type: object
-            devWorkspace:
-              description: Dev Workspace operator configuration
-              properties:
-                enable:
-                  description: Deploys the DevWorkspace Operator in the cluster. Does
-                    nothing when a matching version of the Operator is already installed.
-                    Fails when a non-matching version of the Operator is already installed.
-                  type: boolean
-              type: object
             imagePuller:
               description: Kubernetes Image Puller configuration
               properties:
                 enable:
-                  description: "Install and configure the Community Supported Kubernetes
-                    Image Puller Operator. When set to `true` and no spec is provided,
-                    it will create a default KubernetesImagePuller object to be managed
-                    by the Operator. When set to `false`, the KubernetesImagePuller
-                    object will be deleted, and the Operator will be uninstalled,
-                    regardless of whether a spec is provided. \n Note that while this
-                    the Operator and its behavior is community-supported, its payload
-                    may be commercially-supported for pulling commercially-supported
-                    images."
+                  description: "Install and configure the Community Supported Kubernetes\
+                    \ Image Puller Operator. When set to `true` and no spec is provided,\
+                    \ it will create a default KubernetesImagePuller object to be\
+                    \ managed by the Operator. When set to `false`, the KubernetesImagePuller\
+                    \ object will be deleted, and the Operator will be uninstalled,\
+                    \ regardless of whether a spec is provided. \n Note that while\
+                    \ this the Operator and its behavior is community-supported, its\
+                    \ payload may be commercially-supported for pulling commercially-supported\
+                    \ images."
                   type: boolean
                 spec:
                   description: A KubernetesImagePullerSpec to configure the image
@@ -599,7 +591,7 @@ spec:
                     is required, but defining `nonProxyHosts` in a custom resource
                     leads to merging non proxy hosts lists from the cluster proxy
                     configuration and ones defined in the custom resources. See the
-                    doc https://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html.
+                    doc https://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html).
                     See also the `proxyURL` fields.'
                   type: string
                 pluginRegistryCpuLimit:
@@ -680,7 +672,7 @@ spec:
                     is required, but defining `proxyUrl` in a custom resource leads
                     to overrides the cluster proxy configuration with fields `proxyUrl`,
                     `proxyPort`, `proxyUser` and `proxyPassword` from the custom resource.
-                    See the doc https://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html.
+                    See the doc https://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html).
                     See also the `proxyPort` and `nonProxyHosts` fields.
                   type: string
                 proxyUser:
@@ -753,7 +745,7 @@ spec:
                 useInternalClusterSVCNames:
                   description: Use internal cluster SVC names to communicate between
                     components to speed up the traffic and avoid proxy issues. The
-                    default value is `true`.
+                    default value is `false`.
                   type: boolean
                 workspaceNamespaceDefault:
                   description: Defines Kubernetes default namespace in which user's
@@ -861,6 +853,6 @@ spec:
       type: object
   version: v1
   versions:
-  - name: v1
-    served: true
-    storage: true
+    - name: v1
+      served: true
+      storage: true

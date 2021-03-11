@@ -12,6 +12,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: che-namespace-editor
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/component: codeready-operator
 rules:
   - apiGroups:
       - ""
@@ -19,4 +23,6 @@ rules:
       - namespaces
     verbs:
       - update
+      - list
+      - create
       - get

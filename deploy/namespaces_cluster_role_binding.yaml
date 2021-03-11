@@ -12,6 +12,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: codeready-operator-namespace-editor
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/component: codeready-operator
 subjects:
   - kind: ServiceAccount
     name: codeready-operator
