@@ -19,10 +19,10 @@ metadata:
               "externalIdentityProvider": false,
               "identityProviderAdminUserName": "",
               "identityProviderClientId": "",
-              "identityProviderImage": "",
               "identityProviderPassword": "",
               "identityProviderRealm": "",
               "identityProviderURL": "",
+              "initialOpenShiftOAuthUser": true,
               "oAuthClientName": "",
               "oAuthSecret": ""
             },
@@ -32,8 +32,10 @@ metadata:
               "chePostgresPassword": "",
               "chePostgresPort": "",
               "chePostgresUser": "",
-              "externalDb": false,
-              "postgresImage": ""
+              "externalDb": false
+            },
+            "devWorkspace": {
+              "enable": false
             },
             "metrics": {
               "enable": true
@@ -42,33 +44,23 @@ metadata:
               "allowUserDefinedWorkspaceNamespaces": false,
               "cheClusterRoles": "",
               "cheFlavor": "codeready",
-              "cheImage": "",
-              "cheImageTag": "",
               "cheWorkspaceClusterRole": "",
-              "devfileRegistryImage": "",
               "gitSelfSignedCert": false,
               "nonProxyHosts": "",
-              "pluginRegistryImage": "",
               "proxyPassword": "",
               "proxyPort": "",
               "proxyURL": "",
               "proxyUser": "",
               "serverExposureStrategy": "",
-              "serverMemoryLimit": "",
-              "serverMemoryRequest": "",
               "serverTrustStoreConfigMapName": "",
-              "singleHostGatewayConfigMapLabels": {},
-              "singleHostGatewayConfigSidecarImage": "",
-              "singleHostGatewayImage": "",
               "tlsSupport": true,
               "useInternalClusterSVCNames": true,
-              "workspaceNamespaceDefault": ""
+              "workspaceNamespaceDefault": "<username>-codeready"
             },
             "storage": {
               "postgresPVCStorageClassName": "",
               "preCreateSubPaths": true,
               "pvcClaimSize": "1Gi",
-              "pvcJobsImage": "",
               "pvcStrategy": "common",
               "workspacePVCStorageClassName": ""
             }
@@ -78,15 +70,15 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools, OpenShift Optional
     certified: "true"
-    containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.6
-    createdAt: "2021-01-23T01:50:29+00:00"
+    containerImage: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.8
+    createdAt: "2021-03-19T21:27:01+00:00"
     description: A Kube-native development solution that delivers portable and collaborative
       developer workspaces in OpenShift.
     operatorframework.io/suggested-namespace: openshift-workspaces
     operatorframework.io/cluster-monitoring: "true"
     repository: https://github.com/redhat-developer/codeready-workspaces-operator/
     support: Red Hat
-  name: crwoperator.v2.6.0
+  name: crwoperator.v2.8.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -97,51 +89,60 @@ spec:
         displayName: CodeReady Workspaces Cluster
         kind: CheCluster
         name: checlusters.org.eclipse.che
-        specDescriptors:
-          - description: Deprecated. Instructs the operator to deploy Che in TLS mode.
-              This is enabled by default. Disabling TLS may cause malfunction of some
-              Che components.
-            displayName: Tls support
-            path: server.tlsSupport
-            x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
           - description: Status of a Che installation. Can be `Available`, `Unavailable`,
-              or `Available, Rolling Update in Progress`
+              or `Available, Rolling Update in Progress`.
             displayName: Status
             path: cheClusterRunning
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: Public URL to the Che server
+          - description: Public URL to the Che server.
             displayName: CodeReady Workspaces URL
             path: cheURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: Current installed Che version
+          - description: Current installed Che version.
             displayName: 'displayName: CodeReady Workspaces version'
             path: cheVersion
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: A URL that can point to some URL where to find help related
+          - description: Public URL to the devfile registry.
+            displayName: Devfile registry URL
+            path: devfileRegistryURL
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
+          - description: A URL that points to some URL where to find help related
               to the current Operator status.
             displayName: Help link
             path: helpLink
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
-          - description: Public URL to the Identity Provider server (Red Hat SSO /
-              RH SSO).
+          - description: Public URL to the Identity Provider server, Red Hat SSO or
+              RH-SSO,.
             displayName: Red Hat SSO Admin Console URL
             path: keycloakURL
             x-descriptors:
               - urn:alm:descriptor:org.w3:link
           - description: A human readable message indicating details about why the
-              pod is in this condition.
+              Pod is in this condition.
             displayName: Message
             path: message
             x-descriptors:
               - urn:alm:descriptor:text
+          - description: OpenShift OAuth secret that contains user credentials for
+              HTPasswd identity provider.
+            displayName: OpenShift OAuth secret that contains user credentials for
+              HTPasswd identity provider.
+            path: openShiftOAuthUserCredentialsSecret
+            x-descriptors:
+              - urn:alm:descriptor:text
+          - description: Public URL to the plugin registry.
+            displayName: Plugin registry URL
+            path: pluginRegistryURL
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
           - description: A brief CamelCase message indicating details about why the
-              pod is in this state.
+              Pod is in this state.
             displayName: Reason
             path: reason
             x-descriptors:
@@ -254,6 +255,7 @@ spec:
                 - create
                 - get
                 - delete
+                - deletecollection
                 - list
                 - patch
                 - update
@@ -261,8 +263,16 @@ spec:
             - apiGroups:
                 - config.openshift.io
               resources:
-                - infrastructures
                 - oauths
+              verbs:
+                - get
+                - list
+                - watch
+                - patch
+            - apiGroups:
+                - config.openshift.io
+              resources:
+                - infrastructures
                 - proxies
               verbs:
                 - get
@@ -274,6 +284,13 @@ spec:
                 - users
               verbs:
                 - list
+                - delete
+            - apiGroups:
+                - user.openshift.io
+              resources:
+                - identities
+              verbs:
+                - delete
             - apiGroups:
                 - console.openshift.io
               resources:
@@ -294,6 +311,305 @@ spec:
                 - create
                 - watch
                 - update
+                - get
+                - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterroles
+              verbs:
+                - list
+                - create
+                - watch
+                - update
+                - get
+                - delete
+            - apiGroups:
+                - authorization.openshift.io
+              resources:
+                - roles
+              verbs:
+                - get
+                - create
+                - delete
+            - apiGroups:
+                - authorization.openshift.io
+              resources:
+                - rolebindings
+              verbs:
+                - get
+                - create
+                - update
+                - delete
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - roles
+              verbs:
+                - get
+                - create
+                - delete
+                - list
+                - update
+                - watch
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - rolebindings
+              verbs:
+                - get
+                - create
+                - update
+                - delete
+                - list
+                - watch
+            - apiGroups:
+                - org.eclipse.che
+              resources:
+                - checlusters
+                - checlusters/finalizers
+              verbs:
+                - '*'
+            - apiGroups:
+                - project.openshift.io
+              resources:
+                - projectrequests
+              verbs:
+                - create
+                - update
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - get
+                - create
+                - update
+            - apiGroups:
+                - project.openshift.io
+              resources:
+                - projects
+              verbs:
+                - get
+            - apiGroups:
+                - ""
+              resources:
+                - configmaps
+                - persistentvolumeclaims
+                - pods
+                - secrets
+                - serviceaccounts
+                - services
+              verbs:
+                - '*'
+            - apiGroups:
+                - ""
+              resources:
+                - configmaps/status
+              verbs:
+                - get
+                - update
+                - patch
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - create
+            - apiGroups:
+                - apps
+              resources:
+                - secrets
+              verbs:
+                - list
+            - apiGroups:
+                - apps
+                - extensions
+              resources:
+                - deployments
+                - replicasets
+              verbs:
+                - '*'
+            - apiGroups:
+                - route.openshift.io
+              resources:
+                - routes
+              verbs:
+                - '*'
+            - apiGroups:
+                - route.openshift.io
+              resources:
+                - routes/custom-host
+              verbs:
+                - create
+            - apiGroups:
+                - ""
+              resources:
+                - events
+              verbs:
+                - watch
+                - create
+                - patch
+            - apiGroups:
+                - monitoring.coreos.com
+              resources:
+                - servicemonitors
+              verbs:
+                - create
+                - get
+            - apiGroups:
+                - batch
+              resources:
+                - jobs
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - apps
+              resourceNames:
+                - devworkspace-controller
+              resources:
+                - deployments/finalizers
+              verbs:
+                - update
+            - apiGroups:
+                - extensions
+              resources:
+                - ingresses
+              verbs:
+                - '*'
+            - apiGroups:
+                - workspace.devfile.io
+              resources:
+                - '*'
+              verbs:
+                - '*'
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - '*'
+              verbs:
+                - '*'
+            - apiGroups:
+                - admissionregistration.k8s.io
+              resources:
+                - mutatingwebhookconfigurations
+                - validatingwebhookconfigurations
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - operators.coreos.com
+              resources:
+                - subscriptions
+              verbs:
+                - get
+            - apiGroups:
+                - authentication.k8s.io
+              resources:
+                - tokenreviews
+              verbs:
+                - create
+            - apiGroups:
+                - authorization.k8s.io
+              resources:
+                - subjectaccessreviews
+              verbs:
+                - create
+            - apiGroups:
+                - apiextensions.k8s.io
+              resources:
+                - customresourcedefinitions
+              verbs:
+                - get
+                - create
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - list
+                - watch
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - '*'
+              verbs:
+                - '*'
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - chemanagers
+              verbs:
+                - '*'
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - chemanagers/status
+              verbs:
+                - get
+                - patch
+                - update
+            - apiGroups:
+                - che.eclipse.org
+              resources:
+                - chemanagers/finalizers
+              verbs:
+                - update
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - workspaceroutings
+              verbs:
+                - '*'
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - workspaceroutings/finalizers
+              verbs:
+                - update
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - workspaceroutings/status
+              verbs:
+                - get
+                - patch
+                - update
+            - apiGroups:
+                - ""
+              resources:
+                - configmap
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - apps
+              resourceNames:
+                - devworkspace-codeready-operator
+              resources:
+                - deployments/finalizers
+              verbs:
+                - update
+            - nonResourceURLs:
+                - /metrics
+              verbs:
+                - get
           serviceAccountName: codeready-operator
         - rules:
             - apiGroups:
@@ -302,6 +618,8 @@ spec:
                 - namespaces
               verbs:
                 - update
+                - list
+                - create
                 - get
           serviceAccountName: che-namespace-editor
       deployments:
@@ -311,11 +629,16 @@ spec:
             selector:
               matchLabels:
                 app: codeready-operator
-            strategy: {}
+            strategy:
+              type: RollingUpdate
             template:
               metadata:
                 labels:
                   app: codeready-operator
+                  app.kubernetes.io/component: codeready-operator
+                  app.kubernetes.io/instance: che
+                  app.kubernetes.io/managed-by: olm
+                  app.kubernetes.io/name: che
               spec:
                 containers:
                   - command:
@@ -332,7 +655,7 @@ spec:
                       - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
                         value: ca-certs
                       - name: CHE_VERSION
-                        value: 2.6.0
+                        value: 2.8.0
                       - name: CONSOLE_LINK_DISPLAY_NAME
                         value: CodeReady Workspaces
                       - name: CONSOLE_LINK_IMAGE
@@ -348,59 +671,59 @@ spec:
                           fieldRef:
                             fieldPath: metadata.name
                       - name: RELATED_IMAGE_che_server
-                        value: registry.redhat.io/codeready-workspaces/server-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/server-rhel8:2.8
                       - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
-                        value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.8
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8:2.8
                       - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
-                        value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_machineexec
-                        value: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_openj9
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_ppc64le
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_s390x
-                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_kubernetes
-                        value: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_openshift
-                        value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_cpp
-                        value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_dotnet
-                        value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_golang
-                        value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_stacks_php
-                        value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_theia
-                        value: registry.redhat.io/codeready-workspaces/theia-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/theia-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_theia_endpoint
-                        value: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.8
                       - name: RELATED_IMAGE_devfile_registry
-                        value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8:2.8
                       - name: RELATED_IMAGE_jboss_eap_7_eap73_openjdk8_openshift_rhel7
                         value: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.1
-                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp1_openj9_11_openshift
-                        value: registry.redhat.io/jboss-eap-7/eap-xp1-openj9-11-openshift-rhel8:1.0.2-5.1604581793
-                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp1_openjdk11_openshift_ppc64le
-                        value: registry.redhat.io/jboss-eap-7/eap-xp1-openj9-11-openshift-rhel8:1.0.2-5.1604581793
-                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp1_openjdk11_openshift_s390x
-                        value: registry.redhat.io/jboss-eap-7/eap-xp1-openj9-11-openshift-rhel8:1.0.2-5.1604581793
+                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openj9_11_openshift
+                        value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8:2.0
                       - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift
                         value: registry.redhat.io/jboss-eap-7/eap-xp2-openjdk11-openshift-rhel8:2.0-3
+                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_ppc64le
+                        value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8:2.0
+                      - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_s390x
+                        value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8:2.0
                       - name: RELATED_IMAGE_keycloak
                         value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:7.4
                       - name: RELATED_IMAGE_keycloak_ppc64le
@@ -408,31 +731,60 @@ spec:
                       - name: RELATED_IMAGE_keycloak_s390x
                         value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8:7.4
                       - name: RELATED_IMAGE_plugin_registry
-                        value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8:2.8
                       - name: RELATED_IMAGE_postgres
                         value: registry.redhat.io/rhel8/postgresql-96:1
                       - name: RELATED_IMAGE_pvc_jobs
-                        value: registry.redhat.io/ubi8/ubi-minimal:8.2
+                        value: registry.redhat.io/ubi8/ubi-minimal:8.3
                       - name: RELATED_IMAGE_rhscl_mongodb_36_rhel7
                         value: registry.redhat.io/rhscl/mongodb-36-rhel7:1-50
                       - name: RELATED_IMAGE_single_host_gateway
-                        value: registry.redhat.io/codeready-workspaces/traefik-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/traefik-rhel8:2.8
                       - name: RELATED_IMAGE_single_host_gateway_config_sidecar
-                        value: registry.redhat.io/codeready-workspaces/configbump-rhel8:2.6
+                        value: registry.redhat.io/codeready-workspaces/configbump-rhel8:2.8
                       - name: WATCH_NAMESPACE
                         valueFrom:
                           fieldRef:
                             fieldPath: metadata.annotations['olm.targetNamespaces']
-                    image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.6
+                    image: registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.8
                     imagePullPolicy: Always
+                    livenessProbe:
+                      failureThreshold: 10
+                      httpGet:
+                        path: /healthz
+                        port: 6789
+                      initialDelaySeconds: 15
+                      periodSeconds: 10
+                      successThreshold: 1
+                      timeoutSeconds: 5
                     name: codeready-operator
                     ports:
                       - containerPort: 60000
                         name: metrics
-                    resources: {}
+                    readinessProbe:
+                      exec:
+                        command:
+                          - stat
+                          - /tmp/operator-sdk-ready
+                      failureThreshold: 10
+                      initialDelaySeconds: 5
+                      periodSeconds: 10
+                      successThreshold: 1
+                      timeoutSeconds: 5
+                    resources:
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                      requests:
+                        cpu: 100m
+                        memory: 64Mi
+                    securityContext:
+                      capabilities:
+                        drop:
+                          - ALL
                 restartPolicy: Always
                 serviceAccountName: codeready-operator
-                terminationGracePeriodSeconds: 5
+                terminationGracePeriodSeconds: 20
       permissions:
         - rules:
             - apiGroups:
@@ -505,7 +857,9 @@ spec:
             - apiGroups:
                 - org.eclipse.che
               resources:
-                - '*'
+                - checlusters
+                - checlusters/status
+                - checlusters/finalizers
               verbs:
                 - '*'
             - apiGroups:
@@ -568,5 +922,5 @@ spec:
   maturity: stable
   provider:
     name: Red Hat
-  version: 2.6.0
-  replaces: crwoperator.v2.5.1
+  version: 2.8.0
+  replaces: crwoperator.v2.7.0
