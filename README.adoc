@@ -2,7 +2,7 @@
 
 ### Operator container
 
-* The CRW operator has most of code in the upstream link:https://github.com/eclipse/che-operator/[che-operator] repo, including this link:https://github.com/eclipse/che-operator/blob/master/Dockerfile[Dockerfile].
+* The CRW operator has most of code in the upstream link:https://github.com/eclipse-che/che-operator/[che-operator] repo, including this link:https://github.com/eclipse-che/che-operator/blob/master/Dockerfile[Dockerfile].
 
 * This code is then synced to the link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/?h=crw-2-rhel-8[downstream repo] via a job located here:
 
