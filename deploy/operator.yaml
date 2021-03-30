@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: codeready-operator
-          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest
+          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.8
           ports:
             - containerPort: 60000
               name: metrics
@@ -68,9 +68,9 @@ spec:
             - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
               value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8:2.8
             - name: RELATED_IMAGE_single_host_gateway
-              value: docker.io/traefik:v2.2.8
+              value: registry.redhat.io/codeready-workspaces/traefik-rhel8:2.8
             - name: RELATED_IMAGE_single_host_gateway_config_sidecar
-              value: quay.io/che-incubator/configbump:0.1.4
+              value: registry.redhat.io/codeready-workspaces/configbump-rhel8:2.8
             - name: CHE_FLAVOR
               value: codeready
             - name: CONSOLE_LINK_NAME
@@ -90,9 +90,9 @@ spec:
             - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
               value: ca-certs
             - name: RELATED_IMAGE_keycloak_ppc64le
-              value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8:7.4
+              value: quay.io/eclipse/che-keycloak@sha256:9b3c978c03ba9aa493396de5e42ed4324201de70e81219d124014646b78bd69b
             - name: RELATED_IMAGE_keycloak_s390x
-              value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8:7.4
+              value: quay.io/eclipse/che-keycloak@sha256:9b3c978c03ba9aa493396de5e42ed4324201de70e81219d124014646b78bd69b
           livenessProbe:
             httpGet:
               path: /healthz
