@@ -19,6 +19,7 @@ spec:
     listKind: CheClusterList
     plural: checlusters
     singular: checluster
+  preserveUnknownFields: false
   scope: Namespaced
   subresources:
     status: {}
@@ -324,15 +325,15 @@ spec:
               description: Kubernetes Image Puller configuration
               properties:
                 enable:
-                  description: "Install and configure the Community Supported Kubernetes
-                    Image Puller Operator. When set to `true` and no spec is provided,
-                    it will create a default KubernetesImagePuller object to be managed
-                    by the Operator. When set to `false`, the KubernetesImagePuller
-                    object will be deleted, and the Operator will be uninstalled,
-                    regardless of whether a spec is provided. \n Note that while this
-                    the Operator and its behavior is community-supported, its payload
-                    may be commercially-supported for pulling commercially-supported
-                    images."
+                  description: "Install and configure the Community Supported Kubernetes\
+                    \ Image Puller Operator. When set to `true` and no spec is provided,\
+                    \ it will create a default KubernetesImagePuller object to be\
+                    \ managed by the Operator. When set to `false`, the KubernetesImagePuller\
+                    \ object will be deleted, and the Operator will be uninstalled,\
+                    \ regardless of whether a spec is provided. \n Note that while\
+                    \ this the Operator and its behavior is community-supported, its\
+                    \ payload may be commercially-supported for pulling commercially-supported\
+                    \ images."
                   type: boolean
                 spec:
                   description: A KubernetesImagePullerSpec to configure the image
@@ -432,7 +433,7 @@ spec:
                     registry to pull images from. This value overrides the container
                     registry organization defined in all the default container images
                     involved in a Che deployment. This is particularly useful to install
-                    CodeReady Workspaces in a restricted environment.
+                    Eclipse Che in a restricted environment.
                   type: string
                 allowUserDefinedWorkspaceNamespaces:
                   description: Defines that a user is allowed to specify a Kubernetes
@@ -867,6 +868,6 @@ spec:
       type: object
   version: v1
   versions:
-  - name: v1
-    served: true
-    storage: true
+    - name: v1
+      served: true
+      storage: true
