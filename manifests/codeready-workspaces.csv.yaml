@@ -682,20 +682,12 @@ spec:
                         value: registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
                         value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.8
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.9
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
                         value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.9
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
                         value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.9
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
                         value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.8
-                      - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
-                        value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.9
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
                         value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8
                       - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_openj9
