@@ -219,7 +219,10 @@ yq  -y 'del(.spec.k8s)')" && \
 
 	# delete unneeded files
 	echo "Delete olm/eclipse-che-preview-kubernetes and olm/eclipse-che-preview-openshift"
-	rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes olm/eclipse-che-preview-openshift"
+	rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes ${TARGETDIR}/olm/eclipse-che-preview-openshift"
+	rm -fr "${TARGETDIR}/deploy/olm-catalog/eclipse-che-preview-kubernetes"
+	rm -fr "${TARGETDIR}/deploy/olm-catalog/nightly/eclipse-che-preview-kubernetes"
+	rm -fr "${TARGETDIR}/deploy/olm-catalog/stable/eclipse-che-preview-kubernetes"
 
 popd >/dev/null
 
