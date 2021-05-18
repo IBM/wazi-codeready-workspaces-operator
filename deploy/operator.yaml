@@ -73,6 +73,10 @@ spec:
               value: registry.redhat.io/codeready-workspaces/traefik-rhel8:2.9
             - name: RELATED_IMAGE_single_host_gateway_config_sidecar
               value: registry.redhat.io/codeready-workspaces/configbump-rhel8:2.9
+            - name: RELATED_IMAGE_devworkspace_che_operator
+              value: registry.redhat.io/codeready-workspaces/devworkspace-rhel8:2.9
+            - name: RELATED_IMAGE_devworkspace_controller
+              value: registry.redhat.io/codeready-workspaces/devworkspace-controller-rhel8:2.9
             - name: CHE_FLAVOR
               value: codeready
             - name: CONSOLE_LINK_NAME
