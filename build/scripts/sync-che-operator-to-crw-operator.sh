@@ -10,7 +10,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 #
-# convert che-operator upstream to downstream using sed & perl transforms, and deleting files
+# convert che-operator upstream to downstream using sed & yq transforms, and deleting files
 
 set -e
 SCRIPTS_DIR=$(cd "$(dirname "$0")"; pwd)
@@ -75,30 +75,40 @@ SSO_IMAGE="registry.redhat.io/rh-sso-7/sso74-openshift-rhel8:${SSO_TAG}" # and r
 
 # global / generic changes
 pushd "${SOURCEDIR}" >/dev/null
-COPY_FOLDERS="cmd mocks olm pkg templates vendor version"
+COPY_FOLDERS="cmd deploy mocks olm pkg templates vendor version"
 echo "Rsync ${COPY_FOLDERS} to ${TARGETDIR}"
 rsync -azrlt ${COPY_FOLDERS} ${TARGETDIR}/
+
+# delete unneeded files
+echo "Delete olm/eclipse-che-preview-kubernetes and olm/eclipse-che-preview-openshift"
+rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes ${TARGETDIR}/olm/eclipse-che-preview-openshift"
+echo "Delete deploy/*/eclipse-che-preview-kubernetes and deploy/olm-catalog/stable"
+rm -fr "${TARGETDIR}/deploy/olm-catalog/eclipse-che-preview-kubernetes"
+rm -fr "${TARGETDIR}/deploy/olm-catalog/nightly/eclipse-che-preview-kubernetes"
+# remove files with embedded RELATED_IMAGE_* values for Che stable releases
+rm -fr "${TARGETDIR}/deploy/olm-catalog/stable" 
 
 # sed changes
 while IFS= read -r -d '' d; do
 	if [[ -d "${SOURCEDIR}/${d%/*}" ]]; then mkdir -p "${TARGETDIR}"/"${d%/*}"; fi
-	sed -r \
-		-e "s|identityProviderPassword: ''|identityProviderPassword: 'admin'|g" \
-		-e "s|quay.io/eclipse/che-operator:.+|${CRW_RRIO}/${CRW_OPERATOR}:latest|" \
-		-e "s|Eclipse Che|CodeReady Workspaces|g" \
-		-e 's|(DefaultCheFlavor.*=) "che"|\1 "codeready"|' \
-		-e 's|(DefaultPvcStrategy.*=) "common"|\1 "per-workspace"|' \
-		-e 's|che/operator|codeready/operator|' \
-		-e 's|che-operator|codeready-operator|' \
-		-e 's|name: eclipse-che|name: codeready-workspaces|' \
-		-e "s|cheImageTag: 'nightly'|cheImageTag: ''|" \
-		-e 's|/bin/codeready-operator|/bin/che-operator|' \
-		-e 's#(githubusercontent|github).com/eclipse/codeready-operator#\1.com/eclipse/che-operator#g' \
-		-e 's#(githubusercontent|github).com/eclipse-che/codeready-operator#\1.com/eclipse-che/che-operator#g' \
-		-e 's|devworkspace-codeready-operator|devworkspace-che-operator|' \
-	"$d" > "${TARGETDIR}/${d}"
-	if [[ $(diff -u "$d" "${TARGETDIR}/${d}") ]]; then
-		echo "Converted (sed) ${d}"
+	if [[ -f "${TARGETDIR}/${d}" ]]; then 
+		sed -i "${TARGETDIR}/${d}" -r \
+			-e "s|identityProviderPassword: ''|identityProviderPassword: 'admin'|g" \
+			-e "s|quay.io/eclipse/che-operator:.+|${CRW_RRIO}/${CRW_OPERATOR}:latest|" \
+			-e "s|Eclipse Che|CodeReady Workspaces|g" \
+			-e 's|(DefaultCheFlavor.*=) "che"|\1 "codeready"|' \
+			-e 's|(DefaultPvcStrategy.*=) "common"|\1 "per-workspace"|' \
+			-e 's|che/operator|codeready/operator|' \
+			-e 's|che-operator|codeready-operator|' \
+			-e 's|name: eclipse-che|name: codeready-workspaces|' \
+			-e "s|cheImageTag: 'nightly'|cheImageTag: ''|" \
+			-e 's|/bin/codeready-operator|/bin/che-operator|' \
+			-e 's#(githubusercontent|github).com/eclipse/codeready-operator#\1.com/eclipse/che-operator#g' \
+			-e 's#(githubusercontent|github).com/eclipse-che/codeready-operator#\1.com/eclipse-che/che-operator#g' \
+			-e 's|devworkspace-codeready-operator|devworkspace-che-operator|'
+		if [[ $(diff -u "${SOURCEDIR}/${d}" "${TARGETDIR}/${d}") ]]; then
+			echo "Converted (sed) ${d}"
+		fi
 	fi
 done <   <(find deploy pkg/deploy -type f -not -name "defaults_test.go" -print0)
 
@@ -146,6 +156,7 @@ replaceField()
   theFile="$1"
   updateName="$2"
   updateVal="$3"
+  header="$4"
   echo "[INFO] ${0##*/} rF :: * ${updateName}: ${updateVal}"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ $updateVal == "DELETEME" ]]; then
@@ -153,31 +164,32 @@ replaceField()
   else
 	changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
   fi
-  echo "${COPYRIGHT}${changed}" > "${theFile}"
+  echo "${header}${changed}" > "${theFile}"
 }
 
 # similar method to replaceEnvVar() but for a different path within the yaml
 replaceEnvVarOperatorYaml()
 {
 	fileToChange="$1"
+	header="$2"
 	# don't do anything if the existing value is the same as the replacement one
 	# shellcheck disable=SC2016 disable=SC2002
 	if [[ "$(cat "${fileToChange}" | yq -r --arg updateName "${updateName}" '.spec.template.spec.containers[].env[] | select(.name == $updateName).value')" != "${updateVal}" ]]; then
 		echo "[INFO] ${0##*/} rEVOY :: ${fileToChange##*/} :: ${updateName}: ${updateVal}"
 		if [[ $updateVal == "DELETEME" ]]; then
 			changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" 'del(.spec.template.spec.containers[].env[]|select(.name == $updateName))')
-			echo "${COPYRIGHT}${changed}" > "${fileToChange}.2"
+			echo "${header}${changed}" > "${fileToChange}.2"
 		else
 			changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
 '.spec.template.spec.containers[].env = [.spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]')
-			echo "${COPYRIGHT}${changed}" > "${fileToChange}.2"
+			echo "${header}${changed}" > "${fileToChange}.2"
 			# echo "replaced?"
 			# diff -u "${fileToChange}" "${fileToChange}.2" || true
 			if [[ ! $(diff -u "${fileToChange}" "${fileToChange}.2") ]]; then
 			#echo "insert $updateName = $updateVal"
 			changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
 				'.spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]')
-			echo "${COPYRIGHT}${changed}" > "${fileToChange}.2"
+			echo "${header}${changed}" > "${fileToChange}.2"
 			fi
 		fi
 		mv "${fileToChange}.2" "${fileToChange}"
@@ -215,7 +227,7 @@ replaceEnvVarOperatorYaml()
 	while IFS= read -r -d '' d; do
 		for updateName in "${!operator_replacements[@]}"; do
 			updateVal="${operator_replacements[$updateName]}"
-			replaceEnvVarOperatorYaml "${d}"
+			replaceEnvVarOperatorYaml "${d}" "${COPYRIGHT}"
 		done
 	done <   <(find "${TARGETDIR}/deploy" -type f -name "operator*.yaml" -print0)
 
@@ -228,13 +240,13 @@ replaceEnvVarOperatorYaml()
 	for updateName in "${!operator_insertions[@]}"; do
 		updateVal="${operator_insertions[$updateName]}"
 		# apply same transforms in operator.yaml
-		replaceEnvVarOperatorYaml "${TARGETDIR}/deploy/operator.yaml"
+		replaceEnvVarOperatorYaml "${TARGETDIR}/deploy/operator.yaml" "${COPYRIGHT}"
 	done
 
 	# CRW-1579 set correct crw-2-rhel8-operator image and tag in operator.yaml
 	oldImage=$(yq -r '.spec.template.spec.containers[].image' "${TARGETDIR}/deploy/operator.yaml")
 	if [[ $oldImage ]]; then 
-		replaceField "${TARGETDIR}/deploy/operator.yaml" ".spec.template.spec.containers[].image" "${oldImage%%:*}:${CRW_VERSION}"
+		replaceField "${TARGETDIR}/deploy/operator.yaml" ".spec.template.spec.containers[].image" "${oldImage%%:*}:${CRW_VERSION}" "${COPYRIGHT}"
 	fi
 
 	# see both sync-che-o*.sh scripts - need these since we're syncing to different midstream/dowstream repos
@@ -253,14 +265,14 @@ yq  -y 'del(.spec.k8s)')" && \
 		fi
 	done <   <(find "${TARGETDIR}/deploy/crds" -type f -name "org_v1_che_cr.yaml" -print0)
 
-	# delete unneeded files
-	echo "Delete olm/eclipse-che-preview-kubernetes and olm/eclipse-che-preview-openshift"
-	rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes ${TARGETDIR}/olm/eclipse-che-preview-openshift"
-	echo "Delete deploy/*/eclipse-che-preview-kubernetes and deploy/olm-catalog/stable"
-	rm -fr "${TARGETDIR}/deploy/olm-catalog/eclipse-che-preview-kubernetes"
-	rm -fr "${TARGETDIR}/deploy/olm-catalog/nightly/eclipse-che-preview-kubernetes"
-	# remove files with embedded RELATED_IMAGE_* values for Che stable releases
-	rm -fr "${TARGETDIR}/deploy/olm-catalog/stable" 
+	# # delete unneeded files
+	# echo "Delete olm/eclipse-che-preview-kubernetes and olm/eclipse-che-preview-openshift"
+	# rm -fr "${TARGETDIR}/olm/eclipse-che-preview-kubernetes ${TARGETDIR}/olm/eclipse-che-preview-openshift"
+	# echo "Delete deploy/*/eclipse-che-preview-kubernetes and deploy/olm-catalog/stable"
+	# rm -fr "${TARGETDIR}/deploy/olm-catalog/eclipse-che-preview-kubernetes"
+	# rm -fr "${TARGETDIR}/deploy/olm-catalog/nightly/eclipse-che-preview-kubernetes"
+	# # remove files with embedded RELATED_IMAGE_* values for Che stable releases
+	# rm -fr "${TARGETDIR}/deploy/olm-catalog/stable" 
 
 popd >/dev/null || exit
 

@@ -125,39 +125,40 @@ replaceField()
   theFile="$1"
   updateName="$2"
   updateVal="$3"
-  echo "[INFO] ${0##*/} :: * ${updateName}: ${updateVal}"
+  header="$4"
+  echo "[INFO] ${0##*/} rF :: * ${updateName}: ${updateVal}"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ $updateVal == "DELETEME" ]]; then
 	changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" 'del(${updateName})')
   else
 	changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
   fi
-  echo "${COPYRIGHT}${changed}" > "${theFile}"
+  echo "${header}${changed}" > "${theFile}"
 }
 
 # similar method to insertEnvVar() used in insert-related-images-to-csv.sh; uses += instead of =
 replaceEnvVar()
 {
 	fileToChange="$1"
+	header="$2"
 	# don't do anything if the existing value is the same as the replacement one
 	# shellcheck disable=SC2016 disable=SC2002
 	if [[ "$(cat "${fileToChange}" | yq -r --arg updateName "${updateName}" '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name == $updateName).value')" != "${updateVal}" ]]; then
-		echo "[INFO] ${0##*/} :: ${fileToChange##*/} :: ${updateName}: ${updateVal}"
+		echo "[INFO] ${0##*/} rEV :: ${fileToChange##*/} :: ${updateName}: ${updateVal}"
 		if [[ $updateVal == "DELETEME" ]]; then
-			cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-			'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then del(.spec.install.spec.deployments[].spec.template.spec.containers[].env[]|select(.value == $updateVal)) else . end]' \
-			> "${fileToChange}.2"
+			changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" 'del(.spec.install.spec.deployments[].spec.template.spec.containers[].env[]|select(.name == $updateName))')
+			echo "${header}${changed}" > "${fileToChange}.2"
 		else
-			cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-			'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]' \
-			> "${fileToChange}.2"
+			changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+'.spec.install.spec.deployments[].spec.template.spec.containers[].env = [.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | if (.name == $updateName) then (.value = $updateVal) else . end]')
+			echo "${header}${changed}" > "${fileToChange}.2"
 			# echo "replaced?"
 			# diff -u ${fileToChange} ${fileToChange}.2 || true
 			if [[ ! $(diff -u "${fileToChange}" "${fileToChange}.2") ]]; then
 				# echo "insert $updateName = $updateVal"
-				cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-					'.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]' \
-					> "${fileToChange}.2"
+				changed=$(cat "${fileToChange}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+					'.spec.install.spec.deployments[].spec.template.spec.containers[].env += [{"name": $updateName, "value": $updateVal}]')
+				echo "${header}${changed}" > "${fileToChange}.2"
 			fi
 		fi
 		mv "${fileToChange}.2" "${fileToChange}"
@@ -286,7 +287,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 	)
 	for updateName in "${!operator_replacements[@]}"; do
 		updateVal="${operator_replacements[$updateName]}"
-		replaceEnvVar "${CSVFILE}"
+		replaceEnvVar "${CSVFILE}" ""
 	done
 
 	# see both sync-che-o*.sh scripts - need these since we're syncing to different midstream/dowstream repos
@@ -297,7 +298,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 	)
 	for updateName in "${!operator_insertions[@]}"; do
 		updateVal="${operator_insertions[$updateName]}"
-		replaceEnvVar "${CSVFILE}"
+		replaceEnvVar "${CSVFILE}" ""
 	done
 
 	# insert replaces: field
@@ -307,7 +308,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 	)
 	for updateName in "${!spec_insertions[@]}"; do
 		updateVal="${spec_insertions[$updateName]}"
-		replaceField "${CSVFILE}" "${updateName}" "${updateVal}"
+		replaceField "${CSVFILE}" "${updateName}" "${updateVal}" "${COPYRIGHT}"
 	done
 
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries
