@@ -1,5 +1,5 @@
 #
-# Copyright IBM Corporation 2020-2021
+# Copyright IBM Corporation 2021
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -18,21 +18,17 @@ metadata:
   labels:
     name: wazi-codeready-operator-catalog
     app.kubernetes.io/name: wazi-codeready-operator-catalog
-    app.kubernetes.io/instance: wazi-codeready-operator-catalog-1.2.0
-    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/instance: wazi-codeready-operator-catalog-1.2.5
+    app.kubernetes.io/version: "1.2.5"
     app.kubernetes.io/component: workspaces
     app.kubernetes.io/part-of: wazi-developer
-    app.kubernetes.io/managed-by: operator
+    app.kubernetes.io/managed-by: olm
   annotations:
-    productID: "9d41d2d8126f4200b62ba1acc0dffa2e"
-    productName: "IBM Wazi Developer for Red Hat CodeReady Workspaces"
-    productMetric: "VIRTUAL_PROCESSOR_CORE"
-    productChargedContainers: "All"
-    productVersion: "1.2.0"
+    productVersion: "1.2.5"
             
 spec:
   sourceType: grpc
   displayName: IBM Wazi Developer Operators
   publisher: IBM
-  image: docker.io/ibmcom/wazi-code-operator-catalog@sha256:edfa9da664ac00712e8f4d10bcf06fd9d5c748f62521a4dd34bfc5fb07e9bf27
-  # tag: docker.io/ibmcom/wazi-code-operator-catalog:1.2.0
+  image: docker.io/ibmcom/wazi-code-operator-catalog@sha256:42646eedcbf2fa09465023d7adda0220efa7daf3f7b10d8b17575617f13022aa
+  # tag: docker.io/ibmcom/wazi-code-operator-catalog:1.2.5

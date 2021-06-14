@@ -2,17 +2,17 @@
 [![Release](https://img.shields.io/github/release/IBM/wazi-codeready-workspaces-operator.svg)](../../releases/latest)
 [![License](https://img.shields.io/github/license/IBM/wazi-codeready-workspaces-operator)](LICENSE)
 [![DockerHub](https://img.shields.io/badge/DockerHub-Operator-blue?color=3498db)](https://hub.docker.com/repository/docker/ibmcom/wazi-code-operator-catalog)
-[![Knowledge Center](https://img.shields.io/badge/Knowledge%20Center-blue?color=1f618d)](https://www.ibm.com/support/knowledgecenter/SSCH39)
+[![Documentation](https://img.shields.io/badge/Documentation-blue?color=1f618d)](https://ibm.biz/wazi-crw-doc)
 
 ## What's inside?
   
 A Docker image that packages all the operator lifecycle manager dependencies for installing the IBM Wazi Developer for Red Hat CodeReady Workspaces (IBM Wazi Developer for Workspaces). This operator is installed into a Red Hat OpenShift Container Platform for a cluster administrator to manage. Once an instance is deployed into a cluster, then a user can use a browser to access the IBM Wazi Developer for Workspaces.
 
-- This repository is based off of the upstream [Red Hat CodeReady for Workspaces Operator](https://github.com/redhat-developer/codeready-workspaces-operator), where the code is in another upstream [Eclipse Che Operator](https://github.com/eclipse/che-operator/) repository.
+- This repository is based off of the upstream [Red Hat CodeReady for Workspaces Operator](https://github.com/redhat-developer/codeready-workspaces-operator), where the code is in another upstream [Eclipse Che Operator](https://github.com/eclipse/che-operator/) repository. Repositories gathered together downstream are all brought together into a [Red Hat CodeReady Workspaces Images](https://github.com/redhat-developer/codeready-workspaces-images) repository and the generated output is located in the respective branch.
   
 ## Documentation
   
-Documentation can be found here for [IBM Wazi Developer for Workspaces](https://www.ibm.com/support/knowledgecenter/SSCH39)  
+Documentation can be found here for [IBM Wazi Developer for Workspaces](https://ibm.biz/wazi-crw-doc)  
   
 * The [IBM Wazi Developer for Workspaces](https://github.com/ibm/wazi-codeready-workspaces) repository - provides the devfile and plug-in registries for the Red Hat CodeReady Workspaces.
 * The [IBM Wazi Developer for Workspaces Sidecars](https://github.com/ibm/wazi-codeready-workspaces-sidecars) repository - provides the supporting resources for the devfile and plug-in registries.
