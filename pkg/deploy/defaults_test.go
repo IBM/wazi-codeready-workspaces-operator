@@ -91,7 +91,7 @@ func TestCorrectImageName(t *testing.T) {
 	testCases := map[string]string{
 		"registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:latest":  "crw-2-rhel8-operator:latest",
 		"eclipse/che-operator:7.1.0":            "che-operator:7.1.0",
-		"registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.9":  "crw-2-rhel8-operator:2.9",
+		"registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.10":  "crw-2-rhel8-operator:2.10",
 	}
 	for k, v := range testCases {
 		t.Run(k, func(*testing.T) {
