@@ -314,7 +314,7 @@ for CSVFILE in ${TARGETDIR}/manifests/codeready-workspaces.csv.yaml; do
 	# add more RELATED_IMAGE_ fields for the images referenced by the registries
 	${SCRIPTS_DIR}/insert-related-images-to-csv.sh -v ${CSV_VERSION} -t ${TARGETDIR} --crw-branch ${MIDSTM_BRANCH}
 
-	# sort env vars
+	# echo "[INFO] ${0##*/} :: Sort env var in ${CSVFILE}:"
 	cat "${CSVFILE}" | yq -Y '.spec.install.spec.deployments[].spec.template.spec.containers[].env |= sort_by(.name)' > "${CSVFILE}.2"
 	mv "${CSVFILE}.2" "${CSVFILE}"
 
