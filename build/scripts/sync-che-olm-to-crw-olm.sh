@@ -23,7 +23,7 @@ MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 OLM_CHANNEL="nightly" # or "stable", see https://github.com/eclipse-che/che-operator/tree/master/deploy/olm-catalog
 
 SSO_TAG=7.4
-UBI_TAG=8.3
+UBI_TAG=8.4
 POSTGRES_TAG=1
 
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
