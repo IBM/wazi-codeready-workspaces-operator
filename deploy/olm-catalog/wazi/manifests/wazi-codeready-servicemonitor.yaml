@@ -1,0 +1,31 @@
+#
+#  Copyright (c) 2019-2021 Red Hat, Inc.
+#    This program and the accompanying materials are made
+#    available under the terms of the Eclipse Public License 2.0
+#    which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+#  SPDX-License-Identifier: EPL-2.0
+#
+#  Contributors:
+#    Red Hat, Inc. - initial API and implementation
+#    IBM Corporation - implementation
+#
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: wazi-codeready-workspaces-metrics-exporter
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/managed-by: olm
+spec:
+  endpoints:
+  - interval: 30s
+    port: metrics
+    scheme: http
+  namespaceSelector:
+    matchNames:
+    - wazi-codeready-workspaces
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: codeready

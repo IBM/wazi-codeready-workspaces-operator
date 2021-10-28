@@ -30,7 +30,8 @@ IBM Wazi Developer for Workspaces, a component of IBM Wazi Developer, is built o
   
 IBM Wazi Developer for Workspaces provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe and Red Hat CodeReady Workspaces, IBM Wazi Developer for Workspaces offers an easy, streamlined onboarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Developer for Workspaces brings the necessary technology to the task at hand.
 
-### Details
+## Details
+
 IBM Wazi Developer for Workspaces provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
 
 - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I, which provides language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
@@ -42,9 +43,74 @@ IBM Wazi Developer for Workspaces provides a custom stack for mainframe develope
 - Debugging COBOL and PL/I applications using [IBM Z Open Debug](https://developer.ibm.com/mainframe/2020/06/12/introducing-ibm-z-open-debug/)
 - Mainframe Development package with a custom plug-in and devfile registry support using the [IBM Wazi Developer stack](https://github.com/IBM/wazi-codeready-workspaces)
 
-### Prerequisites
+Read our official documentation on the [IBM Documentation](https://ibm.biz/wazi-crw-doc) site to learn more about IBM Wazi Developer.
+
+## Prerequisites
+
+### Resources Required
+
 - Ensure that you have a connection to a Red Hat OpenShift Container Platform (OCP) cluster, and that you have cluster-admin permissions.
 - The Red Hat OpenShift cluster must be configured with a default storage class. For more information, see OpenShift Container Platform documentation.
 - If you plan to use the OpenShift oAuth, then the cluster oAuth must be configured. For more information, see Configuring the internal OAuth server.
 - Install OpenShift command-line tool, which lets you create applications and manage OpenShift Container Platform projects from a terminal.
 - Install IBM Cloud Pak® command-line tool, which is a command line tool to manage Container Application Software for Enterprises (CASEs).
+
+---
+  
+**_Red Hat Content_** 
+
+## Building CRW Operator and Metadata containers
+
+### Operator container
+
+* The CRW operator has most of code in the upstream [che-operator](https://github.com/eclipse-che/che-operator/) repo, including this [Dockerfile](https://github.com/eclipse-che/che-operator/blob/master/Dockerfile).
+
+* This code is then synced to the [downstream repo](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/?h=crw-2-rhel-8) via a job located here:
+
+  - https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (jobs)
+  - https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources)
+  - https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs (copied sources)
+
+The Jenkinsfile transforms the Che code into CRW code and commits the changed code directly to downstream so there's no need for a branch in che-operator or to have code duplicated here. 
+
+NOTE: The job can be configured to sync from any upstream che-operator branch, eg., `SOURCE_BRANCH` = `7.26.x` or `master`.
+
+* Once the sync is done:
+
+** the [codeready-workspaces-operator](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/?h=crw-2-rhel-8) repo is updated;
+
+** a Brew build will be triggered via **get-sources-rhpkg-container-build** job
+
+** and, if successful, the Brew build will be copied to Quay as `https://quay.io/crw/crw-2-rhel8-operator`.
+
+### Metadata container
+
+* Metadata for the CRW operator is contained in this repo. See [manifests](https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/manifests), [metadata](https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/metadata) and [deploy](https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/deploy) folders, and this [operator-metadata.Dockerfile](https://github.com/redhat-developer/codeready-workspaces-operator/blob/master/operator-metadata.Dockerfile).
+
+* The metadata is then synced to the [downstream repo](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/?h=crw-2-rhel-8) via a job located here:
+
+  - https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (jobs)
+  - https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources)
+  - https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs (copied sources)
+
+NOTE: The job can be configured to sync from any upstream che-operator branch, eg., `SOURCE_BRANCH` = `7.26.x` or `master`.
+
+* Once the sync is done:
+
+** the [codeready-workspaces-operator-metadata](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/?h=crw-2-rhel-8) repo is updated;
+
+** a Brew build will be triggered via **get-sources-rhpkg-container-build** job
+
+** and, if successful, the Brew build will be copied to Quay] as `https://quay.io/crw/crw-2-rhel8-operator-metadata`.
+
+### crwctl CLI binary
+
+* Once the operator and metadata is rebuilt, a new build of [crwctl](https://github.com/redhat-developer/codeready-workspaces-chectl) is triggered.
+
+* This is triggered because the CRW operator-metadata's [deploy folder](https://github.com/redhat-developer/codeready-workspaces-operator/tree/master/deploy) is used in crwctl to do deployment when there is no OLM present on the target cluster (OCP 3.11 and 4.1).
+
+See crwctl job located here:
+
+  - https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (jobs)
+  - https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources)
+  - https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs (copied sources)

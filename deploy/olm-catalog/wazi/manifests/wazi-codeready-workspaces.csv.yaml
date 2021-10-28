@@ -1,0 +1,1423 @@
+#
+# Copyright IBM Corporation 2021
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   IBM Corporation - implementation
+#
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/managed-by: olm
+    operatorframework.io/arch.amd64: supported
+    operatorframework.io/arch.s390x: supported
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "org.eclipse.che/v1",
+          "kind": "CheCluster",
+          "metadata": {
+            "name": "wazi-codeready-workspaces"
+          },
+          "spec": {
+            "auth": {
+              "externalIdentityProvider": false,
+              "identityProviderAdminUserName": "",
+              "identityProviderClientId": "",
+              "identityProviderPassword": "",
+              "identityProviderRealm": "",
+              "identityProviderURL": "",
+              "initialOpenShiftOAuthUser": false,
+              "oAuthClientName": "",
+              "oAuthSecret": ""
+            },
+            "database": {
+              "chePostgresDb": "",
+              "chePostgresHostName": "",
+              "chePostgresPassword": "",
+              "chePostgresPort": "",
+              "chePostgresUser": "",
+              "externalDb": false
+            },
+            "devWorkspace": {
+              "enable": false
+            },
+            "metrics": {
+              "enable": true
+            },
+            "server": {
+              "allowUserDefinedWorkspaceNamespaces": false,
+              "cheClusterRoles": "",
+              "cheFlavor": "codeready",
+              "cheWorkspaceClusterRole": "",
+              "gitSelfSignedCert": false,
+              "nonProxyHosts": "",
+              "proxyPassword": "",
+              "proxyPort": "",
+              "proxyURL": "",
+              "proxyUser": "",
+              "serverExposureStrategy": "",
+              "serverTrustStoreConfigMapName": "",
+              "tlsSupport": true,
+              "useInternalClusterSVCNames": true,
+              "workspaceNamespaceDefault": "wazi-codeready-<username>"
+            },
+            "storage": {
+              "postgresPVCStorageClassName": "",
+              "preCreateSubPaths": true,
+              "pvcClaimSize": "10Gi",
+              "pvcStrategy": "common",
+              "workspacePVCStorageClassName": ""
+            }
+          }
+        }
+      ]
+    capabilities: Seamless Upgrades
+    categories: Developer Tools, OpenShift Optional
+    certified: "true"
+    containerImage: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
+    createdAt: "2021-07-29T01:56:36+00:00"
+    description: Personal z/OS cloud IDE for development and testing.
+    operatorframework.io/suggested-namespace: wazi-codeready-workspaces
+    operatorframework.io/cluster-monitoring: "true"
+    repository: https://github.com/IBM/wazi-codeready-workspaces-operator
+    support: IBM
+    olm.skipRange: ">=1.0.0 <1.4.0"
+  name: ibm-wazi-developer-for-workspaces.v1.4.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Personal z/OS cloud IDE for development and testing.
+      displayName: IBM Wazi Developer for Workspaces
+      kind: CheCluster
+      name: checlusters.org.eclipse.che
+      statusDescriptors:
+      - description: IBM Wazi Developer for Workspaces - Status
+        displayName: Status
+        path: cheClusterRunning
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.phase
+      - description: IBM Wazi Developer for Workspaces - URL Route
+        displayName: URL Route
+        path: cheURL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: IBM Wazi Developer for Workspaces - Che Server Version
+        displayName: Che Server Version
+        path: cheVersion
+        x-descriptors:
+        - urn:alm:descriptor:text
+      - description: IBM Wazi Developer for Workspaces - Devfile Registry URL
+        displayName: Devfile Registry URL (/devfiles)
+        path: devfileRegistryURL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: IBM Wazi Developer for Workspaces - Help URL
+        displayName: Help URL
+        path: helpLink
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: IBM Wazi Developer for Workspaces - Keycloak SSO Admin Console
+        displayName: Keycloak SSO Admin Console
+        path: keycloakURL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: IBM Wazi Developer for Workspaces - Message
+        displayName: Message
+        path: message
+        x-descriptors:
+        - urn:alm:descriptor:text
+      - description: IBM Wazi Developer for Workspaces - Identity Provider Credentials
+        displayName: Identity Provider Credentials
+        path: openShiftOAuthUserCredentialsSecret
+        x-descriptors:
+        - urn:alm:descriptor:text
+      - description: IBM Wazi Developer for Workspaces - Plugin Registry URL
+        displayName: Plugin Registry URL (/plugins)
+        path: pluginRegistryURL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: IBM Wazi Developer for Workspaces - Reason
+        displayName: Reason
+        path: reason
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.phase:reason
+        - urn:alm:descriptor:text
+      version: v1
+  description: |
+    # Introduction
+    
+    IBM Wazi Developer for Red Hat CodeReady Workspaces (IBM Wazi Developer) is a single integrated solution, which delivers a cloud native development experience for z/OS. It enables application developers to develop and test z/OS application components in a virtual z/OS environment on an OpenShift®-powered hybrid multicloud platform, and to use an industry standard integrated development environment (IDE) of their choice. 
+    
+    IBM Wazi Developer for Workspaces, a component of IBM Wazi Developer, is built on the Red Hat CodeReady Workspaces project. The core functionality for Red Hat CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Developer for Workspaces uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z platform.
+
+    IBM Wazi Developer for Workspaces provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe and Red Hat CodeReady Workspaces, IBM Wazi Developer for Workspaces offers an easy, streamlined onboarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Developer for Workspaces brings the necessary technology to the task at hand.
+    
+    ## Details
+
+    IBM Wazi Developer for Workspaces provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
+
+    - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I that provide language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
+    - Source code management (SCM) integration to enable integration with any flavor of Git, a popular and modern parallel development SCM
+    - Intelligent build capability that enables developers to perform a user build with IBM Dependency Based Build for any flavor of Git
+    - Integrations that enable developers to work with z/OS resources such as MVS and UNIX files and JES jobs
+    - Connectivity to Z host using [Zowe Explorer](https://marketplace.visualstudio.com/items?itemName=Zowe.vscode-extension-for-zowe)
+    - Debugging COBOL and PL/I applications using [IBM Z Open Debug](https://developer.ibm.com/mainframe/2020/06/12/introducing-ibm-z-open-debug/)
+    - Interacting with the [IBM Remote System Explorer API](https://ibm.github.io/zopeneditor-about/Docs/interact_zos_overview.html)
+    - Mainframe Development package with custom plugin and devfile registry support using the [IBM Wazi Developer stack](https://github.com/IBM/wazi-codeready-workspaces)
+      
+    Read our official documentation on the [IBM Documentation](https://ibm.biz/wazi-crw-doc) site to learn more about IBM Wazi Developer. 
+    
+    ## Prerequisites
+
+    ### Resources Required
+    
+    - Ensure that you have a connection to a Red Hat OpenShift Container Platform (OCP) cluster, and that you have cluster-admin permissions.
+    - The Red Hat OpenShift cluster must be configured with a default storage class. For more information, see OpenShift Container Platform documentation.
+    - If you plan to use the OpenShift oAuth, then the cluster oAuth must be configured. For more information, see Configuring the internal OAuth server.
+    - Install OpenShift command-line tool, which lets you create applications and manage OpenShift Container Platform projects from a terminal.
+    - Install IBM Cloud Pak® command-line tool, which is a command line tool to manage Container Application Software for Enterprises (CASEs).
+
+    Minimum scheduling capacity:
+
+    | Software                                    | Memory (GB) | CPU (cores) | Disk (GB) | Nodes |
+    | ------------------------------------------- | ----------- | ----------- | --------- | ----- |
+    | IBM Wazi Developer for Workspaces           | 8 GB        | 4 (vCPUs)   | 35 GB     | 1     |
+    |                                             |             |             |           |       |
+    | **Total**                                   | 8 GB        | 4 (vCPUs)   | 35 GB     | 1     |
+
+    - #### Minimum of 5 GB of RAM is required to run Codeready Workspaces
+      - The CodeReady Workspaces server: about 750 MB
+      - The Red Hat Single Sign-On authorization server: about 1 GB
+      - PostgreSQL: about 515 MB
+      - Keycloak: about 1GB
+      - Workspaces: 2 GB of RAM per workspace. The require size of RAM for workspace depends on the runtime and number of pods.
+
+    - #### Codeready Workspaces storage requirements
+      - CodeReady Workspaces server: 1 GB to store logs and initial workspace stacks
+      - Keycloak: 2 PVCs, 1 GB each to store logs and Keycloak data
+      - PostgreSQL: 1 GB PVC to store database.
+        
+    ## Installing
+    
+    Press the **Install** button, select the namespace, choose the update strategy, click the Subscribe button, and wait for the **Succeeded** Operator status.
+
+    When the operator is installed, create a new instance of the IBM Wazi Developer for Workspaces (click the **Create Instance** button).  
+
+    IBM Wazi Developer for Workspaces spec contains all defaults (see below).
+
+    You can start using the IBM Wazi Developer for Workspaces when the status is set to **Available**, and you see a URL.
+
+    # Configuration
+    
+    ## Defaults
+    
+    By default, the operator deploys IBM Wazi Developer for Workspaces with:
+
+    - Bundled PostgreSQL and Keycloak
+    - Per-Workspace PVC strategy
+    - Auto-generated passwords
+    - TLS mode (secure routes)
+    - Built-in authentication (Keycloak)
+
+    ## Installation Options
+    
+    IBM Wazi Developer operator installation options include:
+
+    - Connection to external database and Keycloak
+    - Configuration of default passwords and object names
+    - PVC strategy (once shared PVC for all workspaces, PVC per workspace, or PVC per volume)
+    - Authentication options
+
+    ## External Database and Keycloak
+
+    To instruct the operator to skip deploying PostgreSQL and Keycloak and connect to an existing DB and Keycloak instead:
+
+    - set respective fields to `true` in a custom resource spec
+    - provide the operator with connection and authentication details:
+      
+      `externalDb: true`
+
+
+      `chePostgresHostname: 'yourPostgresHost'`
+
+
+      `chePostgresPort: '5432'`
+
+
+      `chePostgresUser: 'myuser'`
+
+
+      `chePostgresPassword: 'mypass'`
+
+
+      `chePostgresDb: 'mydb'`
+
+
+      `externalIdentityProvider: true`
+
+
+      `identityProviderURL: 'https://my-keycloak.com'`
+
+
+      `identityProviderRealm: 'myrealm'`
+
+
+      `identityProviderClientId: 'myClient'`
+
+    ## Self-signed Certificates
+
+    IBM Wazi Developer for Workspaces uses self-signed certificates by default.
+
+    You can also manually create a secret:
+
+    ```
+    oc create secret generic self-signed-certificate  --from-file=/path/to/certificate/ca.crt -n=$codeReadyNamespace
+    ```
+    
+    ## Limitations
+
+    - See the [Release Notes and Known Issues](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces) for Red Hat CodeReady Workspaces
+
+    ## SecurityContextConstraints Requirements
+
+    - Security Context Constraints (SCC) is in a `restricted` mode for all pods.
+
+    Custom SecurityContextConstraints definition:
+      
+    ```
+    openshift.io/scc: restricted
+    ```
+  displayName: IBM Wazi Developer for Workspaces
+  icon:
+  - base64data: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDojZmZmO30uY2xzLTJ7ZmlsbDp1cmwoI2xpbmVhci1ncmFkaWVudCk7fS5jbHMtM3ttYXNrOnVybCgjbWFzayk7fS5jbHMtNHtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50LTIpO30uY2xzLTV7ZmlsbDojMDYxZjgwO308L3N0eWxlPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMTAwLjI3IiB5MT0iNS4wNyIgeDI9IjEwNC4xMyIgeTI9IjcuMyIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgtMC41LCAtMS41NiwgMC44NywgLTAuOSwgNzMuNTEsIDE4My45NikiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMC45Ii8+PC9saW5lYXJHcmFkaWVudD48bWFzayBpZD0ibWFzayIgeD0iMCIgeT0iMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNiwzMWEuOS45LDAsMCwxLS41LS4xNGwtMTItN0ExLDEsMCwwLDEsMywyM1Y5YTEsMSwwLDAsMSwuNS0uODZsMTItN2ExLDEsMCwwLDEsMSwwbDEyLDdBMSwxLDAsMCwxLDI5LDlhMSwxLDAsMCwxLS40OS44N2wtMTAsNi0xLTEuNzJMMjYsOSwxNiwzLjE2LDUsOS41N1YyMi40M2wxMSw2LjQxLDExLTYuNDFWMTVoMnY4YTEsMSwwLDAsMS0uNS44NmwtMTIsN0EuOS45LDAsMCwxLDE2LDMxWiIvPjxyZWN0IGNsYXNzPSJjbHMtMiIgeD0iMjYuMjUiIHk9IjE0LjUiIHdpZHRoPSIzLjA1IiBoZWlnaHQ9IjguMDYiLz48L21hc2s+PGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQtMiIgeTE9IjMyIiB4Mj0iMzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI2I5OGNmZCIvPjxzdG9wIG9mZnNldD0iMC45IiBzdG9wLWNvbG9yPSIjNDE4YWZjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPmFwcC1pY29uLWxpZ2h0LTwvdGl0bGU+PGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+PGcgY2xhc3M9ImNscy0zIj48cmVjdCBjbGFzcz0iY2xzLTQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIvPjwvZz48cGF0aCBjbGFzcz0iY2xzLTUiIGQ9Ik0xNiwyMGE0LDQsMCwxLDEsNC00QTQsNCwwLDAsMSwxNiwyMFptMC02YTIsMiwwLDEsMCwyLDJBMiwyLDAsMCwwLDE2LDE0WiIvPjwvZz48L3N2Zz4=
+    mediatype: image/svg+xml
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - oauth.openshift.io
+          resources:
+          - oauthclients
+          verbs:
+          - create
+          - get
+          - delete
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - config.openshift.io
+          resources:
+          - oauths
+          verbs:
+          - get
+          - list
+          - watch
+          - patch
+        - apiGroups:
+          - config.openshift.io
+          resources:
+          - infrastructures
+          - proxies
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - user.openshift.io
+          resources:
+          - users
+          verbs:
+          - list
+          - delete
+        - apiGroups:
+          - user.openshift.io
+          resources:
+          - identities
+          verbs:
+          - delete
+        - apiGroups:
+          - console.openshift.io
+          resources:
+          - consolelinks
+          verbs:
+          - get
+          - list
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          verbs:
+          - list
+          - create
+          - watch
+          - update
+          - get
+          - delete
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterroles
+          verbs:
+          - list
+          - create
+          - watch
+          - update
+          - get
+          - delete
+        - apiGroups:
+          - authorization.openshift.io
+          resources:
+          - roles
+          verbs:
+          - get
+          - create
+          - delete
+        - apiGroups:
+          - authorization.openshift.io
+          resources:
+          - rolebindings
+          verbs:
+          - get
+          - create
+          - update
+          - delete
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - roles
+          verbs:
+          - get
+          - create
+          - delete
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - rolebindings
+          verbs:
+          - get
+          - create
+          - update
+          - delete
+        - apiGroups:
+          - org.eclipse.che
+          resources:
+          - checlusters
+          - checlusters/finalizers
+          verbs:
+          - '*'
+        - apiGroups:
+          - project.openshift.io
+          resources:
+          - projectrequests
+          verbs:
+          - create
+          - update
+        - apiGroups:
+          - project.openshift.io
+          resources:
+          - projects
+          verbs:
+          - get
+          - list
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+          - list
+          - create
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - serviceaccounts
+          verbs:
+          - get
+          - create
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - pods/exec
+          verbs:
+          - create
+        - apiGroups:
+          - apps
+          resources:
+          - secrets
+          verbs:
+          - list
+        - apiGroups:
+          - ""
+          resources:
+          - secrets
+          verbs:
+          - list
+          - get
+          - create
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - persistentvolumeclaims
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+          - list
+          - create
+          - watch
+          - delete
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          verbs:
+          - get
+          - list
+          - create
+          - patch
+          - watch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          verbs:
+          - list
+          - create
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - create
+          - delete
+          - list
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - list
+          - create
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          verbs:
+          - list
+          - get
+          - patch
+          - delete
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - list
+          - create
+          - watch
+          - get
+          - delete
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - get
+          - create
+          - update
+        - apiGroups:
+          - operators.coreos.com
+          resources:
+          - subscriptions
+          verbs:
+          - get
+        - apiGroups:
+          - workspace.devfile.io
+          resources:
+          - devworkspaces
+          - devworkspacetemplates
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - patch
+          - update
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings
+          - components
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - patch
+          - update
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - persistentvolumeclaims
+          - pods
+          - secrets
+          - serviceaccounts
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - metrics.k8s.io
+          resources:
+          - pods
+          - nodes
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - batch
+          - ""
+          resources:
+          - pods/exec
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          verbs:
+          - '*'
+        - apiGroups:
+          - admissionregistration.k8s.io
+          resources:
+          - mutatingwebhookconfigurations
+          - validatingwebhookconfigurations
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resourceNames:
+          - devworkspace-controller
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - deployments
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - deployments
+          - replicasets
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - replicasets
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings
+          verbs:
+          - '*'
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - create
+          - get
+        - apiGroups:
+          - oauth.openshift.io
+          resources:
+          - oauthclients
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          - clusterroles
+          - rolebindings
+          - roles
+          verbs:
+          - create
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - '*'
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes/custom-host
+          verbs:
+          - create
+        - apiGroups:
+          - workspace.devfile.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - workspace.devfile.io
+          resources:
+          - devworkspaces
+          - devworkspacetemplates
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings
+          - components
+          verbs:
+          - get
+          - list
+          - watch
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps/status
+          verbs:
+          - get
+          - update
+          - patch
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - persistentvolumeclaims
+          - pods
+          - secrets
+          - serviceaccounts
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - pods/exec
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          resourceNames:
+          - devworkspace-che-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - deployments
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - deployments
+          - replicasets
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - replicasets
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - create
+          - delete
+          - get
+          - update
+          - watch
+        - apiGroups:
+          - che.eclipse.org
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - che.eclipse.org
+          resources:
+          - chemanagers
+          verbs:
+          - '*'
+        - apiGroups:
+          - che.eclipse.org
+          resources:
+          - chemanagers/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - che.eclipse.org
+          resources:
+          - chemanagers/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings
+          verbs:
+          - '*'
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - controller.devfile.io
+          resources:
+          - devworkspaceroutings/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - configmap
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - create
+          - get
+        - apiGroups:
+          - oauth.openshift.io
+          resources:
+          - oauthclients
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          - clusterroles
+          - rolebindings
+          - roles
+          verbs:
+          - create
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - '*'
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes/custom-host
+          verbs:
+          - create
+        serviceAccountName: wazi-codeready-operator
+      deployments:
+      - name: wazi-codeready-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: wazi-codeready-operator
+          strategy:
+            type: RollingUpdate
+          template:
+            metadata:
+              annotations:
+                cloudpakId: "9d41d2d8126f4200b62ba1acc0dffa2e"
+                cloudpakName: "IBM Wazi Developer for Red Hat CodeReady Workspaces"
+                cloudpakMetric: "VIRTUAL_PROCESSOR_CORE"
+                productID: "0e775d0d3f354a5ca074a6a4398045f3"
+                productName: "Wazi Developer Code"
+                productMetric: "AUTHORIZED_USER"
+                productChargedContainers: "All"
+                productCloudpakRatio: "5:1"
+                productVersion: "1.4.0"
+              labels:
+                app: wazi-codeready-operator
+                app.kubernetes.io/component: wazi-codeready-operator
+                app.kubernetes.io/instance: che
+                app.kubernetes.io/managed-by: olm
+                app.kubernetes.io/name: che
+            spec:
+              containers:
+              - command:
+                - /usr/local/bin/che-operator
+                env:
+                - name: CHE_FLAVOR
+                  value: wazi-codeready
+                - name: CHE_IDENTITY_POSTGRES_SECRET
+                  value: che-identity-postgres-secret
+                - name: CHE_IDENTITY_SECRET
+                  value: che-identity-secret
+                - name: CHE_POSTGRES_SECRET
+                  value: che-postgres-secret
+                - name: CHE_SERVER_TRUST_STORE_CONFIGMAP_NAME
+                  value: ca-certs
+                - name: CHE_VERSION
+                  value: 2.10.1
+                - name: CONSOLE_LINK_DISPLAY_NAME
+                  value: IBM Wazi Developer for Workspaces
+                - name: CONSOLE_LINK_IMAGE
+                  value: /dashboard/assets/branding/loader.svg
+                - name: CONSOLE_LINK_NAME
+                  value: che
+                - name: CONSOLE_LINK_SECTION
+                  value: IBM Applications
+                - name: OPERATOR_NAME
+                  value: wazi-codeready-operator
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: RELATED_IMAGE_che_server
+                  value: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:591f23a2db6e6ced7bad91e33d2492bf796d8bad2f545dc17c79d23a39657b28
+                - name: RELATED_IMAGE_che_server_secure_exposer_jwt_proxy_image
+                  value: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:c62c57ceb4b5f78eb62e43ee59e580e7df8cbe6e75a4e59ce344ea2c885c7129
+                - name: RELATED_IMAGE_che_workspace_plugin_broker_artifacts
+                  value: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:0e6b054323fd8cfca3171fa5aaa25f48b1d4ebd098ca63e71d7f0a379e2a51a1
+                - name: RELATED_IMAGE_che_workspace_plugin_broker_metadata
+                  value: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:ca8ba32dd8c789cf4a384bf4bf1c63d845b370b7b1249dbbc0b7ebd1aab6437d
+                - name: RELATED_IMAGE_codeready_workspaces_machineexec
+                  value: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:56573ec2092ba1b4339e5ae9e9c128bb48c6ef08f95512fb7e12b6d732624899
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java11
+                  value: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:f90e09397caa4dd5cd3476e495adfc0096272c0ba746a6e32215175c541ae058
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_openj9
+                  value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_ppc64le
+                  value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java11_s390x
+                  value: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java8
+                  value: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:1f5ac84a66454ab4b7b31cb259d30d1a5675dd5a342c9c7dfc536846c8d9a9b1
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_openj9
+                  value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_ppc64le
+                  value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_java8_s390x
+                  value: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_kubernetes
+                  value: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:82e5e4cc40a458b4ea3d7e070945532cbf6a2f3ae966a68b50fe4cd74348c283
+                - name: RELATED_IMAGE_codeready_workspaces_plugin_openshift
+                  value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:00aeb2293b02a8875ca996b3b02cf7ece516fe5c254ce83ade8fa3648afb6a56
+                - name: RELATED_IMAGE_codeready_workspaces_stacks_cpp
+                  value: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:4bd93c6fbd77acf07f2206fe76d9e8589f453aa219302c9b4ad0e80ca6180dce
+                - name: RELATED_IMAGE_codeready_workspaces_stacks_dotnet
+                  value: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:581d3da4bf1fe4467d688cd4390e958dc15f07b530845298c3fbcb18bfdc033a
+                - name: RELATED_IMAGE_codeready_workspaces_stacks_golang
+                  value: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:a4c848642e5cbd2e503915932c27342c94904763caa9085a866cb39c7e443335
+                - name: RELATED_IMAGE_codeready_workspaces_stacks_php
+                  value: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:a3fc9a39225136f735660830787fdb84531db4481665a26e5be21e4534b6bac0
+                - name: RELATED_IMAGE_codeready_workspaces_theia
+                  value: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:1e77ab29f9a72ce94ae40670499c3823048cfdb4fe7de0707adeffd7274f78c9
+                - name: RELATED_IMAGE_codeready_workspaces_theia_endpoint
+                  value: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:e19ab58d0bb1b4f39ff3f66edd2138fed76b8feae5db78acee0e364936a73827
+                - name: RELATED_IMAGE_dashboard
+                  value: registry.redhat.io/codeready-workspaces/dashboard-rhel8@sha256:d6911d22200677aa0116f4523d325e5630b300788ee55fd2ba3b709714901d34
+                - name: RELATED_IMAGE_devfile_registry
+                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:8cf9c39cb8a45cd14ff4f7df09bc9ceb39768befe87761f7140e9c9d259ad397
+                - name: RELATED_IMAGE_devworkspace_che_operator
+                  value: registry.redhat.io/codeready-workspaces/devworkspace-rhel8@sha256:832ebf337003084ea649244b331bcc5442dae90f5ad5a0c83b2cc15e68b29fdf
+                - name: RELATED_IMAGE_devworkspace_controller
+                  value: registry.redhat.io/codeready-workspaces/devworkspace-controller-rhel8@sha256:ee3e6abf41fe504ef7c6c76a904542da0e22af242f2cd2007d3899e72fc17dab
+                - name: RELATED_IMAGE_jboss_eap_7_eap73_openjdk8_openshift_rhel7
+                  value: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:d16cfe30eaf20a157cd5d5980a6c34f3fcbcfd2fd225e670a0138d81007dd919
+                - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openj9_11_openshift
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openjdk11-openshift-rhel8@sha256:647d092383a760edc083eafb2d7bc3208d6409097281bedbd5eaccde360e7e39
+                - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_ppc64le
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_s390x
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                - name: RELATED_IMAGE_keycloak
+                  value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:05f97328bafa615ceca025a6a93051a1ecdc08ae6123a78bf6ce56096f2ad233
+                - name: RELATED_IMAGE_keycloak_ppc64le
+                  value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
+                - name: RELATED_IMAGE_keycloak_s390x
+                  value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
+                - name: RELATED_IMAGE_plugin_registry
+                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:6baada84cccbe4b1abcf560e317998efb12e4db238557d85a1ec1c63e65a396f
+                - name: RELATED_IMAGE_postgres
+                  value: registry.redhat.io/rhel8/postgresql-96@sha256:33643fb4cafffacb277982c6098b561aa80c06210e77d2badebef405ee953e43
+                - name: RELATED_IMAGE_pvc_jobs
+                  value: registry.redhat.io/ubi8/ubi-minimal@sha256:d9b92ea78e76300968f5c9a4a04c2cf220a0bbfac667f77e5e7287692163d898
+                - name: RELATED_IMAGE_rhscl_mongodb_36_rhel7
+                  value: registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
+                - name: RELATED_IMAGE_single_host_gateway
+                  value: registry.redhat.io/codeready-workspaces/traefik-rhel8@sha256:983abe532ec2d8741d326dd3cd2a4678ba82a3d4e71d77f02bf39d92a8ba3303
+                - name: RELATED_IMAGE_single_host_gateway_config_sidecar
+                  value: registry.redhat.io/codeready-workspaces/configbump-rhel8@sha256:df90e683ef3141ea5e5ba77e4346285685be527a35073855c936c6237e91a1a8
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
+                imagePullPolicy: Always
+                livenessProbe:
+                  failureThreshold: 10
+                  httpGet:
+                    path: /healthz
+                    port: 6789
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  successThreshold: 1
+                  timeoutSeconds: 5
+                name: wazi-codeready-operator
+                ports:
+                - containerPort: 60000
+                  name: metrics
+                readinessProbe:
+                  exec:
+                    command:
+                    - stat
+                    - /tmp/operator-sdk-ready
+                  failureThreshold: 10
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  successThreshold: 1
+                  timeoutSeconds: 5
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 256Mi
+                  requests:
+                    cpu: 100m
+                    memory: 64Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+                  privileged: false
+                  readOnlyRootFilesystem: false
+                  runAsNonRoot: true
+              hostIPC: false
+              hostNetwork: false
+              hostPID: false
+              restartPolicy: Always
+              serviceAccountName: wazi-codeready-operator
+              terminationGracePeriodSeconds: 20
+      permissions:
+      - rules:
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - '*'
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - '*'
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          - routes/custom-host
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - roles
+          - rolebindings
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterroles
+          - clusterrolebindings
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - serviceaccounts
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          - pods/exec
+          - pods/log
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - org.eclipse.che
+          resources:
+          - checlusters
+          - checlusters/status
+          - checlusters/finalizers
+          verbs:
+          - '*'
+        - apiGroups:
+          - metrics.k8s.io
+          resources:
+          - pods
+          - nodes
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - che.eclipse.org
+          resources:
+          - kubernetesimagepullers
+          verbs:
+          - '*'
+        - apiGroups:
+          - operators.coreos.com
+          resources:
+          - subscriptions
+          - clusterserviceversions
+          - operatorgroups
+          verbs:
+          - '*'
+        - apiGroups:
+          - packages.operators.coreos.com
+          resources:
+          - packagemanifests
+          verbs:
+          - get
+          - list
+        serviceAccountName: wazi-codeready-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: true
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - workspaces
+  - devtools
+  - developer
+  - ide
+  - java
+  links:
+  - name: Product Page
+    url: https://www.ibm.com/products/wazi-for-red-hat-codeready-workspaces
+  - name: Documentation
+    url: https://ibm.biz/wazi-crw-doc
+  - name: Readme
+    url: https://ibm.biz/wazi-crw-readme
+  - name: License
+    url: https://ibm.biz/wazi-crw-license
+  - name: Support
+    url: https://github.com/IBM/wazi-codeready-workspaces/issues
+  maintainers:
+  - name: IBM
+  maturity: stable
+  provider:
+    name: IBM
+  version: 1.4.0
+  relatedImages:
+  - name: crw-2-rhel8-operator-eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54-annotation
+    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
+  - name: codeready-operator
+    image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
+  - name: che_server
+    image: registry.redhat.io/codeready-workspaces/server-rhel8@sha256:591f23a2db6e6ced7bad91e33d2492bf796d8bad2f545dc17c79d23a39657b28
+  - name: che_server_secure_exposer_jwt_proxy_image
+    image: registry.redhat.io/codeready-workspaces/jwtproxy-rhel8@sha256:c62c57ceb4b5f78eb62e43ee59e580e7df8cbe6e75a4e59ce344ea2c885c7129
+  - name: che_workspace_plugin_broker_artifacts
+    image: registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8@sha256:0e6b054323fd8cfca3171fa5aaa25f48b1d4ebd098ca63e71d7f0a379e2a51a1
+  - name: che_workspace_plugin_broker_metadata
+    image: registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8@sha256:ca8ba32dd8c789cf4a384bf4bf1c63d845b370b7b1249dbbc0b7ebd1aab6437d
+  - name: codeready_workspaces_machineexec
+    image: registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:56573ec2092ba1b4339e5ae9e9c128bb48c6ef08f95512fb7e12b6d732624899
+  - name: codeready_workspaces_plugin_java11
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:f90e09397caa4dd5cd3476e495adfc0096272c0ba746a6e32215175c541ae058
+  - name: codeready_workspaces_plugin_java11_openj9
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+  - name: codeready_workspaces_plugin_java11_ppc64le
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+  - name: codeready_workspaces_plugin_java11_s390x
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8@sha256:adf7aedb113fda38db621f2660246ea011d5b25ce77734db406888545b194daf
+  - name: codeready_workspaces_plugin_java8
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8@sha256:1f5ac84a66454ab4b7b31cb259d30d1a5675dd5a342c9c7dfc536846c8d9a9b1
+  - name: codeready_workspaces_plugin_java8_openj9
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+  - name: codeready_workspaces_plugin_java8_ppc64le
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+  - name: codeready_workspaces_plugin_java8_s390x
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8@sha256:f3dd1d9b76591a9aaeb34c609150db0775443d7db2db5593135cf5c8ee8729f8
+  - name: codeready_workspaces_plugin_kubernetes
+    image: registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8@sha256:82e5e4cc40a458b4ea3d7e070945532cbf6a2f3ae966a68b50fe4cd74348c283
+  - name: codeready_workspaces_plugin_openshift
+    image: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8@sha256:00aeb2293b02a8875ca996b3b02cf7ece516fe5c254ce83ade8fa3648afb6a56
+  - name: codeready_workspaces_stacks_cpp
+    image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8@sha256:4bd93c6fbd77acf07f2206fe76d9e8589f453aa219302c9b4ad0e80ca6180dce
+  - name: codeready_workspaces_stacks_dotnet
+    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:581d3da4bf1fe4467d688cd4390e958dc15f07b530845298c3fbcb18bfdc033a
+  - name: codeready_workspaces_stacks_golang
+    image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:a4c848642e5cbd2e503915932c27342c94904763caa9085a866cb39c7e443335
+  - name: codeready_workspaces_stacks_php
+    image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8@sha256:a3fc9a39225136f735660830787fdb84531db4481665a26e5be21e4534b6bac0
+  - name: codeready_workspaces_theia
+    image: registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:1e77ab29f9a72ce94ae40670499c3823048cfdb4fe7de0707adeffd7274f78c9
+  - name: codeready_workspaces_theia_endpoint
+    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:e19ab58d0bb1b4f39ff3f66edd2138fed76b8feae5db78acee0e364936a73827
+  - name: dashboard
+    image: registry.redhat.io/codeready-workspaces/dashboard-rhel8@sha256:d6911d22200677aa0116f4523d325e5630b300788ee55fd2ba3b709714901d34
+  - name: devfile_registry
+    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:8cf9c39cb8a45cd14ff4f7df09bc9ceb39768befe87761f7140e9c9d259ad397
+  - name: devworkspace_che_operator
+    image: registry.redhat.io/codeready-workspaces/devworkspace-rhel8@sha256:832ebf337003084ea649244b331bcc5442dae90f5ad5a0c83b2cc15e68b29fdf
+  - name: devworkspace_controller
+    image: registry.redhat.io/codeready-workspaces/devworkspace-controller-rhel8@sha256:ee3e6abf41fe504ef7c6c76a904542da0e22af242f2cd2007d3899e72fc17dab
+  - name: jboss_eap_7_eap73_openjdk8_openshift_rhel7
+    image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:d16cfe30eaf20a157cd5d5980a6c34f3fcbcfd2fd225e670a0138d81007dd919
+  - name: jboss_eap_7_eap_xp2_openj9_11_openshift
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+  - name: jboss_eap_7_eap_xp2_openjdk11_openshift
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openjdk11-openshift-rhel8@sha256:647d092383a760edc083eafb2d7bc3208d6409097281bedbd5eaccde360e7e39
+  - name: jboss_eap_7_eap_xp2_openjdk11_openshift_ppc64le
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+  - name: jboss_eap_7_eap_xp2_openjdk11_openshift_s390x
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+  - name: keycloak
+    image: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:05f97328bafa615ceca025a6a93051a1ecdc08ae6123a78bf6ce56096f2ad233
+  - name: keycloak_ppc64le
+    image: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
+  - name: keycloak_s390x
+    image: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
+  - name: plugin_registry
+    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:6baada84cccbe4b1abcf560e317998efb12e4db238557d85a1ec1c63e65a396f
+  - name: postgres
+    image: registry.redhat.io/rhel8/postgresql-96@sha256:33643fb4cafffacb277982c6098b561aa80c06210e77d2badebef405ee953e43
+  - name: pvc_jobs
+    image: registry.redhat.io/ubi8/ubi-minimal@sha256:d9b92ea78e76300968f5c9a4a04c2cf220a0bbfac667f77e5e7287692163d898
+  - name: rhscl_mongodb_36_rhel7
+    image: registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
+  - name: single_host_gateway
+    image: registry.redhat.io/codeready-workspaces/traefik-rhel8@sha256:983abe532ec2d8741d326dd3cd2a4678ba82a3d4e71d77f02bf39d92a8ba3303
+  - name: single_host_gateway_config_sidecar
+    image: registry.redhat.io/codeready-workspaces/configbump-rhel8@sha256:df90e683ef3141ea5e5ba77e4346285685be527a35073855c936c6237e91a1a8
