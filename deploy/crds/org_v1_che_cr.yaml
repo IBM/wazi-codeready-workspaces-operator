@@ -12,6 +12,10 @@ apiVersion: org.eclipse.che/v1
 kind: CheCluster
 metadata:
   name: codeready-workspaces
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/managed-by: olm
 spec:
   server:
     useInternalClusterSVCNames: true

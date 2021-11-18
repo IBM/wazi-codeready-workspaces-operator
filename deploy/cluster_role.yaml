@@ -16,6 +16,7 @@ metadata:
     app.kubernetes.io/name: che
     app.kubernetes.io/instance: che
     app.kubernetes.io/component: codeready-operator
+    app.kubernetes.io/managed-by: olm
 rules:
   - apiGroups:
       - oauth.openshift.io
@@ -133,7 +134,10 @@ rules:
       - checlusters
       - checlusters/finalizers
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - project.openshift.io
     resources:
@@ -327,7 +331,10 @@ rules:
       - secrets
       - serviceaccounts
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - ""
     resources:
@@ -357,7 +364,10 @@ rules:
     resources:
       - services
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - admissionregistration.k8s.io
     resources:
@@ -395,7 +405,10 @@ rules:
       - deployments
       - replicasets
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - apps
       - extensions
@@ -422,13 +435,19 @@ rules:
     resources:
       - '*'
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - controller.devfile.io
     resources:
       - devworkspaceroutings
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - controller.devfile.io
     resources:
@@ -442,7 +461,10 @@ rules:
     resources:
       - ingresses
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - monitoring.coreos.com
     resources:
@@ -481,7 +503,10 @@ rules:
     resources:
       - routes
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - route.openshift.io
     resources:
@@ -493,7 +518,10 @@ rules:
     resources:
       - '*'
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
 # devworkspace requirements: devworkspace-controller-view-workspaces cluster roles
   - apiGroups:
       - workspace.devfile.io
@@ -556,7 +584,10 @@ rules:
       - secrets
       - serviceaccounts
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - ""
     resources:
@@ -574,7 +605,10 @@ rules:
     resources:
       - services
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - apps
     resourceNames:
@@ -599,7 +633,10 @@ rules:
       - deployments
       - replicasets
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - apps
       - extensions
@@ -624,13 +661,19 @@ rules:
     resources:
       - '*'
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - che.eclipse.org
     resources:
       - chemanagers
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - che.eclipse.org
     resources:
@@ -650,7 +693,10 @@ rules:
     resources:
       - devworkspaceroutings
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - controller.devfile.io
     resources:
@@ -682,7 +728,10 @@ rules:
     resources:
       - ingresses
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - monitoring.coreos.com
     resources:
@@ -721,7 +770,10 @@ rules:
     resources:
       - routes
     verbs:
-      - '*'
+      - get
+      - create
+      - update
+      - delete
   - apiGroups:
       - route.openshift.io
     resources:

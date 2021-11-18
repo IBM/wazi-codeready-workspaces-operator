@@ -90,8 +90,8 @@ metadata:
     operatorframework.io/cluster-monitoring: "true"
     repository: https://github.com/IBM/wazi-codeready-workspaces-operator
     support: IBM
-    olm.skipRange: ">=1.0.0 <1.4.0"
-  name: ibm-developer-for-zos-enterprise-edition.v1.4.0
+    olm.skipRange: ">=1.0.0 <1.4.1"
+  name: ibm-developer-for-zos-enterprise-edition.v1.4.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -155,149 +155,90 @@ spec:
         - urn:alm:descriptor:text
       version: v1
   description: |
-    # Introduction
+    IBM Wazi Developer for Workspaces is a component shipped with either IBM Wazi Developer for Red Hat CodeReady Workspaces (Wazi Developer for Workspaces) or IBM Developer for z/OS Enterprise Edition (IDzEE).
     
-    IBM Wazi Developer for Red Hat CodeReady Workspaces (IBM Wazi Developer) is a single integrated solution, which delivers a cloud native development experience for z/OS. It enables application developers to develop and test z/OS application components in a virtual z/OS environment on an OpenShift®-powered hybrid multicloud platform, and to use an industry standard integrated development environment (IDE) of their choice. 
+    # Name
+    IBM Wazi Developer for Red Hat CodeReady Workspaces (Wazi Developer for Workspaces)
     
-    IBM Wazi Developer for Workspaces, a component of IBM Wazi Developer, is built on the Red Hat CodeReady Workspaces project. The core functionality for Red Hat CodeReady Workspaces is provided by an open-source project called Eclipse Che. IBM Wazi Developer for Workspaces uses Kubernetes and containers to provide your team with a consistent, secure, and zero-configuration development environment that interacts with your IBM Z platform.
-
-    IBM Wazi Developer for Workspaces provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open-source projects Zowe and Red Hat CodeReady Workspaces, IBM Wazi Developer for Workspaces offers an easy, streamlined onboarding process to provide mainframe developers the tools they need. Using container technology and stacks, IBM Wazi Developer for Workspaces brings the necessary technology to the task at hand.
+    ## Introduction
+    IBM Wazi Developer for Workspaces provides a modern experience for mainframe software developers working with z/OS applications in the cloud. Powered by the open source projects Zowe and Red Hat CodeReady Workspaces, IBM Wazi Developer for Workspaces offers an easy, streamlined onboarding process to provide mainframe developers the tools they need. Using container technology, IBM Wazi Developer for Workspaces brings the necessary tools to the task at hand.
     
     ## Details
+    IBM Wazi Developer for Workspaces provides a custom stack with the all-in-one mainframe development package that enables mainframe developers to:
 
-    IBM Wazi Developer for Workspaces provides a custom stack for mainframe developers with the all-in-one mainframe development package that includes the following capabilities:
-
-    - Modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I that provide language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using [IBM Z Open Editor](https://marketplace.visualstudio.com/items?itemName=IBM.zopeneditor)
-    - Source code management (SCM) integration to enable integration with any flavor of Git, a popular and modern parallel development SCM
-    - Intelligent build capability that enables developers to perform a user build with IBM Dependency Based Build for any flavor of Git
-    - Integrations that enable developers to work with z/OS resources such as MVS and UNIX files and JES jobs
-    - Connectivity to Z host using [Zowe Explorer](https://marketplace.visualstudio.com/items?itemName=Zowe.vscode-extension-for-zowe)
-    - Debugging COBOL and PL/I applications using [IBM Z Open Debug](https://developer.ibm.com/mainframe/2020/06/12/introducing-ibm-z-open-debug/)
-    - Interacting with the [IBM Remote System Explorer API](https://ibm.github.io/zopeneditor-about/Docs/interact_zos_overview.html)
-    - Mainframe Development package with custom plugin and devfile registry support using the [IBM Wazi Developer stack](https://github.com/IBM/wazi-codeready-workspaces)
-      
-    Read our official documentation on the [IBM Documentation](https://ibm.biz/wazi-crw-doc) site to learn more about IBM Wazi Developer. 
+    - Use a modern mainframe editor with rich language support for COBOL, JCL, Assembler (HLASM), and PL/I, which provides language-specific features such as syntax highlighting, outline view, declaration hovering, code completion, snippets, a preview of copybooks, copybook navigation, and basic refactoring using IBM Z Open Editor, a component of IBM Wazi Developer for VS Code
+    - Integrate with any flavor of Git source code management (SCM)
+    - Perform a user build with IBM Dependency Based Build for any flavor of Git
+    - Work with z/OS resources such as MVS, UNIX files, and JES jobs
+    - Connect to the Z host with z/OSMF or IBM Remote System Explorer (RSE) API, using Zowe Explorer plus IBM Z Open Editor for a graphical user interface and Zowe CLI plus the RSE API plug-in for Zowe CLI for command line access
+    - Debug COBOL and PL/I applications using IBM Z Open Debug
+    - Use a mainframe development package with a custom plug-in and devfile registry support from the [IBM Wazi Developer stack](https://github.com/IBM/wazi-codeready-workspaces)
     
     ## Prerequisites
+    Before you install Wazi Developer for Workspaces, ensure that the following prerequisites are met. Ensure that you have the latest version of each tool mentioned below. If you installed these tools previously, check the versions and update if necessary.
+
+    - Ensure that you have a connection to a Red Hat&reg; OpenShift Container Platform (OCP) cluster, and that you have cluster-admin permissions.
+    - Install the OpenShift command-line interface (CLI), which lets you create applications and manage OpenShift Container Platform projects from a terminal.
 
     ### Resources Required
+    | Pod | Container Name | Default memory limit | Default memory request |
+    | --- | --- | --- | --- |
+    | Wazi CodeReady Operator | wazi-codeready-operator | 256 MiB | 64 MiB |
+    | Che Server and Dashboard | che | 1 GiB | 512 MiB |
+    | PostgreSQL | postgres | 1 GiB | 512 MiB |
+    | RH-SSO | keycloak | 2 GiB | 512 MiB |
+    | Devfile registry | che-devfile-registry | 256 MiB | 32 MiB |
+    | Plug-in registry | che-plugin-registry | 1 GiB | 512 MiB |
+    | Wazi CodeReady Sidecar | wazi-terminal | 128 MiB | 32 MiB |
     
-    - Ensure that you have a connection to a Red Hat OpenShift Container Platform (OCP) cluster, and that you have cluster-admin permissions.
-    - The Red Hat OpenShift cluster must be configured with a default storage class. For more information, see OpenShift Container Platform documentation.
-    - If you plan to use the OpenShift oAuth, then the cluster oAuth must be configured. For more information, see Configuring the internal OAuth server.
-    - Install OpenShift command-line tool, which lets you create applications and manage OpenShift Container Platform projects from a terminal.
-    - Install IBM Cloud Pak® command-line tool, which is a command line tool to manage Container Application Software for Enterprises (CASEs).
-
+    **Note**: For larger deployments, [increase the memory limits](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.12/html-single/installation_guide/index#advanced-configuration-options-for-the-codeready-workspaces-server-component_crw).
+    
+    ### Storage
     Minimum scheduling capacity:
-
     | Software                                    | Memory (GB) | CPU (cores) | Disk (GB) | Nodes |
     | ------------------------------------------- | ----------- | ----------- | --------- | ----- |
     | IBM Wazi Developer for Workspaces           | 8 GB        | 4 (vCPUs)   | 35 GB     | 1     |
     |                                             |             |             |           |       |
     | **Total**                                   | 8 GB        | 4 (vCPUs)   | 35 GB     | 1     |
-
-    - #### Minimum of 5 GB of RAM is required to run Codeready Workspaces
-      - The CodeReady Workspaces server: about 750 MB
-      - The Red Hat Single Sign-On authorization server: about 1 GB
-      - PostgreSQL: about 515 MB
-      - Keycloak: about 1GB
-      - Workspaces: 2 GB of RAM per workspace. The require size of RAM for workspace depends on the runtime and number of pods.
-
-    - #### Codeready Workspaces storage requirements
-      - CodeReady Workspaces server: 1 GB to store logs and initial workspace stacks
-      - Keycloak: 2 PVCs, 1 GB each to store logs and Keycloak data
-      - PostgreSQL: 1 GB PVC to store database.
-        
+    
+    ### SecurityContextConstraints Requirements
+    All pods run in `restricted` mode, see [Managing security context constraints](https://docs.openshift.com/container-platform/latest/authentication/managing-security-context-constraints.html) for more information.
+    
     ## Installing
+    The Operator will manage the lifecycle of an instance of IBM Wazi Developer for Workspaces.
     
-    Press the **Install** button, select the namespace, choose the update strategy, click the Subscribe button, and wait for the **Succeeded** Operator status.
-
-    When the operator is installed, create a new instance of the IBM Wazi Developer for Workspaces (click the **Create Instance** button).  
-
-    IBM Wazi Developer for Workspaces spec contains all defaults (see below).
-
-    You can start using the IBM Wazi Developer for Workspaces when the status is set to **Available**, and you see a URL.
-
-    # Configuration
+    | Product Name                              | Default Project            |
+    | ----------------------------------------- | -------------------------- |
+    | IBM Wazi Developer for Workspaces         | wazi-codeready-workspaces  |
+    | IBM Developer for z/OS Enterprise Edition | idzee-codeready-workspaces |
     
-    ## Defaults
+    In the OpenShift cluster web console:
     
-    By default, the operator deploys IBM Wazi Developer for Workspaces with:
-
-    - Bundled PostgreSQL and Keycloak
-    - Per-Workspace PVC strategy
-    - Auto-generated passwords
-    - TLS mode (secure routes)
-    - Built-in authentication (Keycloak)
-
-    ## Installation Options
+    1. Expand the **Operators** tab on the left side menu and click **OperatorHub**.
+    1. Search for `z/os`. A set of Operator tiles will be filtered on the main window.
+    1. Click the **Product Name** tile, and then click **Install**.
+    1. Review all settings and click the **Install** button.
+    1. When the Operator is installed, an entry will appear under **Operators** > **Installed Operators**. Select the installed Operator from the default project, and click **Create instance** under **Provided APIs**.
+    1. Review the configuration sections and click the **Create** button. This will create a new instance of Wazi Developer for Workspaces.
     
-    IBM Wazi Developer operator installation options include:
-
-    - Connection to external database and Keycloak
-    - Configuration of default passwords and object names
-    - PVC strategy (once shared PVC for all workspaces, PVC per workspace, or PVC per volume)
-    - Authentication options
-
-    ## External Database and Keycloak
-
-    To instruct the operator to skip deploying PostgreSQL and Keycloak and connect to an existing DB and Keycloak instead:
-
-    - set respective fields to `true` in a custom resource spec
-    - provide the operator with connection and authentication details:
-      
-      `externalDb: true`
-
-
-      `chePostgresHostname: 'yourPostgresHost'`
-
-
-      `chePostgresPort: '5432'`
-
-
-      `chePostgresUser: 'myuser'`
-
-
-      `chePostgresPassword: 'mypass'`
-
-
-      `chePostgresDb: 'mydb'`
-
-
-      `externalIdentityProvider: true`
-
-
-      `identityProviderURL: 'https://my-keycloak.com'`
-
-
-      `identityProviderRealm: 'myrealm'`
-
-
-      `identityProviderClientId: 'myClient'`
-
-    ## Self-signed Certificates
-
-    IBM Wazi Developer for Workspaces uses self-signed certificates by default.
-
-    You can also manually create a secret:
-
-    ```
-    oc create secret generic self-signed-certificate  --from-file=/path/to/certificate/ca.crt -n=$codeReadyNamespace
-    ```
+    **Note**: If you use the license of IBM Developer for z/OS Enterprise Edition (IDzEE), use the `IBM Developer for z/OS Enterprise Edition` tile.
     
-    ## Limitations
-
-    - See the [Release Notes and Known Issues](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces) for Red Hat CodeReady Workspaces
-
-    ## SecurityContextConstraints Requirements
-
-    - Security Context Constraints (SCC) is in a `restricted` mode for all pods.
-
-    Custom SecurityContextConstraints definition:
-      
-    ```
-    openshift.io/scc: restricted
-    ```
+    You can start using IBM Wazi Developer for Workspaces when the instance has been created and all pods are up and running.
+    
+    ### Configuration
+    - **Auth**: Configuration settings related to the Authentication used by the Che installation.
+    - **Database**: Configuration settings related to the database used by the Che installation.
+    - **Dev Workspace**: Dev Workspace operator configuration.
+    - **Image Puller**: Kubernetes Image Puller configuration.
+    - **K8S**: Configuration settings specific to Che installations made on upstream Kubernetes.
+    - **Metrics**: Configuration settings related to the metrics collection used by the Che installation.
+    - **Server**: General configuration settings related to the Che server and the plug-in and devfile registries.
+    - **Storage**: Configuration settings related to the persistent storage used by the Che installation.
+    
+    For more information about configuration parameters, see [Advanced configuration options for the Che server component](https://www.eclipse.org/che/docs/che-7/installation-guide/advanced-configuration-options-for-the-che-server-component/).
+    
+    ### Limitations
+    See the [Release Notes and Known Issues](https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces) for Red Hat CodeReady Workspaces.
   displayName: IBM Developer for z/OS Enterprise Edition
   icon:
   - base64data: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDojZmZmO30uY2xzLTJ7ZmlsbDp1cmwoI2xpbmVhci1ncmFkaWVudCk7fS5jbHMtM3ttYXNrOnVybCgjbWFzayk7fS5jbHMtNHtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50LTIpO30uY2xzLTV7ZmlsbDojMDYxZjgwO308L3N0eWxlPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMTAwLjI3IiB5MT0iNS4wNyIgeDI9IjEwNC4xMyIgeTI9IjcuMyIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgtMC41LCAtMS41NiwgMC44NywgLTAuOSwgNzMuNTEsIDE4My45NikiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMC45Ii8+PC9saW5lYXJHcmFkaWVudD48bWFzayBpZD0ibWFzayIgeD0iMCIgeT0iMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNiwzMWEuOS45LDAsMCwxLS41LS4xNGwtMTItN0ExLDEsMCwwLDEsMywyM1Y5YTEsMSwwLDAsMSwuNS0uODZsMTItN2ExLDEsMCwwLDEsMSwwbDEyLDdBMSwxLDAsMCwxLDI5LDlhMSwxLDAsMCwxLS40OS44N2wtMTAsNi0xLTEuNzJMMjYsOSwxNiwzLjE2LDUsOS41N1YyMi40M2wxMSw2LjQxLDExLTYuNDFWMTVoMnY4YTEsMSwwLDAsMS0uNS44NmwtMTIsN0EuOS45LDAsMCwxLDE2LDMxWiIvPjxyZWN0IGNsYXNzPSJjbHMtMiIgeD0iMjYuMjUiIHk9IjE0LjUiIHdpZHRoPSIzLjA1IiBoZWlnaHQ9IjguMDYiLz48L21hc2s+PGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQtMiIgeTE9IjMyIiB4Mj0iMzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI2I5OGNmZCIvPjxzdG9wIG9mZnNldD0iMC45IiBzdG9wLWNvbG9yPSIjNDE4YWZjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPmFwcC1pY29uLWxpZ2h0LTwvdGl0bGU+PGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+PGcgY2xhc3M9ImNscy0zIj48cmVjdCBjbGFzcz0iY2xzLTQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIvPjwvZz48cGF0aCBjbGFzcz0iY2xzLTUiIGQ9Ik0xNiwyMGE0LDQsMCwxLDEsNC00QTQsNCwwLDAsMSwxNiwyMFptMC02YTIsMiwwLDEsMCwyLDJBMiwyLDAsMCwwLDE2LDE0WiIvPjwvZz48L3N2Zz4=
@@ -1114,7 +1055,7 @@ spec:
                 - name: RELATED_IMAGE_dashboard
                   value: registry.redhat.io/codeready-workspaces/dashboard-rhel8@sha256:d6911d22200677aa0116f4523d325e5630b300788ee55fd2ba3b709714901d34
                 - name: RELATED_IMAGE_devfile_registry
-                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:8cf9c39cb8a45cd14ff4f7df09bc9ceb39768befe87761f7140e9c9d259ad397
+                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:70929334aa9bc85916dfcdd2a82572aad6ffd730f575a79888a8824f51199be9
                 - name: RELATED_IMAGE_devworkspace_che_operator
                   value: registry.redhat.io/codeready-workspaces/devworkspace-rhel8@sha256:832ebf337003084ea649244b331bcc5442dae90f5ad5a0c83b2cc15e68b29fdf
                 - name: RELATED_IMAGE_devworkspace_controller
@@ -1122,13 +1063,13 @@ spec:
                 - name: RELATED_IMAGE_jboss_eap_7_eap73_openjdk8_openshift_rhel7
                   value: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:d16cfe30eaf20a157cd5d5980a6c34f3fcbcfd2fd225e670a0138d81007dd919
                 - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openj9_11_openshift
-                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:74cd92e152eaded1a7977215712618197bbf661e3de36a467b66c4d00ead9cea
                 - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift
                   value: registry.redhat.io/jboss-eap-7/eap-xp2-openjdk11-openshift-rhel8@sha256:647d092383a760edc083eafb2d7bc3208d6409097281bedbd5eaccde360e7e39
                 - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_ppc64le
-                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:fae94e81cb18a1a3d1a60674a562a466a766238926d2437f4963744ec5a4fba7
                 - name: RELATED_IMAGE_jboss_eap_7_eap_xp2_openjdk11_openshift_s390x
-                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+                  value: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:85381683a149a82fb24efde8377e34a46e74e9f55a7f8a16fda25b1e199a9b4a
                 - name: RELATED_IMAGE_keycloak
                   value: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:05f97328bafa615ceca025a6a93051a1ecdc08ae6123a78bf6ce56096f2ad233
                 - name: RELATED_IMAGE_keycloak_ppc64le
@@ -1136,7 +1077,7 @@ spec:
                 - name: RELATED_IMAGE_keycloak_s390x
                   value: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
                 - name: RELATED_IMAGE_plugin_registry
-                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:6baada84cccbe4b1abcf560e317998efb12e4db238557d85a1ec1c63e65a396f
+                  value: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:96ab5a1363fccc4938c4e23ca61971db47a8602cebb5b1a0d9b49644e4479139
                 - name: RELATED_IMAGE_postgres
                   value: registry.redhat.io/rhel8/postgresql-96@sha256:33643fb4cafffacb277982c6098b561aa80c06210e77d2badebef405ee953e43
                 - name: RELATED_IMAGE_pvc_jobs
@@ -1323,7 +1264,7 @@ spec:
   - java
   links:
   - name: Product Page
-    url: https://www.ibm.com/products/wazi-for-red-hat-codeready-workspaces
+    url: https://www.ibm.com/products/developer-for-zos
   - name: Documentation
     url: https://ibm.biz/wazi-crw-doc
   - name: Readme
@@ -1337,7 +1278,8 @@ spec:
   maturity: stable
   provider:
     name: IBM
-  version: 1.4.0
+  replaces: ibm-developer-for-zos-enterprise-edition.v1.4.0
+  version: 1.4.1
   relatedImages:
   - name: crw-2-rhel8-operator-eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54-annotation
     image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
@@ -1388,7 +1330,7 @@ spec:
   - name: dashboard
     image: registry.redhat.io/codeready-workspaces/dashboard-rhel8@sha256:d6911d22200677aa0116f4523d325e5630b300788ee55fd2ba3b709714901d34
   - name: devfile_registry
-    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:8cf9c39cb8a45cd14ff4f7df09bc9ceb39768befe87761f7140e9c9d259ad397
+    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-dev-file@sha256:70929334aa9bc85916dfcdd2a82572aad6ffd730f575a79888a8824f51199be9
   - name: devworkspace_che_operator
     image: registry.redhat.io/codeready-workspaces/devworkspace-rhel8@sha256:832ebf337003084ea649244b331bcc5442dae90f5ad5a0c83b2cc15e68b29fdf
   - name: devworkspace_controller
@@ -1396,13 +1338,13 @@ spec:
   - name: jboss_eap_7_eap73_openjdk8_openshift_rhel7
     image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7@sha256:d16cfe30eaf20a157cd5d5980a6c34f3fcbcfd2fd225e670a0138d81007dd919
   - name: jboss_eap_7_eap_xp2_openj9_11_openshift
-    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:74cd92e152eaded1a7977215712618197bbf661e3de36a467b66c4d00ead9cea
   - name: jboss_eap_7_eap_xp2_openjdk11_openshift
     image: registry.redhat.io/jboss-eap-7/eap-xp2-openjdk11-openshift-rhel8@sha256:647d092383a760edc083eafb2d7bc3208d6409097281bedbd5eaccde360e7e39
   - name: jboss_eap_7_eap_xp2_openjdk11_openshift_ppc64le
-    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:fae94e81cb18a1a3d1a60674a562a466a766238926d2437f4963744ec5a4fba7
   - name: jboss_eap_7_eap_xp2_openjdk11_openshift_s390x
-    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:3f2de8176fb0b0e996fb1051d4244b4720014e0767b60e4b815ef0f7ec33dec9
+    image: registry.redhat.io/jboss-eap-7/eap-xp2-openj9-11-openshift-rhel8@sha256:85381683a149a82fb24efde8377e34a46e74e9f55a7f8a16fda25b1e199a9b4a
   - name: keycloak
     image: registry.redhat.io/rh-sso-7/sso74-openshift-rhel8@sha256:05f97328bafa615ceca025a6a93051a1ecdc08ae6123a78bf6ce56096f2ad233
   - name: keycloak_ppc64le
@@ -1410,7 +1352,7 @@ spec:
   - name: keycloak_s390x
     image: registry.redhat.io/rh-sso-7/sso74-openj9-openshift-rhel8@sha256:eb5110c22109412b5101f95d353603c7e3080844ee48f89186f139be5b5faa42
   - name: plugin_registry
-    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:6baada84cccbe4b1abcf560e317998efb12e4db238557d85a1ec1c63e65a396f
+    image: icr.io/wazi-code/ibm-wazi-developer-for-workspaces-plugin@sha256:96ab5a1363fccc4938c4e23ca61971db47a8602cebb5b1a0d9b49644e4479139
   - name: postgres
     image: registry.redhat.io/rhel8/postgresql-96@sha256:33643fb4cafffacb277982c6098b561aa80c06210e77d2badebef405ee953e43
   - name: pvc_jobs

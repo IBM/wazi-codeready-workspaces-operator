@@ -12,6 +12,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: codeready-operator
+  labels:
+    app.kubernetes.io/name: che
+    app.kubernetes.io/instance: che
+    app.kubernetes.io/managed-by: olm
 spec:
   replicas: 1
   selector:
@@ -21,15 +25,20 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        productName: placeholder
+        productID: 11111111111111111111111111111111
+        productMetric: FREE
       labels:
         app: codeready-operator
         app.kubernetes.io/name: che
         app.kubernetes.io/instance: che
         app.kubernetes.io/component: codeready-operator
+        app.kubernetes.io/managed-by: olm
     spec:
       containers:
         - name: codeready-operator
-          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator:2.10
+          image: registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator@sha256:eac1db6b4008ba849d4bcab9acc8542806b2aeda8a5a5f4b3c56fb87129d8e54
           ports:
             - containerPort: 60000
               name: metrics
@@ -137,3 +146,13 @@ spec:
       restartPolicy: Always
       serviceAccountName: codeready-operator
       terminationGracePeriodSeconds: 20
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: in
+                values:
+                - amd64
+                - s390x

@@ -357,8 +357,7 @@ spec:
                       managed by the Operator. When set to `false`, the KubernetesImagePuller
                       object will be deleted, and the Operator will be uninstalled,
                       regardless of whether a spec is provided. 
- Note that while
-                      this the Operator and its behavior is community-supported, its
+                      Note that while this Operator and its behavior is community-supported, its
                       payload may be commercially-supported for pulling commercially-supported
                       images."
                     type: boolean
@@ -450,7 +449,7 @@ spec:
                 type: object
               server:
                 description: General configuration settings related to the Che server
-                  and the plugin and devfile registries
+                  and the plug-in and devfile registries
                 properties:
                   airGapContainerRegistryHostname:
                     description: Optional host name, or URL, to an alternate container
