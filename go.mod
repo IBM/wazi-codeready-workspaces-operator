@@ -12,11 +12,12 @@ require (
 	github.com/operator-framework/operator-sdk v0.15.2
 	github.com/prometheus/common v0.7.0
 	github.com/sirupsen/logrus v1.4.2
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
+	golang.org/x/net v0.7.0
 	k8s.io/api v0.18.2
 	k8s.io/apiextensions-apiserver v0.18.2
 	k8s.io/apimachinery v0.18.2
 	k8s.io/client-go v12.0.0+incompatible
+	k8s.io/utils v0.0.0-20191010214722-8d271d903fe4
 	sigs.k8s.io/controller-runtime v0.6.0
 	sigs.k8s.io/yaml v1.2.0
 )
